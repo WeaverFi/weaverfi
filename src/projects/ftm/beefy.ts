@@ -2,10 +2,8 @@
 // Imports:
 import axios from 'axios';
 import { minABI, beefy, beethovenx } from '../../ABIs';
-import { initResponse, query, addToken, addLPToken, addCurveToken, addBalancerLikeToken } from '../../functions';
-import type { Request } from 'express';
-import { Chain, Address, Token, LPToken, isToken } from 'cookietrack-types';
-import { fBeetLogo, vault as beethovenxVault } from './beethovenx';
+import { query, addToken, addLPToken, addCurveToken, addBalancerLikeToken } from '../../functions';
+import type { Chain, Address, Token, LPToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'ftm';
@@ -17,34 +15,23 @@ const chars = 'abcdefghijklmnopqrstuvwxyz';
 
 /* ========================================================================================================================================================================= */
 
-// GET Function:
-export const get = async (req: Request) => {
-
-  // Initializing Response:
-  let response = initResponse(req);
-
-  // Fetching Response Data:
-  if(response.status === 'ok') {
+// Function to get project balance:
+export const get = async (wallet: Address) => {
+  let balance: (Token | LPToken)[] = [];
+  try {
+    let result;
     try {
-      let wallet = req.query.address as Address;
-      let result;
-      try {
-        result = await axios.get(`https://api.beefy.finance/vaults?${chars[Math.floor(Math.random() * chars.length)]}`);
-      } catch {
-        result = await axios.get(`https://api.beefy.finance/vaults?${chars[Math.floor(Math.random() * chars.length)]}`);
-      }
-      let vaults = result.data.filter((vault: any) => vault.chain === 'fantom' && vault.status === 'active' && vault.tokenAddress);
-      response.data.push(...(await getVaultBalances(wallet, vaults)));
-      response.data.push(...(await getStakedBIFI(wallet)));
-    } catch(err: any) {
-      console.error(err);
-      response.status = 'error';
-      response.data = [{error: 'Internal API Error'}];
+      result = await axios.get(`https://api.beefy.finance/vaults?${chars[Math.floor(Math.random() * chars.length)]}`);
+    } catch {
+      result = await axios.get(`https://api.beefy.finance/vaults?${chars[Math.floor(Math.random() * chars.length)]}`);
     }
+    let vaults = result.data.filter((vault: any) => vault.chain === 'fantom' && vault.status === 'active' && vault.tokenAddress);
+    balance.push(...(await getVaultBalances(wallet, vaults)));
+    balance.push(...(await getStakedBIFI(wallet)));
+  } catch {
+    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
-
-  // Returning Response:
-  return JSON.stringify(response, null, ' ');
+  return balance;
 }
 
 /* ========================================================================================================================================================================= */
@@ -67,10 +54,7 @@ const getVaultBalances = async (wallet: Address, vaults: any[]) => {
       // Beethoven X Vaults:
       } else if(vault.platform === 'Beethoven X') {
         let poolId = await query(chain, vault.tokenAddress, beethovenx.poolABI, 'getPoolId', []);
-        let newToken = await addBalancerLikeToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet, poolId, beethovenxVault);
-        if(isToken(newToken)) {
-          newToken.logo = fBeetLogo;
-        }
+        let newToken = await addBalancerLikeToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet, poolId, '0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce');
         balances.push(newToken);
 
       // Unique Vaults (3+ Assets):

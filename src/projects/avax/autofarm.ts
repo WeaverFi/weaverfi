@@ -1,38 +1,26 @@
 
 // Imports:
 import { minABI, autofarm } from '../../ABIs';
-import { initResponse, query, addToken, addLPToken, addTraderJoeToken } from '../../functions';
-import type { Request } from 'express';
-import type { Chain, Address, Token, LPToken } from 'cookietrack-types';
+import { query, addToken, addLPToken, addTraderJoeToken } from '../../functions';
+import type { Chain, Address, Token, LPToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'avax';
 const project = 'autofarm';
 const registry: Address = '0x864A0B7F8466247A0e44558D29cDC37D4623F213';
-const ignoreVaults: number[] = [67, 77, 79];
+const ignoredVaults: number[] = [67, 77, 79];
 
 /* ========================================================================================================================================================================= */
 
-// GET Function:
-export const get = async (req: Request) => {
-
-  // Initializing Response:
-  let response = initResponse(req);
-
-  // Fetching Response Data:
-  if(response.status === 'ok') {
-    try {
-      let wallet = req.query.address as Address;
-      response.data.push(...(await getVaultBalances(wallet)));
-    } catch(err: any) {
-      console.error(err);
-      response.status = 'error';
-      response.data = [{error: 'Internal API Error'}];
-    }
+// Function to get project balance:
+export const get = async (wallet: Address) => {
+  let balance: (Token | LPToken)[] = [];
+  try {
+    balance.push(...(await getVaultBalances(wallet)));
+  } catch {
+    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
-
-  // Returning Response:
-  return JSON.stringify(response, null, ' ');
+  return balance;
 }
 
 /* ========================================================================================================================================================================= */
@@ -43,7 +31,7 @@ const getVaultBalances = async (wallet: Address) => {
   let poolLength = parseInt(await query(chain, registry, autofarm.registryABI, 'poolLength', []));
   let vaults = [...Array(poolLength).keys()];
   let promises = vaults.map(vaultID => (async () => {
-    if(!ignoreVaults.includes(vaultID)) {
+    if(!ignoredVaults.includes(vaultID)) {
       let balance = parseInt(await query(chain, registry, autofarm.registryABI, 'stakedWantTokens', [vaultID, wallet]));
       if(balance > 99) {
         let token = (await query(chain, registry, autofarm.registryABI, 'poolInfo', [vaultID]))[0];

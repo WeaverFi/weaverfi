@@ -1,9 +1,8 @@
 
 // Imports:
 import { minABI, iron } from '../../ABIs';
-import { initResponse, query, addToken, addLPToken, addDebtToken, addIronToken } from '../../functions';
-import type { Request } from 'express';
-import type { Chain, Address, Token, LPToken, DebtToken } from 'cookietrack-types';
+import { query, addToken, addLPToken, addDebtToken, addIronToken } from '../../functions';
+import type { Chain, Address, Token, LPToken, DebtToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'poly';
@@ -15,29 +14,18 @@ const ice: Address = '0x4A81f8796e0c6Ad4877A51C86693B0dE8093F2ef';
 
 /* ========================================================================================================================================================================= */
 
-// GET Function:
-export const get = async (req: Request) => {
-
-  // Initializing Response:
-  let response = initResponse(req);
-
-  // Fetching Response Data:
-  if(response.status === 'ok') {
-    try {
-      let wallet = req.query.address as Address;
-      response.data.push(...(await getFarmBalances(wallet)));
-      response.data.push(...(await getMarketBalances(wallet)));
-      response.data.push(...(await getMarketRewards(wallet)));
-      response.data.push(...(await getStakedICE(wallet)));
-    } catch(err: any) {
-      console.error(err);
-      response.status = 'error';
-      response.data = [{error: 'Internal API Error'}];
-    }
+// Function to get project balance:
+export const get = async (wallet: Address) => {
+  let balance: (Token | LPToken | DebtToken)[] = [];
+  try {
+    balance.push(...(await getFarmBalances(wallet)));
+    balance.push(...(await getMarketBalances(wallet)));
+    balance.push(...(await getMarketRewards(wallet)));
+    balance.push(...(await getStakedICE(wallet)));
+  } catch {
+    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
-
-  // Returning Response:
-  return JSON.stringify(response, null, ' ');
+  return balance;
 }
 
 /* ========================================================================================================================================================================= */

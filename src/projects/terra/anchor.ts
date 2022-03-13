@@ -1,10 +1,10 @@
 
 // Imports:
-import { initResponse, query, addNativeToken, addNativeDebtToken, addToken, addLPToken } from '../../terra-functions';
-import type { Request } from 'express';
-import type { DebtToken, LPToken, NativeToken, TerraAddress, Token } from 'cookietrack-types';
+import { query, addNativeToken, addNativeDebtToken, addToken, addLPToken } from '../../terra-functions';
+import type { Chain, TerraAddress, NativeToken, Token, LPToken, DebtToken } from '../../types';
 
 // Initializations:
+const chain: Chain = 'terra';
 const project = 'anchor';
 const aust: TerraAddress = 'terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu';
 const anc: TerraAddress = 'terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76';
@@ -28,37 +28,26 @@ const astroGenerator: TerraAddress = 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzup
 
 /* ========================================================================================================================================================================= */
 
-// GET Function:
-export const get = async (req: Request) => {
-
-  // Initializing Response:
-  let response = initResponse(req);
-
-  // Fetching Response Data:
-  if(response.status === 'ok') {
-    try {
-      let wallet = req.query.address as TerraAddress;
-      response.data.push(...(await getEarnBalance(wallet)));
-      response.data.push(...(await getBAssetRewards(wallet)));
-      response.data.push(...(await getBorrowedTokens(wallet)));
-      response.data.push(...(await getAncGovTokens(wallet)));
-      response.data.push(...(await getStakedLP(wallet)));
-    } catch(err: any) {
-      console.error(err);
-      response.status = 'error';
-      response.data = [{error: 'Internal API Error'}];
-    }
+// Function to get project balance:
+export const get = async (wallet: TerraAddress) => {
+  let balance: (NativeToken | Token | LPToken | DebtToken)[] = [];
+  try {
+    balance.push(...(await getEarnBalance(wallet)));
+    balance.push(...(await getBAssetRewards(wallet)));
+    balance.push(...(await getBorrowedTokens(wallet)));
+    balance.push(...(await getAncGovTokens(wallet)));
+    balance.push(...(await getStakedLP(wallet)));
+  } catch {
+    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
-
-  // Returning Response:
-  return JSON.stringify(response, null, ' ');
+  return balance;
 }
 
 /* ========================================================================================================================================================================= */
 
 // Function to get Earn aUST balance:
 const getEarnBalance = async (wallet: TerraAddress) => {
-  let balance = parseInt((await query(aust, {balance: {address: wallet}})).balance);
+  let balance = parseInt((await query(aust, { balance: { address: wallet } })).balance);
   if(balance > 0) {
     let exchangeRate = (await query(market, {state: {}})).prev_exchange_rate;
     let newToken = await addNativeToken(project, 'staked', balance * exchangeRate, wallet, 'usd');
@@ -83,7 +72,7 @@ const getBAssetRewards = async (wallet: TerraAddress) => {
 
 // Function to get borrowed token info:
 const getBorrowedTokens = async (wallet: TerraAddress) => {
-  let tokens: (DebtToken | NativeToken | Token)[] = [];
+  let tokens: (NativeToken | Token | DebtToken)[] = [];
   let borrowerInfo = await query(market, { borrower_info: { borrower: wallet } });
 
   // Borrowed Tokens:
@@ -126,7 +115,7 @@ const getAncGovTokens = async (wallet: TerraAddress) => {
 
 // Function to get staked ANC-UST LP:
 const getStakedLP = async (wallet: TerraAddress) => {
-  let tokens: (LPToken | Token)[] = [];
+  let tokens: (Token | LPToken)[] = [];
 
   // LP Balance:
   let lpBalance = parseInt(await query(astroGenerator, { deposit: { lp_token: ancUstLPToken, user: wallet } }));
@@ -139,5 +128,6 @@ const getStakedLP = async (wallet: TerraAddress) => {
   if(rewardsBalance > 0) {
     tokens.push(await addToken(project, 'unclaimed', anc, 'ANC', 6, rewardsBalance, wallet));
   }
+
   return tokens;
 }

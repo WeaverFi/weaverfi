@@ -2,9 +2,8 @@
 // Imports:
 import axios from 'axios';
 import { minABI, aave } from '../../ABIs';
-import { initResponse, query, addToken, addAaveBLPToken, addDebtToken } from '../../functions';
-import type { Request } from 'express';
-import type { Chain, Address, Token, DebtToken } from 'cookietrack-types';
+import { query, addToken, addAaveBLPToken, addDebtToken } from '../../functions';
+import type { Chain, Address, Token, LPToken, DebtToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'eth';
@@ -16,31 +15,20 @@ const aaveToken: Address = '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9';
 
 /* ========================================================================================================================================================================= */
 
-// GET Function:
-export const get = async (req: Request) => {
-
-  // Initializing Response:
-  let response = initResponse(req);
-
-  // Fetching Response Data:
-  if(response.status === 'ok') {
-    try {
-      let wallet = req.query.address as Address;
-      response.data.push(...(await getStakedAAVE(wallet)));
-      response.data.push(...(await getStakedLP(wallet)));
-      let markets = (await axios.get('https://aave.github.io/aave-addresses/mainnet.json')).data.proto;
-      response.data.push(...(await getMarketBalances(wallet, markets)));
-      response.data.push(...(await getMarketDebt(wallet, markets)));
-      response.data.push(...(await getIncentives(wallet)));
-    } catch(err: any) {
-      console.error(err);
-      response.status = 'error';
-      response.data = [{error: 'Internal API Error'}];
-    }
+// Function to get project balance:
+export const get = async (wallet: Address) => {
+  let balance: (Token | LPToken | DebtToken)[] = [];
+  try {
+    balance.push(...(await getStakedAAVE(wallet)));
+    balance.push(...(await getStakedLP(wallet)));
+    let markets = (await axios.get('https://aave.github.io/aave-addresses/mainnet.json')).data.proto;
+    balance.push(...(await getMarketBalances(wallet, markets)));
+    balance.push(...(await getMarketDebt(wallet, markets)));
+    balance.push(...(await getIncentives(wallet)));
+  } catch {
+    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
-
-  // Returning Response:
-  return JSON.stringify(response, null, ' ');
+  return balance;
 }
 
 /* ========================================================================================================================================================================= */

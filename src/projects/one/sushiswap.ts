@@ -1,9 +1,8 @@
 
 // Imports:
 import { sushiswap } from '../../ABIs';
-import { initResponse, query, addToken, addLPToken } from '../../functions';
-import type { Request } from 'express';
-import type { Chain, Address, Token, LPToken } from 'cookietrack-types';
+import { query, addToken, addLPToken } from '../../functions';
+import type { Chain, Address, Token, LPToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'one';
@@ -13,26 +12,15 @@ const sushi: Address = '0xbec775cb42abfa4288de81f387a9b1a3c4bc552a';
 
 /* ========================================================================================================================================================================= */
 
-// GET Function:
-export const get = async (req: Request) => {
-
-  // Initializing Response:
-  let response = initResponse(req);
-
-  // Fetching Response Data:
-  if(response.status === 'ok') {
-    try {
-      let wallet = req.query.address as Address;
-      response.data.push(...(await getFarmBalances(wallet)));
-    } catch(err: any) {
-      console.error(err);
-      response.status = 'error';
-      response.data = [{error: 'Internal API Error'}];
-    }
+// Function to get project balance:
+export const get = async (wallet: Address) => {
+  let balance: (Token | LPToken)[] = [];
+  try {
+    balance.push(...(await getFarmBalances(wallet)));
+  } catch {
+    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
-
-  // Returning Response:
-  return JSON.stringify(response, null, ' ');
+  return balance;
 }
 
 /* ========================================================================================================================================================================= */

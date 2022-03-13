@@ -2,9 +2,8 @@
 // Imports:
 import axios from 'axios';
 import { minABI, beefy } from '../../ABIs';
-import { initResponse, query, addToken, addLPToken, addCurveToken } from '../../functions';
-import type { Request } from 'express';
-import type { Chain, Address, Token, LPToken } from 'cookietrack-types';
+import { query, addToken, addLPToken, addCurveToken } from '../../functions';
+import type { Chain, Address, Token, LPToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'avax';
@@ -16,34 +15,23 @@ const chars = 'abcdefghijklmnopqrstuvwxyz';
 
 /* ========================================================================================================================================================================= */
 
-// GET Function:
-export const get = async (req: Request) => {
-
-  // Initializing Response:
-  let response = initResponse(req);
-
-  // Fetching Response Data:
-  if(response.status === 'ok') {
+// Function to get project balance:
+export const get = async (wallet: Address) => {
+  let balance: (Token | LPToken)[] = [];
+  try {
+    let result;
     try {
-      let wallet = req.query.address as Address;
-      let result;
-      try {
-        result = await axios.get(`https://api.beefy.finance/vaults?${chars[Math.floor(Math.random() * chars.length)]}`);
-      } catch {
-        result = await axios.get(`https://api.beefy.finance/vaults?${chars[Math.floor(Math.random() * chars.length)]}`);
-      }
-      let vaults = result.data.filter((vault: any) => vault.chain === 'avax' && vault.status === 'active' && vault.tokenAddress);
-      response.data.push(...(await getVaultBalances(wallet, vaults)));
-      response.data.push(...(await getStakedBIFI(wallet)));
-    } catch(err: any) {
-      console.error(err);
-      response.status = 'error';
-      response.data = [{error: 'Internal API Error'}];
+      result = await axios.get(`https://api.beefy.finance/vaults?${chars[Math.floor(Math.random() * chars.length)]}`);
+    } catch {
+      result = await axios.get(`https://api.beefy.finance/vaults?${chars[Math.floor(Math.random() * chars.length)]}`);
     }
+    let vaults = result.data.filter((vault: any) => vault.chain === 'avax' && vault.status === 'active' && vault.tokenAddress);
+    balance.push(...(await getVaultBalances(wallet, vaults)));
+    balance.push(...(await getStakedBIFI(wallet)));
+  } catch {
+    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
-
-  // Returning Response:
-  return JSON.stringify(response, null, ' ');
+  return balance;
 }
 
 /* ========================================================================================================================================================================= */

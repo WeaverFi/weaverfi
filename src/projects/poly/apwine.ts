@@ -1,9 +1,8 @@
 
 // Imports:
 import { minABI, apwine, aave, harvest, balancer, beefy } from '../../ABIs';
-import { initResponse, query, addToken, addLPToken, addCurveToken, addBalancerToken } from '../../functions';
-import type { Request } from 'express';
-import type { Chain, Address, Token, LPToken } from 'cookietrack-types';
+import { query, addToken, addLPToken, addCurveToken, addBalancerToken } from '../../functions';
+import type { Chain, Address, Token, LPToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'poly';
@@ -12,26 +11,15 @@ const registry: Address = '0x72d15EAE2Cd729D8F2e41B1328311f3e275612B9';
 
 /* ========================================================================================================================================================================= */
 
-// GET Function:
-export const get = async (req: Request) => {
-
-  // Initializing Response:
-  let response = initResponse(req);
-
-  // Fetching Response Data:
-  if(response.status === 'ok') {
-    try {
-      let wallet = req.query.address as Address;
-      response.data.push(...(await getFutureBalances(wallet)));
-    } catch(err: any) {
-      console.error(err);
-      response.status = 'error';
-      response.data = [{error: 'Internal API Error'}];
-    }
+// Function to get project balance:
+export const get = async (wallet: Address) => {
+  let balance: (Token | LPToken)[] = [];
+  try {
+    balance.push(...(await getFutureBalances(wallet)));
+  } catch {
+    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
-
-  // Returning Response:
-  return JSON.stringify(response, null, ' ');
+  return balance;
 }
 
 /* ========================================================================================================================================================================= */

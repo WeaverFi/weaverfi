@@ -1,9 +1,8 @@
 
 // Imports:
 import { minABI, pooltogether } from '../../ABIs';
-import { initResponse, query, addToken, addLPToken } from '../../functions';
-import type { Request } from 'express';
-import type { Chain, Address, Token, LPToken } from 'cookietrack-types';
+import { query, addToken, addLPToken } from '../../functions';
+import type { Chain, Address, Token, LPToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'eth';
@@ -17,28 +16,17 @@ const usdc: Address = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
 
 /* ========================================================================================================================================================================= */
 
-// GET Function:
-export const get = async (req: Request) => {
-
-  // Initializing Response:
-  let response = initResponse(req);
-
-  // Fetching Response Data:
-  if(response.status === 'ok') {
-    try {
-      let wallet = req.query.address as Address;
-      response.data.push(...(await getPoolBalances(wallet)));
-      response.data.push(...(await getPodBalances(wallet)));
-      response.data.push(...(await getPoolBalanceV4(wallet)));
-    } catch(err: any) {
-      console.error(err);
-      response.status = 'error';
-      response.data = [{error: 'Internal API Error'}];
-    }
+// Function to get project balance:
+export const get = async (wallet: Address) => {
+  let balance: (Token | LPToken)[] = [];
+  try {
+    balance.push(...(await getPoolBalances(wallet)));
+    balance.push(...(await getPodBalances(wallet)));
+    balance.push(...(await getPoolBalanceV4(wallet)));
+  } catch {
+    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
-
-  // Returning Response:
-  return JSON.stringify(response, null, ' ');
+  return balance;
 }
 
 /* ========================================================================================================================================================================= */

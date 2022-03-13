@@ -1,11 +1,80 @@
 {
- "eth": [],
- "bsc": [],
- "poly": [],
- "ftm": [],
- "avax": [
-  "snowball"
+ "eth": [
+  "aave",
+  "apwine",
+  "balancer",
+  "compound",
+  "cream",
+  "curve",
+  "mstable",
+  "pooltogether",
+  "sushiswap",
+  "yearn"
  ],
- "one": [],
- "terra": []
+ "bsc": [
+  "apeswap",
+  "autofarm",
+  "beefy",
+  "belt",
+  "cream",
+  "moonpot",
+  "pancakeswap",
+  "pooltogether",
+  "venus"
+ ],
+ "poly": [
+  "aave",
+  "apeswap",
+  "apwine",
+  "autofarm",
+  "balancer",
+  "beefy",
+  "cream",
+  "curve",
+  "iron",
+  "mstable",
+  "pooltogether",
+  "quickswap",
+  "sushiswap"
+ ],
+ "ftm": [
+  "autofarm",
+  "beefy",
+  "beethovenx",
+  "bouje",
+  "cream",
+  "curve",
+  "scream",
+  "spookyswap"
+ ],
+ "avax": [
+  "aave",
+  "alligator",
+  "autofarm",
+  "avalaunch",
+  "axial",
+  "beefy",
+  "benqi",
+  "cookiegame",
+  "cream",
+  "curve",
+  "cycle",
+  "everest",
+  "lydia",
+  "pangolin",
+  "penguin",
+  "pooltogether",
+  "snowball",
+  "teddy",
+  "traderjoe",
+  "yieldyak"
+ ],
+ "one": [
+  "autofarm",
+  "beefy",
+  "sushiswap"
+ ],
+ "terra": [
+  "anchor"
+ ]
 }

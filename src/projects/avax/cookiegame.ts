@@ -1,9 +1,8 @@
 
 // Imports:
 import { minABI, cookiegame } from '../../ABIs';
-import { initResponse, query, addCookieToken } from '../../functions';
-import type { Request } from 'express';
-import type { Chain, Address } from 'cookietrack-types';
+import { query, addCookieToken } from '../../functions';
+import type { Chain, Address, Token } from '../../types';
 
 // Initializations:
 const chain: Chain = 'avax';
@@ -14,28 +13,17 @@ const cookie: Address = '0xeb5c8484a5e3866cf9ac0a3e01ca19c3fbe9bd93';
 
 /* ========================================================================================================================================================================= */
 
-// GET Function:
-export const get = async (req: Request) => {
-
-  // Initializing Response:
-  let response = initResponse(req);
-
-  // Fetching Response Data:
-  if(response.status === 'ok') {
-    try {
-      let wallet = req.query.address as Address;
-      response.data.push(...(await getCOOKIE(wallet)));
-      response.data.push(...(await getBakeryBalance(wallet)));
-      response.data.push(...(await getPantryBalance(wallet)));
-    } catch(err: any) {
-      console.error(err);
-      response.status = 'error';
-      response.data = [{error: 'Internal API Error'}];
-    }
+// Function to get project balance:
+export const get = async (wallet: Address) => {
+  let balance: Token[] = [];
+  try {
+    balance.push(...(await getCOOKIE(wallet)));
+    balance.push(...(await getBakeryBalance(wallet)));
+    balance.push(...(await getPantryBalance(wallet)));
+  } catch {
+    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
-
-  // Returning Response:
-  return JSON.stringify(response, null, ' ');
+  return balance;
 }
 
 /* ========================================================================================================================================================================= */

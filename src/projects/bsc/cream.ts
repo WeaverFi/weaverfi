@@ -1,9 +1,8 @@
 
 // Imports:
 import { minABI, cream } from '../../ABIs';
-import { initResponse, query, addToken, addLPToken, addDebtToken } from '../../functions';
-import type { Request } from 'express';
-import type { Chain, Address, Token, LPToken, DebtToken } from 'cookietrack-types';
+import { query, addToken, addLPToken, addDebtToken } from '../../functions';
+import type { Chain, Address, Token, LPToken, DebtToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'bsc';
@@ -12,26 +11,15 @@ const controller: Address = '0x589de0f0ccf905477646599bb3e5c622c84cc0ba';
 
 /* ========================================================================================================================================================================= */
 
-// GET Function:
-export const get = async (req: Request) => {
-
-  // Initializing Response:
-  let response = initResponse(req);
-
-  // Fetching Response Data:
-  if(response.status === 'ok') {
-    try {
-      let wallet = req.query.address as Address;
-      response.data.push(...(await getMarketBalances(wallet)));
-    } catch(err: any) {
-      console.error(err);
-      response.status = 'error';
-      response.data = [{error: 'Internal API Error'}];
-    }
+// Function to get project balance:
+export const get = async (wallet: Address) => {
+  let balance: (Token | LPToken | DebtToken)[] = [];
+  try {
+    balance.push(...(await getMarketBalances(wallet)));
+  } catch {
+    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
-
-  // Returning Response:
-  return JSON.stringify(response, null, ' ');
+  return balance;
 }
 
 /* ========================================================================================================================================================================= */

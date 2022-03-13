@@ -1,6 +1,6 @@
 
 // Imports:
-import { ethers, BigNumber } from 'ethers';
+import { ethers } from 'ethers';
 import axios from 'axios';
 import { minABI, lpABI, snowball, traderjoe, aave, balancer, belt, alpaca, curve, bzx, iron, axial, mstable, cookiegame } from './ABIs';
 import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data } from './tokens';
@@ -54,8 +54,8 @@ export const query = async (chain: Chain, address: Address, abi: ABI[], method: 
 // Function to fetch wallet balances:
 export const getWalletBalance = async (chain: Chain, wallet: Address) => {
   let walletBalance: (NativeToken | Token)[] = [];
-  walletBalance.push(...(await getWalletNativeTokenBalance(chain, wallet as Address)));
-  walletBalance.push(...(await getWalletTokenBalance(chain, wallet as Address)));
+  walletBalance.push(...(await getWalletNativeTokenBalance(chain, wallet)));
+  walletBalance.push(...(await getWalletTokenBalance(chain, wallet)));
   return walletBalance;
 }
 
@@ -66,7 +66,7 @@ export const getProjectBalance = async (chain: Chain, wallet: Address, project: 
   let projectBalance: (NativeToken | Token | LPToken | DebtToken | XToken)[] = [];
   if(projects[chain].includes(project)) {
     let dapp = await import(`./projects/${chain}/${project}`);
-    let balance = await dapp.get(wallet as Address);
+    let balance = await dapp.get(wallet);
     projectBalance.push(...(balance));
   } else {
     console.error(`Invalid Project Queried: ${project} (Chain: ${chain.toUpperCase()})`);
@@ -436,7 +436,7 @@ const getWalletNativeTokenBalance = async (chain: Chain, wallet: Address) => {
   while(!balance && errors < maxQueryRetries) {
     try {
       let ethers_provider = new ethers.providers.JsonRpcProvider(chains[chain].rpcs[rpcID]);
-      balance = (<BigNumber>(await ethers_provider.getBalance(wallet))).toNumber();
+      balance = parseInt((await ethers_provider.getBalance(wallet)).toString());
     } catch {
       if(++rpcID >= chains[chain].rpcs.length) {
         errors++;

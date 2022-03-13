@@ -1,9 +1,8 @@
 
 // Imports:
 import { minABI, mstable } from '../../ABIs';
-import { initResponse, query, addToken, addStableToken, addBalancerToken } from '../../functions';
-import type { Request } from 'express';
-import type { Chain, Address, Token, LPToken } from 'cookietrack-types';
+import { query, addToken, addStableToken, addBalancerToken } from '../../functions';
+import type { Chain, Address, Token, LPToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'eth';
@@ -14,6 +13,7 @@ const imUSDVault: Address = '0x78BefCa7de27d07DC6e71da295Cc2946681A6c7B';
 const imBTCVault: Address = '0xF38522f63f40f9Dd81aBAfD2B8EFc2EC958a3016';
 const staking: Address = '0x8f2326316ec696f6d023e37a9931c2b2c177a3d7';
 const balStaking: Address = '0xeFbe22085D9f29863Cfb77EEd16d3cC0D927b011';
+const mta: Address = '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2';
 const pools: Address[] = [
   '0xfE842e95f8911dcc21c943a1dAA4bd641a1381c6', // mUSD-BUSD
   '0x4fB30C5A3aC8e85bC32785518633303C4590752d', // mUSD-GUSD
@@ -32,33 +32,21 @@ const vaults: Address[] = [
   '0x97e2a2f97a2e9a4cfb462a49ab7c8d205abb9ed9', // mBTC-TBTC V2
   '0xF65D53AA6e2E4A5f4F026e73cb3e22C22D75E35C'  // mBTC-HBTC
 ];
-const mta: Address = '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2';
 
 /* ========================================================================================================================================================================= */
 
-// GET Function:
-export const get = async (req: Request) => {
-
-  // Initializing Response:
-  let response = initResponse(req);
-
-  // Fetching Response Data:
-  if(response.status === 'ok') {
-    try {
-      let wallet = req.query.address as Address;
-      response.data.push(...(await getAssetBalances(wallet)));
-      response.data.push(...(await getPoolBalances(wallet)));
-      response.data.push(...(await getVaultBalances(wallet)));
-      response.data.push(...(await getStaked(wallet)));
-    } catch(err: any) {
-      console.error(err);
-      response.status = 'error';
-      response.data = [{error: 'Internal API Error'}];
-    }
+// Function to get project balance:
+export const get = async (wallet: Address) => {
+  let balance: (Token | LPToken)[] = [];
+  try {
+    balance.push(...(await getAssetBalances(wallet)));
+    balance.push(...(await getPoolBalances(wallet)));
+    balance.push(...(await getVaultBalances(wallet)));
+    balance.push(...(await getStaked(wallet)));
+  } catch {
+    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
-
-  // Returning Response:
-  return JSON.stringify(response, null, ' ');
+  return balance;
 }
 
 /* ========================================================================================================================================================================= */

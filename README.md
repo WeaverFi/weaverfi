@@ -15,21 +15,49 @@ The NPM package to query DeFi.
 
 ## Usage
 
+Install the package using the following:
+
 `npm i weaverfi`
 
-TODO: explain how to import and use the functions available
-TODO: explain general structure, typescript usage, etc.
+Importing the package can be done through any of the following methods, depending on your app's setup:
+
+`import weaver from 'weaverfi'`
+
+`import { WeaverFi } from 'weaverfi'`
+
+`const weaver = require('weaverfi').default`
+
+The `WeaverFi` object (or `weaver` if you prefer to import it that way) contains some global methods such as `WeaverFi.getAllProjects()` or `WeaverFi.getAllTokens()`.
+
+Each supported chain has its own methods that can be as `WeaverFi.ETH.getWalletBalance(wallet)`, for example.
+
+---
+
+## Chains Supported
+
+- ETH (Ethereum)
+- BSC (Binance Smart Chain)
+- POLY (Polygon)
+- FTM (Fantom)
+- AVAX (Avalanche)
+- ONE (Harmony)
+- TERRA (Terra)
+
+---
+
+## Chain Methods Available
+
+- `query(address, abi, method, args)`
+- `isWallet(address)`
+- `getWalletBalance(wallet)`
+- `getProjectBalance(wallet, project)`
+- `getTokens()`
+- `getProjects()`
 
 ---
 
 ## Contributing
 
 Contribution guidelines can be found [here](CONTRIBUTING.md).
-
----
-
-## Typings
-
-TODO: Instructions for typings (if even necessary).
 
 [logo]: https://github.com/CookieTrack-io/weaverfi/blob/master/favicon.svg "WeaverFi"

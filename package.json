@@ -8,7 +8,7 @@
     "build": "tsc",
     "update": "tsc && node dist/updates.js",
     "prepack": "npm run update quick",
-    "test": "tsc && node testing/index.js"
+    "tests": "tsc && node dist/tests.js"
   },
   "repository": {
     "type": "git",

@@ -1,9 +1,8 @@
 
 // Imports:
 import { minABI, traderjoe } from '../../ABIs';
-import { initResponse, query, addToken, addLPToken, addDebtToken, addTraderJoeToken } from '../../functions';
-import type { Request } from 'express';
-import type { Chain, Address, Token, LPToken, DebtToken } from 'cookietrack-types';
+import { query, addToken, addLPToken, addDebtToken, addTraderJoeToken } from '../../functions';
+import type { Chain, Address, Token, LPToken, DebtToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'avax';
@@ -16,28 +15,17 @@ const xjoe: Address = '0x57319d41F71E81F3c65F2a47CA4e001EbAFd4F33';
 
 /* ========================================================================================================================================================================= */
 
-// GET Function:
-export const get = async (req: Request) => {
-
-  // Initializing Response:
-  let response = initResponse(req);
-
-  // Fetching Response Data:
-  if(response.status === 'ok') {
-    try {
-      let wallet = req.query.address as Address;
-      response.data.push(...(await getStakedJOE(wallet)));
-      response.data.push(...(await getFarmBalances(wallet)));
-      response.data.push(...(await getMarketBalances(wallet)));
-    } catch(err: any) {
-      console.error(err);
-      response.status = 'error';
-      response.data = [{error: 'Internal API Error'}];
-    }
+// Function to get project balance:
+export const get = async (wallet: Address) => {
+  let balance: (Token | LPToken | DebtToken)[] = [];
+  try {
+    balance.push(...(await getStakedJOE(wallet)));
+    balance.push(...(await getFarmBalances(wallet)));
+    balance.push(...(await getMarketBalances(wallet)));
+  } catch {
+    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
-
-  // Returning Response:
-  return JSON.stringify(response, null, ' ');
+  return balance;
 }
 
 /* ========================================================================================================================================================================= */

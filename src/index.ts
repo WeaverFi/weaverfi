@@ -10,7 +10,7 @@ const projects: Record<Chain, string[]> = require('../static/projects.json');
 /* ========================================================================================================================================================================= */
 
 // WeaverFi Functionality:
-const WeaverFi = {
+export const WeaverFi = {
 
   // Ethereum Functions:
   ETH: {
@@ -188,5 +188,5 @@ const WeaverFi = {
   }
 }
 
-// Exporting Module:
-exports.default = WeaverFi;
+// Exporting Default Module:
+export default WeaverFi;

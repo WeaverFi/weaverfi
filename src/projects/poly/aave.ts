@@ -2,9 +2,8 @@
 // Imports:
 import axios from 'axios';
 import { minABI, aave } from '../../ABIs';
-import { initResponse, query, addToken, addDebtToken } from '../../functions';
-import type { Request } from 'express';
-import type { Chain, Address, Token, DebtToken } from 'cookietrack-types';
+import { query, addToken, addDebtToken } from '../../functions';
+import type { Chain, Address, Token, DebtToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'poly';
@@ -14,29 +13,18 @@ const wmatic: Address = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270';
 
 /* ========================================================================================================================================================================= */
 
-// GET Function:
-export const get = async (req: Request) => {
-
-  // Initializing Response:
-  let response = initResponse(req);
-
-  // Fetching Response Data:
-  if(response.status === 'ok') {
-    try {
-      let wallet = req.query.address as Address;
-      let markets = (await axios.get('https://aave.github.io/aave-addresses/polygon.json')).data.matic;
-      response.data.push(...(await getMarketBalances(wallet, markets)));
-      response.data.push(...(await getMarketDebt(wallet, markets)));
-      response.data.push(...(await getIncentives(wallet)));
-    } catch(err: any) {
-      console.error(err);
-      response.status = 'error';
-      response.data = [{error: 'Internal API Error'}];
-    }
+// Function to get project balance:
+export const get = async (wallet: Address) => {
+  let balance: (Token | DebtToken)[] = [];
+  try {
+    let markets = (await axios.get('https://aave.github.io/aave-addresses/polygon.json')).data.matic;
+    balance.push(...(await getMarketBalances(wallet, markets)));
+    balance.push(...(await getMarketDebt(wallet, markets)));
+    balance.push(...(await getIncentives(wallet)));
+  } catch {
+    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
-
-  // Returning Response:
-  return JSON.stringify(response, null, ' ');
+  return balance;
 }
 
 /* ========================================================================================================================================================================= */

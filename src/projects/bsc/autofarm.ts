@@ -1,9 +1,8 @@
 
 // Imports:
 import { minABI, autofarm } from '../../ABIs';
-import { initResponse, query, addToken, addLPToken, add4BeltToken, addBeltToken, addAlpacaToken } from '../../functions';
-import type { Request } from 'express';
-import type { Chain, Address, Token, LPToken } from 'cookietrack-types';
+import { query, addToken, addLPToken, add4BeltToken, addBeltToken, addAlpacaToken } from '../../functions';
+import type { Chain, Address, Token, LPToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'bsc';
@@ -11,30 +10,19 @@ const project = 'autofarm';
 const registry: Address = '0x0895196562C7868C5Be92459FaE7f877ED450452';
 const autoVault: Address = '0x763a05bdb9f8946d8C3FA72d1e0d3f5E68647e5C';
 const auto: Address = '0xa184088a740c695e156f91f5cc086a06bb78b827';
-const ignoreVaults: number[] = [331];
+const ignoredVaults: number[] = [331];
 
 /* ========================================================================================================================================================================= */
 
-// GET Function:
-export const get = async (req: Request) => {
-
-  // Initializing Response:
-  let response = initResponse(req);
-
-  // Fetching Response Data:
-  if(response.status === 'ok') {
-    try {
-      let wallet = req.query.address as Address;
-      response.data.push(...(await getVaultBalances(wallet)));
-    } catch(err: any) {
-      console.error(err);
-      response.status = 'error';
-      response.data = [{error: 'Internal API Error'}];
-    }
+// Function to get project balance:
+export const get = async (wallet: Address) => {
+  let balance: (Token | LPToken)[] = [];
+  try {
+    balance.push(...(await getVaultBalances(wallet)));
+  } catch {
+    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
-
-  // Returning Response:
-  return JSON.stringify(response, null, ' ');
+  return balance;
 }
 
 /* ========================================================================================================================================================================= */
@@ -56,7 +44,7 @@ const getVaultBalances = async (wallet: Address) => {
       }
     
     // All Other Vaults:
-    } else if(!ignoreVaults.includes(vaultID)) {
+    } else if(!ignoredVaults.includes(vaultID)) {
       let balance = parseInt(await query(chain, registry, autofarm.registryABI, 'stakedWantTokens', [vaultID, wallet]));
       if(balance > 99) {
         let token = (await query(chain, registry, autofarm.registryABI, 'poolInfo', [vaultID]))[0];

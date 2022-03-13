@@ -1,14 +1,15 @@
 
 // Imports:
 import { minABI, aave } from '../../ABIs';
-import { initResponse, query, addToken, addDebtToken } from '../../functions';
-import type { Request } from 'express';
-import type { Chain, Address, Token, DebtToken } from 'cookietrack-types';
+import { query, addToken, addDebtToken } from '../../functions';
+import type { Chain, Address, Token, DebtToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'avax';
 const project = 'aave';
 const registry: Address = '0x65285E9dfab318f57051ab2b139ccCf232945451';
+const incentives: Address = '0x01D83Fe6A10D2f2B7AF17034343746188272cAc9';
+const wavax: Address = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7';
 const tokens: Address[] = [
   '0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab', // WETH.e
   '0xd586e7f844cea2f87f50152665bcbc2c279d8d70', // DAI.e
@@ -18,32 +19,19 @@ const tokens: Address[] = [
   '0x50b7545627a5162f82a992c33b87adc75187b218', // WBTC.e
   '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7'  // WAVAX
 ];
-const incentives: Address = '0x01D83Fe6A10D2f2B7AF17034343746188272cAc9';
-const wavax: Address = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7';
 
 /* ========================================================================================================================================================================= */
 
-// GET Function:
-export const get = async (req: Request) => {
-
-  // Initializing Response:
-  let response = initResponse(req);
-
-  // Fetching Response Data:
-  if(response.status === 'ok') {
-    try {
-      let wallet = req.query.address as Address;
-      response.data.push(...(await getMarketBalances(wallet)));
-      response.data.push(...(await getIncentives(wallet)));
-    } catch(err: any) {
-      console.error(err);
-      response.status = 'error';
-      response.data = [{error: 'Internal API Error'}];
-    }
+// Function to get project balance:
+export const get = async (wallet: Address) => {
+  let balance: (Token | DebtToken)[] = [];
+  try {
+    balance.push(...(await getMarketBalances(wallet)));
+    balance.push(...(await getIncentives(wallet)));
+  } catch {
+    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
-
-  // Returning Response:
-  return JSON.stringify(response, null, ' ');
+  return balance;
 }
 
 /* ========================================================================================================================================================================= */

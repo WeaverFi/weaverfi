@@ -2,9 +2,8 @@
 // Imports:
 import axios from 'axios';
 import { moonpot } from '../../ABIs';
-import { initResponse, query, addToken, addLPToken, add4BeltToken, addBeltToken, addAlpacaToken } from '../../functions';
-import type { Request } from 'express';
-import type { Chain, Address, Token, LPToken } from 'cookietrack-types';
+import { query, addToken, addLPToken, add4BeltToken, addBeltToken, addAlpacaToken } from '../../functions';
+import type { Chain, Address, Token, LPToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'bsc';
@@ -12,33 +11,22 @@ const project = 'moonpot';
 
 /* ========================================================================================================================================================================= */
 
-// GET Function:
-export const get = async (req: Request) => {
-
-  // Initializing Response:
-  let response = initResponse(req);
-
-  // Fetching Response Data:
-  if(response.status === 'ok') {
-    try {
-      let wallet = req.query.address as Address;
-      let pots: any[] = [];
-      let apiData = ((await axios.get('https://api.moonpot.com/pots')).data.data);
-      Object.keys(apiData).forEach(pot => {
-        if(apiData[pot].status === 'active') {
-          pots.push(apiData[pot]);
-        }
-      });
-      response.data.push(...(await getPotBalances(wallet, pots)));
-    } catch(err: any) {
-      console.error(err);
-      response.status = 'error';
-      response.data = [{error: 'Internal API Error'}];
-    }
+// Function to get project balance:
+export const get = async (wallet: Address) => {
+  let balance: (Token | LPToken)[] = [];
+  try {
+    let pots: any[] = [];
+    let apiData = ((await axios.get('https://api.moonpot.com/pots')).data.data);
+    Object.keys(apiData).forEach(pot => {
+      if(apiData[pot].status === 'active') {
+        pots.push(apiData[pot]);
+      }
+    });
+    balance.push(...(await getPotBalances(wallet, pots)));
+  } catch {
+    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
-
-  // Returning Response:
-  return JSON.stringify(response, null, ' ');
+  return balance;
 }
 
 /* ========================================================================================================================================================================= */

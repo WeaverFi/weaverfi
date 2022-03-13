@@ -1,43 +1,32 @@
 
 // Imports:
 import { minABI, beethovenx } from '../../ABIs';
-import { initResponse, query, addBalancerLikeToken, addToken } from '../../functions';
-import type { Request } from 'express';
-import { Chain, Address, Token, LPToken, isToken } from 'cookietrack-types';
+import { query, addBalancerLikeToken, addToken } from '../../functions';
+import { Chain, Address, Hash, Token, LPToken } from '../../types';
+
+// Required JSON Files:
+const poolIDs: Hash[] = require('../../../static/beethovenx-pools.json');
 
 // Initializations:
 const chain: Chain = 'ftm';
 const project = 'beethovenx';
+const masterChef: Address = '0x8166994d9ebBe5829EC86Bd81258149B87faCfd3';
+const vault: Address = '0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce';
 const beetsToken: Address = '0xF24Bcf4d1e507740041C9cFd2DddB29585aDCe1e';
-const poolIDs: Address[] = require('../../../static/beethovenx-pools.json').pools;
-export const vault: Address = '0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce';
-export const masterChef: Address = '0x8166994d9ebBe5829EC86Bd81258149B87faCfd3';
-export const fBeetAddress: Address = '0xfcef8a994209d6916EB2C86cDD2AFD60Aa6F54b1';
-export const fBeetLogo = 'https://beets.fi/img/fBEETS.d7f7145f.png';
+const fBeetAddress: Address = '0xfcef8a994209d6916EB2C86cDD2AFD60Aa6F54b1';
 
 /* ========================================================================================================================================================================= */
 
-// GET Function:
-export const get = async (req: Request) => {
-
-  // Initializing Response:
-  let response = initResponse(req);
-
-  // Fetching Response Data:
-  if(response.status === 'ok') {
-    try {
-      let wallet = req.query.address as Address;
-      response.data.push(...(await getPoolBalances(wallet)));
-      response.data.push(...(await getStakedBalances(wallet)));
-    } catch(err: any) {
-      console.error(err);
-      response.status = 'error';
-      response.data = [{error: 'Internal API Error'}];
-    }
+// Function to get project balance:
+export const get = async (wallet: Address) => {
+  let balance: (Token | LPToken)[] = [];
+  try {
+    balance.push(...(await getPoolBalances(wallet)));
+    balance.push(...(await getStakedBalances(wallet)));
+  } catch {
+    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
-
-  // Returning Response:
-  return JSON.stringify(response, null, ' ');
+  return balance;
 }
 
 /* ========================================================================================================================================================================= */
@@ -50,9 +39,6 @@ const getPoolBalances = async (wallet: Address) => {
     let balance = parseInt(await query(chain, address, minABI, 'balanceOf', [wallet]));
     if(balance > 0) {
       let newToken = await addBalancerLikeToken(chain, project, 'liquidity', address, balance, wallet, id, vault);
-      if(isToken(newToken)) {
-        newToken.logo = fBeetLogo;
-      }
       balances.push(newToken);
     }
   })());
@@ -74,9 +60,6 @@ const getStakedBalances = async (wallet: Address) => {
         if(poolAddress !== fBeetAddress) {
           let poolId: Address = await query(chain, poolAddress, beethovenx.poolABI, 'getPoolId', []);
           let newToken = await addBalancerLikeToken(chain, project, 'staked', poolAddress, balance, wallet, poolId, vault);
-          if(isToken(newToken)) {
-            newToken.logo = fBeetLogo;
-          }
           balances.push(newToken);
         }
       }

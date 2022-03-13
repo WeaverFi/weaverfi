@@ -1,6 +1,7 @@
 
 // Imports:
-import { Coin, LCDClient, AccPubKey } from '@terra-money/terra.js';
+import { Coin, Coins, LCDClient, AccPubKey, Delegation } from '@terra-money/terra.js';
+import { Pagination } from '@terra-money/terra.js/dist/client/lcd/APIRequester';
 import axios from 'axios';
 import { terra_data } from './tokens';
 import type { Chain, Address, TerraAddress, URL, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken } from './types';
@@ -36,8 +37,8 @@ export const query = async (address: TerraAddress, query: any): Promise<any> => 
 // Function to fetch wallet balances:
 export const getWalletBalance = async (wallet: TerraAddress) => {
   let walletBalance: (NativeToken | Token)[] = [];
-  // walletBalance.push(...(await getWalletNativeTokenBalance(chain, wallet as Address)));
-  // walletBalance.push(...(await getWalletTokenBalance(chain, wallet as Address)));
+  walletBalance.push(...(await getWalletNativeTokenBalance(wallet)));
+  walletBalance.push(...(await getWalletTokenBalance(wallet)));
   return walletBalance;
 }
 
@@ -48,7 +49,7 @@ export const getProjectBalance = async (wallet: TerraAddress, project: string) =
   let projectBalance: (NativeToken | Token | LPToken | DebtToken | XToken)[] = [];
   if(projects[chain].includes(project)) {
     let dapp = await import(`./projects/${chain}/${project}`);
-    let balance = await dapp.get(wallet as Address);
+    let balance = await dapp.get(wallet);
     projectBalance.push(...(balance));
   } else {
     console.error(`Invalid Project Queried: ${project} (Chain: ${chain.toUpperCase()})`);
@@ -229,8 +230,8 @@ const fetchInitialTokenPrices = async () => {
 
         // Other Native Tokens:
         let nativeTokens = (await terra.bank.total())[0];
-        let ignoreTokens = ['uluna', 'uusd', 'unok', 'uidr'];
-        let peggedAssets = nativeTokens.filter((asset: Coin) => asset.denom.charAt(0) === 'u' && !ignoreTokens.includes(asset.denom.toLowerCase()));
+        let ignoredTokens = ['uluna', 'uusd', 'unok', 'uidr'];
+        let peggedAssets = nativeTokens.filter((asset: Coin) => asset.denom.charAt(0) === 'u' && !ignoredTokens.includes(asset.denom.toLowerCase()));
         await Promise.all(peggedAssets.map((asset: Coin) => {
           let singleUnitAsset = new Coin(asset.denom, 10 ** 6);
           return new Promise<void>(async (resolve, reject) => {
@@ -264,6 +265,73 @@ const fetchInitialTokenPrices = async () => {
   }
   await tokenPricesPromise;
 };
+
+/* ========================================================================================================================================================================= */
+
+// Function to get a wallet's native token balance:
+const getWalletNativeTokenBalance = async (wallet: TerraAddress) => {
+
+  // Initializations:
+  let balances: NativeToken[] = [];
+  let ignoreTokens = ['unok', 'uidr'];
+  let bankBalances: Coin[] = [];
+  let stakingDelegations: Delegation[] = [];
+  let firstQuery = true;
+  let pageKey: string | null = null;
+
+  // Bank Balances:
+  while(firstQuery || pageKey) {
+    let results: [Coins, Pagination] = await terra.bank.balance(wallet, (pageKey ? { "pagination.key": pageKey } : undefined));
+    pageKey = results[1].next_key;
+    bankBalances.push(...results[0].filter((token: any) => token.denom.charAt(0) === 'u' && !ignoreTokens.includes(token.denom.toLowerCase())));
+    firstQuery = false;
+  }
+
+  // LUNA Staking Delegations:
+  firstQuery = true;
+  pageKey = null;
+  while (firstQuery || pageKey) {
+    let results: [Delegation[], Pagination] = await terra.staking.delegations(wallet, undefined, (pageKey ? { "pagination.key": pageKey } : undefined));
+    pageKey = results[1].next_key;
+    stakingDelegations.push(...results[0]);
+    firstQuery = false;
+  }
+
+  // Delegation Rewards:
+  let rewards = (await terra.distribution.rewards(wallet)).total.filter(coin => coin.denom.charAt(0) === 'u' && !ignoreTokens.includes(coin.denom.toLowerCase()));
+  
+  // Adding Tokens:
+  let promises = [
+    ...bankBalances.map((token: Coin) => (async () => {
+      balances.push(await addNativeToken('wallet', 'none', token.amount.toNumber(), wallet, token.denom.slice(1)));
+    })()),
+    ...stakingDelegations.map((delegation) => (async () => {
+      balances.push(await addNativeToken('staking_luna', 'staked', delegation.balance.amount.toNumber(), wallet, delegation.balance.denom.slice(1)));
+    })()),
+    ...rewards.map((token: Coin) => (async () => {
+      balances.push(await addNativeToken('staking_luna', 'unclaimed', token.amount.toNumber(), wallet, token.denom.slice(1)));
+    })())
+  ];
+  await Promise.all(promises);
+
+  return balances;
+}
+
+/* ========================================================================================================================================================================= */
+
+// Function to get a wallet's token balance:
+const getWalletTokenBalance = async (wallet: TerraAddress) => {
+  let tokens: Token[] = [];
+  let promises = terra_data.tokens.map(token => (async () => {
+    let balance = parseInt((await query(token.address, { balance: { address: wallet } })).balance);
+    if(balance > 0) {
+      let newToken = await addToken('wallet', 'none', token.address, token.symbol, token.decimals, balance, wallet);
+      tokens.push(newToken);
+    }
+  })());
+  await Promise.all(promises);
+  return tokens;
+}
 
 /* ========================================================================================================================================================================= */
 
