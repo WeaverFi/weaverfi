@@ -3,6 +3,6 @@
 /src/
 /dist/updates.js
 /dist/updates.d.ts
-/dist/testing.js
-/dist/testing.d.ts
+/dist/tests.js
+/dist/tests.d.ts
 tsconfig.json
