@@ -17,19 +17,21 @@ The NPM package to query DeFi.
 
 Install the package using the following:
 
-`npm i weaverfi`
+```
+npm i weaverfi
+```
 
-Importing the package can be done through any of the following methods, depending on your app's setup:
+Importing the package can be done through any one of the following methods, depending on your app's setup:
 
-`import weaver from 'weaverfi'`
-
-`import { WeaverFi } from 'weaverfi'`
-
-`const weaver = require('weaverfi').default`
+```
+import weaver from 'weaverfi'
+import { WeaverFi } from 'weaverfi'
+const weaver = require('weaverfi').default
+```
 
 The `WeaverFi` object (or `weaver` if you prefer to import it that way) contains some global methods such as `WeaverFi.getAllProjects()` or `WeaverFi.getAllTokens()`.
 
-Each supported chain has its own methods that can be as `WeaverFi.ETH.getWalletBalance(wallet)`, for example.
+Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWalletBalance(wallet)`, for example.
 
 ---
 
