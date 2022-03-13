@@ -1,0 +1,7 @@
+/.github/
+/.vscode/
+/src/
+/testing/
+tsconfig.json
+/dist/updates.js
+/dist/updates.d.ts

@@ -1,0 +1,44 @@
+{
+  "name": "weaverfi",
+  "version": "1.0.0",
+  "description": "The NPM package to query DeFi.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "update": "tsc && node dist/updates.js",
+    "prepack": "npm run update quick",
+    "test": "tsc && node testing/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CookieTrack-io/weaverfi.git"
+  },
+  "keywords": [
+    "defi",
+    "decentralized finance",
+    "blockchain",
+    "cryptocurrency",
+    "ethereum",
+    "smart contracts",
+    "ethers",
+    "wallet",
+    "nodejs",
+    "typescript"
+  ],
+  "author": "WeaverFi",
+  "license": "MIT",
+  "homepage": "https://github.com/CookieTrack-io/weaverfi#readme",
+  "bugs": {
+    "url": "https://github.com/CookieTrack-io/weaverfi/labels/bug"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.36.0",
+    "@terra-money/terra.js": "^3.0.8",
+    "axios": "^0.26.1",
+    "ethers": "^5.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.6.2"
+  }
+}
