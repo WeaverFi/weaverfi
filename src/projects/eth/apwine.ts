@@ -1,6 +1,6 @@
 
 // Imports:
-import { minABI, apwine, paladin, aave, harvest, yearn, paraswap } from '../../ABIs';
+import { minABI, apwine, paladin, aave, harvest, yearn, paraswap, truefi } from '../../ABIs';
 import { query, addToken, addCurveToken } from '../../functions';
 import type { Chain, Address, Token, LPToken } from '../../types';
 
@@ -88,7 +88,13 @@ const getFutureBalances = async (wallet: Address) => {
 
       // TrueFi Futures:
       } else if(platform === 'TrueFi') {
-        console.info(`Unsupported TrueFi FutureID on APWine: ${futureID}`); // Asked TrueFi team for clarifications - no response yet.
+        let underlyingToken = await query(chain, futureToken, truefi.poolABI, 'token', []);
+        let underlyingPoolValue = parseInt(await query(chain, futureToken, truefi.poolABI, 'poolValue', []));
+        let underlyingSupply = parseInt(await query(chain, futureToken, minABI, 'totalSupply', []));
+        let underlyingExchangeRate = underlyingPoolValue / underlyingSupply;
+        let fytBalance = await fetchFYTBalance(wallet, future, futureToken);
+        let newToken = await addToken(chain, project, 'staked', underlyingToken, (ptBalance + fytBalance) * underlyingExchangeRate, wallet);
+        balances.push(newToken);
 
       // Aave Futures:
       } else if(platform === 'Aave') {

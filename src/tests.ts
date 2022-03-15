@@ -9,7 +9,7 @@ import { WeaverFi as weaver } from './index';
 // const projects: Record<Chain, string[]> = require('../static/projects.json');
 
 // Initializations:
-// const wallet = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E';
+// const wallet = '0x94458aa887d18f85003c3b0391594767ddc733fb';
 
 /* ========================================================================================================================================================================= */
 
@@ -17,7 +17,7 @@ import { WeaverFi as weaver } from './index';
 const tests = async () => {
 
   // Project Balance Tests:
-  // let projectBalance = await weaver.ETH.getProjectBalance(wallet, 'aave');
+  // let projectBalance = await weaver.ETH.getProjectBalance(wallet, 'apwine');
   // console.log('🕷️ ~ projectBalance', projectBalance);
 
   /* ================================================== */
