@@ -1,12 +1,10 @@
 
 // Imports:
 import { WeaverFi as weaver } from './index';
+// import { chains } from './chains';
+// import { projects } from './projects';
 // import { minABI } from './ABIs';
 // import type { Chain, ChainData } from './types';
-
-// Required JSON Files:
-// const chains: Record<Chain, ChainData> = require('../static/chains.json');
-// const projects: Record<Chain, string[]> = require('../static/projects.json');
 
 // Initializations:
 // const wallet = '0x94458aa887d18f85003c3b0391594767ddc733fb';

@@ -2,13 +2,11 @@
 // Imports:
 import { ethers } from 'ethers';
 import axios from 'axios';
+import { chains } from './chains';
+import { projects } from './projects';
 import { minABI, lpABI, snowball, traderjoe, aave, balancer, belt, alpaca, curve, bzx, iron, axial, mstable, cookiegame } from './ABIs';
 import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data } from './tokens';
-import type { Chain, ChainData, ChainTokenData, Address, URL, ABI, TokenData, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken } from './types';
-
-// Required JSON Files:
-const chains: Record<Chain, ChainData> = require('../static/chains.json');
-const projects: Record<Chain, string[]> = require('../static/projects.json');
+import type { EVMChain, ChainTokenData, Address, URL, ABI, TokenData, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken } from './types';
 
 // Initializations:
 const defaultTokenLogo: URL = 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@d5c68edec1f5eaec59ac77ff2b48144679cebca1/32/icon/generic.png';
@@ -17,7 +15,7 @@ const zero: Address = '0x0000000000000000000000000000000000000000';
 const maxQueryRetries = 3;
 
 // Ignored Errors On Blockchain Queries:
-export const ignoredErrors: { chain: Chain, address: Address }[] = [
+export const ignoredErrors: { chain: EVMChain, address: Address }[] = [
   {chain: 'poly', address: '0x8aaa5e259f74c8114e0a471d9f2adfc66bfe09ed'}, // QuickSwap Registry
   {chain: 'poly', address: '0x9dd12421c637689c3fc6e661c9e2f02c2f61b3eb'}  // QuickSwap Dual Rewards Registry
 ];
@@ -25,7 +23,7 @@ export const ignoredErrors: { chain: Chain, address: Address }[] = [
 /* ========================================================================================================================================================================= */
 
 // Function to make blockchain queries:
-export const query = async (chain: Chain, address: Address, abi: ABI[], method: string, args: any[]) => {
+export const query = async (chain: EVMChain, address: Address, abi: ABI[], method: string, args: any[]) => {
   let result;
   let errors = 0;
   let rpcID = 0;
@@ -52,7 +50,7 @@ export const query = async (chain: Chain, address: Address, abi: ABI[], method: 
 /* ========================================================================================================================================================================= */
 
 // Function to fetch wallet balances:
-export const getWalletBalance = async (chain: Chain, wallet: Address) => {
+export const getWalletBalance = async (chain: EVMChain, wallet: Address) => {
   let walletBalance: (NativeToken | Token)[] = [];
   walletBalance.push(...(await getWalletNativeTokenBalance(chain, wallet)));
   walletBalance.push(...(await getWalletTokenBalance(chain, wallet)));
@@ -62,7 +60,7 @@ export const getWalletBalance = async (chain: Chain, wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to fetch project balances:
-export const getProjectBalance = async (chain: Chain, wallet: Address, project: string) => {
+export const getProjectBalance = async (chain: EVMChain, wallet: Address, project: string) => {
   let projectBalance: (NativeToken | Token | LPToken | DebtToken | XToken)[] = [];
   if(projects[chain].includes(project)) {
     let dapp = await import(`./projects/${chain}/${project}`);
@@ -84,7 +82,7 @@ export const isWallet = async (address: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get native token info:
-export const addNativeToken = async (chain: Chain, rawBalance: number, owner: Address): Promise<NativeToken> => {
+export const addNativeToken = async (chain: EVMChain, rawBalance: number, owner: Address): Promise<NativeToken> => {
 
   // Initializing Token Values:
   let type: TokenType = 'nativeToken';
@@ -114,7 +112,7 @@ export const addNativeToken = async (chain: Chain, rawBalance: number, owner: Ad
 /* ========================================================================================================================================================================= */
 
 // Function to get token info:
-export const addToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -155,7 +153,7 @@ export const addToken = async (chain: Chain, location: string, status: TokenStat
 /* ========================================================================================================================================================================= */
 
 // Function to get LP token info:
-export const addLPToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<LPToken> => {
+export const addLPToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<LPToken> => {
 
   // Initializing Token Values:
   let type: TokenType = 'lpToken';
@@ -215,7 +213,7 @@ export const addLPToken = async (chain: Chain, location: string, status: TokenSt
 /* ========================================================================================================================================================================= */
 
 // Function to get debt token info:
-export const addDebtToken = async (chain: Chain, location: string, address: Address, rawBalance: number, owner: Address): Promise<DebtToken> => {
+export const addDebtToken = async (chain: EVMChain, location: string, address: Address, rawBalance: number, owner: Address): Promise<DebtToken> => {
 
   // Initializing Token Values:
   let type: TokenType = 'debt';
@@ -257,7 +255,7 @@ export const addDebtToken = async (chain: Chain, location: string, address: Addr
 /* ========================================================================================================================================================================= */
 
 // Function to get derivative/composite token info:
-export const addXToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, underlyingAddress: Address, underlyingRawBalance: number): Promise<XToken> => {
+export const addXToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, underlyingAddress: Address, underlyingRawBalance: number): Promise<XToken> => {
 
   // Initializing Token Values:
   let type: TokenType = 'xToken';
@@ -298,7 +296,7 @@ export const addXToken = async (chain: Chain, location: string, status: TokenSta
 /* ========================================================================================================================================================================= */
 
 // Function to get a list of tracked tokens on any given chain:
-export const getTokens = (chain: Chain) => {
+export const getTokens = (chain: EVMChain) => {
   let chainTokenData = getChainTokenData(chain);
   if(chainTokenData) {
     return chainTokenData.tokens;
@@ -310,7 +308,7 @@ export const getTokens = (chain: Chain) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get a token's current price:
-export const getTokenPrice = async (chain: Chain, address: Address, decimals: number): Promise<number> => {
+export const getTokenPrice = async (chain: EVMChain, address: Address, decimals: number): Promise<number> => {
 
   // Initializations:
   let priceFound = false;
@@ -429,7 +427,7 @@ export const getTokenPrice = async (chain: Chain, address: Address, decimals: nu
 /* ========================================================================================================================================================================= */
 
 // Function to get a wallet's native token balance:
-const getWalletNativeTokenBalance = async (chain: Chain, wallet: Address) => {
+const getWalletNativeTokenBalance = async (chain: EVMChain, wallet: Address) => {
   let balance;
   let errors = 0;
   let rpcID = 0;
@@ -454,7 +452,7 @@ const getWalletNativeTokenBalance = async (chain: Chain, wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get a wallet's token balance:
-const getWalletTokenBalance = async (chain: Chain, wallet: Address) => {
+const getWalletTokenBalance = async (chain: EVMChain, wallet: Address) => {
   let tokens: Token[] = [];
   let data = getChainTokenData(chain);
   if(data) {
@@ -473,7 +471,7 @@ const getWalletTokenBalance = async (chain: Chain, wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get a token's logo:
-const getTokenLogo = (chain: Chain, symbol: string) => {
+const getTokenLogo = (chain: EVMChain, symbol: string) => {
 
   // Initializing Default Token Logo:
   let logo = defaultTokenLogo;
@@ -500,7 +498,7 @@ const getTokenLogo = (chain: Chain, symbol: string) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get tracked token info:
-const getTrackedTokenInfo = (chain: Chain, address: Address) => {
+const getTrackedTokenInfo = (chain: EVMChain, address: Address) => {
   let data = getChainTokenData(chain);
   if(data) {
     return data.tokens.find(token => token.address.toLowerCase() === address.toLowerCase());
@@ -512,7 +510,7 @@ const getTrackedTokenInfo = (chain: Chain, address: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get tracked token info:
-const addTrackedToken = async (chain: Chain, location: string, status: TokenStatus, token: TokenData, rawBalance: number, owner: Address): Promise<Token> => {
+const addTrackedToken = async (chain: EVMChain, location: string, status: TokenStatus, token: TokenData, rawBalance: number, owner: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -529,7 +527,7 @@ const addTrackedToken = async (chain: Chain, location: string, status: TokenStat
 /* ========================================================================================================================================================================= */
 
 // Function to select the right chain's token data:
-const getChainTokenData = (chain: Chain) => {
+const getChainTokenData = (chain: EVMChain) => {
 
   // Initializating Data:
   let data: ChainTokenData;
@@ -557,7 +555,7 @@ const getChainTokenData = (chain: Chain) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get S4D token info:
-export const addS4DToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addS4DToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -576,7 +574,7 @@ export const addS4DToken = async (chain: Chain, location: string, status: TokenS
 /* ========================================================================================================================================================================= */
 
 // Function to get Trader Joe token info (xJOE):
-export const addTraderJoeToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addTraderJoeToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -598,7 +596,7 @@ export const addTraderJoeToken = async (chain: Chain, location: string, status: 
 /* ========================================================================================================================================================================= */
 
 // Function to get Aave BLP token info:
-export const addAaveBLPToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<LPToken> => {
+export const addAaveBLPToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<LPToken> => {
 
   // Initializing Token Values:
   let type: TokenType = 'lpToken';
@@ -643,7 +641,7 @@ export const addAaveBLPToken = async (chain: Chain, location: string, status: To
 /* ========================================================================================================================================================================= */
 
 // Function to get 4Belt token info:
-export const add4BeltToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const add4BeltToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -659,7 +657,7 @@ export const add4BeltToken = async (chain: Chain, location: string, status: Toke
 /* ========================================================================================================================================================================= */
 
 // Function to get Belt token info:
-export const addBeltToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addBeltToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -679,7 +677,7 @@ export const addBeltToken = async (chain: Chain, location: string, status: Token
 /* ========================================================================================================================================================================= */
 
 // Function to get Alpaca token info:
-export const addAlpacaToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addAlpacaToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -701,7 +699,7 @@ export const addAlpacaToken = async (chain: Chain, location: string, status: Tok
 /* ========================================================================================================================================================================= */
 
 // Function to get Curve token info:
-export const addCurveToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token | LPToken> => {
+export const addCurveToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token | LPToken> => {
   
   // Ethereum Token:
   if(chain === 'eth') {
@@ -718,7 +716,7 @@ export const addCurveToken = async (chain: Chain, location: string, status: Toke
     let multiplier = parseInt(await query(chain, registry, curve.registryABI, 'get_virtual_price_from_lp_token', [address])) / (10 ** decimals);
 
     // Function to redirect synthetic asset price fetching:
-    const getPrice = async (chain: Chain, address: Address, decimals: number): Promise<number> => {
+    const getPrice = async (chain: EVMChain, address: Address, decimals: number): Promise<number> => {
       if(address.toLowerCase() === '0xbBC455cb4F1B9e4bFC4B73970d360c8f032EfEE6'.toLowerCase()) { // sLINK
         return await getTokenPrice(chain, '0x514910771af9ca656af840dff83e8264ecf986ca', decimals);
       } else if(address.toLowerCase() === '0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6'.toLowerCase()) { // sBTC
@@ -1157,7 +1155,7 @@ export const addCurveToken = async (chain: Chain, location: string, status: Toke
 /* ========================================================================================================================================================================= */
 
 // Function to get BZX token info:
-export const addBZXToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addBZXToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -1177,12 +1175,12 @@ export const addBZXToken = async (chain: Chain, location: string, status: TokenS
 /* ========================================================================================================================================================================= */
 
 // Function to get Balancer LP token info:
-export const addBalancerToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, id: Address) => {
+export const addBalancerToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, id: Address) => {
   return await addBalancerLikeToken(chain, location, status, address, rawBalance, owner, id, '0xBA12222222228d8Ba445958a75a0704d566BF2C8');
 }
 
 // Function to get Balancer-like LP token info:
-export const addBalancerLikeToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, id: Address, vault: Address): Promise<Token | LPToken> => {
+export const addBalancerLikeToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, id: Address, vault: Address): Promise<Token | LPToken> => {
 
   // Generic Token Values:
   let poolInfo = await query(chain, vault, balancer.vaultABI, 'getPoolTokens', [id]);
@@ -1262,7 +1260,7 @@ export const addBalancerLikeToken = async (chain: Chain, location: string, statu
 /* ========================================================================================================================================================================= */
 
 // Function to get Iron token info:
-export const addIronToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addIronToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -1281,7 +1279,7 @@ export const addIronToken = async (chain: Chain, location: string, status: Token
 /* ========================================================================================================================================================================= */
 
 // Function to get Axial token info:
-export const addAxialToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addAxialToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -1300,7 +1298,7 @@ export const addAxialToken = async (chain: Chain, location: string, status: Toke
 /* ========================================================================================================================================================================= */
 
 // Function to get mStable token info:
-export const addStableToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addStableToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -1321,7 +1319,7 @@ export const addStableToken = async (chain: Chain, location: string, status: Tok
 /* ========================================================================================================================================================================= */
 
 // Function to get Cookie token info:
-export const addCookieToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addCookieToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -1341,7 +1339,7 @@ export const addCookieToken = async (chain: Chain, location: string, status: Tok
 /* ========================================================================================================================================================================= */
 
 // Function to get Alligator token info (xGTR):
-export const addAlligatorToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addAlligatorToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';

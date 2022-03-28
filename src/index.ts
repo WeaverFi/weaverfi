@@ -2,10 +2,8 @@
 // Imports:
 import * as evm from './functions';
 import * as terra from './terra-functions';
+import { projects } from './projects';
 import type { Chain, Address, TerraAddress, TokenData, TerraTokenData, ABI } from './types';
-
-// Required JSON Files:
-const projects: Record<Chain, string[]> = require('../static/projects.json');
 
 /* ========================================================================================================================================================================= */
 

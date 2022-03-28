@@ -1,8 +1,6 @@
 /.github/
 /.vscode/
 /src/
-/dist/updates.js
-/dist/updates.d.ts
 /dist/tests.js
 /dist/tests.d.ts
 tsconfig.json

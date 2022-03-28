@@ -1,6 +1,7 @@
 
 // Chain Types:
 export type Chain = 'eth' | 'bsc' | 'poly' | 'ftm' | 'avax' | 'one' | 'terra';
+export type EVMChain = 'eth' | 'bsc' | 'poly' | 'ftm' | 'avax' | 'one';
 export type ChainID = 1 | 56 | 137 | 250 | 43114 | 1666600000;
 
 // Address Types:

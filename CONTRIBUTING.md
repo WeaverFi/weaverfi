@@ -20,6 +20,7 @@ Doing so was made as easy and straightforward as possible. Simply fork this repo
 - Any new relevant tracked tokens listed in `/src/tokens.ts`.
 - Any new relevant new ABIs updated in `/src/ABIs.ts`.
 - A file in `/src/projects/` with the functionality of querying the new dapp in the appropriate chain folder, as a `.ts` file.
+- The name of your project (the same as the file name) in `/src/projects.ts`.
 
 There is a template at `/src/projects/template.ts` to help new contributors.
 

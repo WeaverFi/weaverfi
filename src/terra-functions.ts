@@ -3,11 +3,9 @@
 import { Coin, Coins, LCDClient, AccPubKey, Delegation } from '@terra-money/terra.js';
 import { Pagination } from '@terra-money/terra.js/dist/client/lcd/APIRequester';
 import axios from 'axios';
+import { projects } from './projects';
 import { terra_data } from './tokens';
 import type { Chain, Address, TerraAddress, URL, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken } from './types';
-
-// Required JSON Files:
-const projects: Record<Chain, string[]> = require('../static/projects.json');
 
 // Initializations:
 const chain: Chain = 'terra';
