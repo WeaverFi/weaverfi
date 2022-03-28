@@ -1,6 +1,6 @@
 {
   "name": "weaverfi",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "The NPM package to query DeFi.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -8,7 +8,7 @@
     "build": "tsc",
     "update": "tsc && node dist/updates.js",
     "prepack": "npm run update quick",
-    "tests": "tsc && node dist/tests.js"
+    "test": "tsc && node dist/tests.js"
   },
   "repository": {
     "type": "git",

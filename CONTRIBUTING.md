@@ -23,7 +23,7 @@ Doing so was made as easy and straightforward as possible. Simply fork this repo
 
 There is a template at `/src/projects/template.ts` to help new contributors.
 
-You can test your implementation through `npm run tests`, and a lot of tests are already setup and available in `/src/tests.ts`.
+You can test your implementation through `npm run test`, and a lot of tests are already setup and available in `/src/tests.ts`.
 
 If your PR isn't reviewed right away, reach out in our [Discord server](https://discord.com/invite/DzADcq7y75)!
 
