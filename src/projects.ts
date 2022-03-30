@@ -55,6 +55,7 @@ export const projects: Record<Chain, string[]> = {
   avax: [
    'aave',
    'alligator',
+   'anchor',
    'autofarm',
    'avalaunch',
    'axial',
