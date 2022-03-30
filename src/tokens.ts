@@ -585,7 +585,8 @@ export const avax_data: ChainTokenData = {
     { address: '0x43c812ba28cb061b1be7514145a15c9e18a27342', symbol: 'GTR', logo: 'https://snowtrace.io/token/images/alligatorexchange2_32.png', decimals: 18 },
     { address: '0x22d4002028f537599bE9f666d1c4Fa138522f9c8', symbol: 'PTP', logo: 'https://snowtrace.io/token/images/platypusfinance_32.png', decimals: 18 },
     { address: '0x1C20E891Bab6b1727d14Da358FAe2984Ed9B59EB', symbol: 'TUSD', logo: 'https://snowtrace.io/token/images/trueusd_32.png', decimals: 18 },
-    { address: '0x1ECd47FF4d9598f89721A2866BFEb99505a413Ed', symbol: 'AVME', logo: 'https://snowtrace.io/token/images/avmeavax_32.png', decimals: 18 }
+    { address: '0x1ECd47FF4d9598f89721A2866BFEb99505a413Ed', symbol: 'AVME', logo: 'https://snowtrace.io/token/images/avmeavax_32.png', decimals: 18 },
+    { address: '0xb599c3590F42f8F995ECfa0f85D2980B76862fc1', symbol: 'UST', logo: 'https://snowtrace.io/token/images/wormholeust_32.png', decimals: 6 }
   ],
   logos: [
     { symbol: 'AVAX', logo: 'https://bscscan.com/token/images/avax_32.png' },
@@ -629,7 +630,8 @@ export const avax_data: ChainTokenData = {
     { symbol: 'DAI', logo: 'https://snowtrace.io/token/images/MCDDai_32.png' },
     { symbol: 's3D', logo: 'https://snowtrace.io/token/images/snowball_32.png' },
     { symbol: 'ETH', logo: 'https://snowtrace.io/token/images/ethereum_32.png' },
-    { symbol: 'YRT', logo: 'https://snowtrace.io/token/images/yieldyak_32.png' }
+    { symbol: 'YRT', logo: 'https://snowtrace.io/token/images/yieldyak_32.png' },
+    { symbol: 'aUST', logo: 'https://snowtrace.io/token/images/wormholeust_32.png' }
   ],
   blacklist: [
     '0xd17584633bc8d190e5a14502976dad9640456d6d'
