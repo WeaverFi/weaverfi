@@ -84,7 +84,7 @@ const getBorrowedTokens = async (wallet: TerraAddress) => {
   // Borrowing Rewards:
   let borrowRewards = parseInt(borrowerInfo.pending_rewards);
   if(borrowRewards > 0) {
-    tokens.push(await addNativeToken(project, 'unclaimed', borrowRewards, wallet, 'usd'));
+    tokens.push(await addToken(project, 'unclaimed', anc, 'ANC', 6, borrowRewards, wallet));
   }
 
   // bLUNA Collateral:
