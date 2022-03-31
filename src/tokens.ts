@@ -631,7 +631,8 @@ export const avax_data: ChainTokenData = {
     { symbol: 's3D', logo: 'https://snowtrace.io/token/images/snowball_32.png' },
     { symbol: 'ETH', logo: 'https://snowtrace.io/token/images/ethereum_32.png' },
     { symbol: 'YRT', logo: 'https://snowtrace.io/token/images/yieldyak_32.png' },
-    { symbol: 'aUST', logo: 'https://snowtrace.io/token/images/wormholeust_32.png' }
+    { symbol: 'aUST', logo: 'https://snowtrace.io/token/images/wormholeust_32.png' },
+    { symbol: 'xSNOB', logo: 'https://snowtrace.io/token/images/snowball_32.png' }
   ],
   blacklist: [
     '0xd17584633bc8d190e5a14502976dad9640456d6d'

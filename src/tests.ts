@@ -7,7 +7,7 @@ import { WeaverFi as weaver } from './index';
 // import type { Chain, ChainData } from './types';
 
 // Initializations:
-// const wallet = '0x94458aa887d18f85003c3b0391594767ddc733fb';
+const wallet = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E';
 
 /* ========================================================================================================================================================================= */
 
@@ -15,8 +15,8 @@ import { WeaverFi as weaver } from './index';
 const tests = async () => {
 
   // Project Balance Tests:
-  // let projectBalance = await weaver.ETH.getProjectBalance(wallet, 'apwine');
-  // console.log('🕷️ ~ projectBalance', projectBalance);
+  let projectBalance = await weaver.AVAX.getProjectBalance(wallet, 'snowball');
+  console.log('🕷️ ~ projectBalance', projectBalance);
 
   /* ================================================== */
   
@@ -111,10 +111,10 @@ const tests = async () => {
   /* ================================================== */
 
   // Generic Tests:
-  let allProjects = weaver.getAllProjects();
-  console.log('🕷️ ~ allProjects', allProjects);
-  let allTokens = weaver.getAllTokens();
-  console.log('🕷️ ~ allTokens', allTokens);
+  // let allProjects = weaver.getAllProjects();
+  // console.log('🕷️ ~ allProjects', allProjects);
+  // let allTokens = weaver.getAllTokens();
+  // console.log('🕷️ ~ allTokens', allTokens);
 
 }
 

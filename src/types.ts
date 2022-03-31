@@ -37,6 +37,7 @@ export interface OwnedToken extends BaseToken {
     location: string
     status: TokenStatus
     owner: Address | TerraAddress
+    info?: TokenInfo
 }
 export interface NativeToken extends OwnedToken, PricedToken {
     type: 'nativeToken'
@@ -56,6 +57,12 @@ export interface XToken extends OwnedToken {
     type: 'xToken'
     logo: URL
     underlyingToken: PricedToken
+}
+export interface TokenInfo {
+    apr?: number
+    apy?: number
+    unlock?: number
+    deprecated?: boolean
 }
 
 // Token Type Guards:
@@ -190,4 +197,20 @@ export interface TerraTokenData {
 export interface LogoData {
     symbol: string
     logo: URL
+}
+
+/* ========================================================================================================================================================================= */
+
+// Miscellaneous API Response Types:
+export interface SnowballAPIResponse {
+    symbol: string
+    address: Address
+    lpAddress: Address
+    deprecated: boolean
+    yearlyAPY: number
+    yearlySwapFees: number
+    gaugeInfo: {
+        address: Address
+        snobYearlyAPR: number
+    }
 }
