@@ -75,10 +75,6 @@ export const beethovenx: Record<string, ABI[]> = {
 
 // Snowball ABIs:
 export const snowball: Record<string, ABI[]> = {
-  registryABI: [
-    { constant: true, inputs: [], name: "tokens", outputs: [{ name: "", type: "address[]" }], type: "function" },
-    { constant: true, inputs: [{ name: "_token", type: "address" }], name: "getGauge", outputs: [{ name: "", type: "address" }], type: "function" }
-  ],
   gaugeABI: [
     { constant: true, inputs: [{ name: "account", type: "address" }], name: "earned", outputs: [{ name: "", type: "uint256" }], type: "function" }
   ],
@@ -88,12 +84,6 @@ export const snowball: Record<string, ABI[]> = {
   ],
   stakingABI: [
     { constant: true, inputs: [{ name: "arg0", type: "address" }], name: "locked", outputs: [{ name: "amount", type: "uint128" }, { name: "end", type: "uint256" }], type: "function" }
-  ],
-  s4dABI: [
-    { constant: true, inputs: [], name: "owner", outputs: [{ name: "", type: "address" }], type: "function" }
-  ],
-  s4dControllerABI: [
-    { constant: true, inputs: [], name: "getVirtualPrice", outputs: [{ name: "", type: "uint256" }], type: "function" }
   ]
 }
 

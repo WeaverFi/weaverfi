@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import axios from 'axios';
 import { chains } from './chains';
 import { projects } from './projects';
-import { minABI, lpABI, snowball, traderjoe, aave, balancer, belt, alpaca, curve, bzx, iron, axial, mstable, cookiegame } from './ABIs';
+import { minABI, lpABI, traderjoe, aave, balancer, belt, alpaca, curve, bzx, iron, axial, mstable, cookiegame } from './ABIs';
 import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data } from './tokens';
 import type { EVMChain, ChainTokenData, Address, URL, ABI, TokenData, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken } from './types';
 
@@ -550,25 +550,6 @@ const getChainTokenData = (chain: EVMChain) => {
   }
   
   return data;
-}
-
-/* ========================================================================================================================================================================= */
-
-// Function to get S4D token info:
-export const addS4DToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
-
-  // Initializing Token Values:
-  let type: TokenType = 'token';
-  let symbol = await query(chain, address, minABI, 'symbol', []);
-  let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
-  let balance = rawBalance / (10 ** decimals);
-  let logo = getTokenLogo(chain, symbol);
-
-  // Finding Token Price:
-  let controller = await query(chain, address, snowball.s4dABI, 'owner', []);
-  let price = parseInt(await query(chain, controller, snowball.s4dControllerABI, 'getVirtualPrice', [])) / (10 ** decimals);
-
-  return { type, chain, location, status, owner, symbol, address, balance, price, logo };
 }
 
 /* ========================================================================================================================================================================= */
