@@ -1,5 +1,6 @@
 
 // Imports:
+import * as $ from './prices';
 import * as evm from './functions';
 import * as terra from './terra-functions';
 import { projects } from './projects';
@@ -29,6 +30,12 @@ export const WeaverFi = {
     },
     getProjects: () => {
       return projects['eth'];
+    },
+    getTokenPrices: () => {
+      return $.getChainTokenPrices('eth');
+    },
+    getTokenPrice: (address: Address, decimals?: number) => {
+      return $.getTokenPrice('eth', address, decimals);
     }
   },
 
@@ -51,6 +58,12 @@ export const WeaverFi = {
     },
     getProjects: () => {
       return projects['bsc'];
+    },
+    getTokenPrices: () => {
+      return $.getChainTokenPrices('bsc');
+    },
+    getTokenPrice: (address: Address, decimals?: number) => {
+      return $.getTokenPrice('bsc', address, decimals);
     }
   },
 
@@ -73,6 +86,12 @@ export const WeaverFi = {
     },
     getProjects: () => {
       return projects['poly'];
+    },
+    getTokenPrices: () => {
+      return $.getChainTokenPrices('poly');
+    },
+    getTokenPrice: (address: Address, decimals?: number) => {
+      return $.getTokenPrice('poly', address, decimals);
     }
   },
 
@@ -95,6 +114,12 @@ export const WeaverFi = {
     },
     getProjects: () => {
       return projects['ftm'];
+    },
+    getTokenPrices: () => {
+      return $.getChainTokenPrices('ftm');
+    },
+    getTokenPrice: (address: Address, decimals?: number) => {
+      return $.getTokenPrice('ftm', address, decimals);
     }
   },
 
@@ -117,6 +142,12 @@ export const WeaverFi = {
     },
     getProjects: () => {
       return projects['avax'];
+    },
+    getTokenPrices: () => {
+      return $.getChainTokenPrices('avax');
+    },
+    getTokenPrice: (address: Address, decimals?: number) => {
+      return $.getTokenPrice('avax', address, decimals);
     }
   },
 
@@ -139,6 +170,12 @@ export const WeaverFi = {
     },
     getProjects: () => {
       return projects['one'];
+    },
+    getTokenPrices: () => {
+      return $.getChainTokenPrices('one');
+    },
+    getTokenPrice: (address: Address, decimals?: number) => {
+      return $.getTokenPrice('one', address, decimals);
     }
   },
 
@@ -161,6 +198,12 @@ export const WeaverFi = {
     },
     getProjects: () => {
       return projects['terra'];
+    },
+    getTokenPrices: () => {
+      return $.getChainTokenPrices('terra');
+    },
+    getTokenPrice: (address: Address, decimals?: number) => {
+      return $.getTokenPrice('terra', address, decimals);
     }
   },
 
@@ -173,7 +216,7 @@ export const WeaverFi = {
 
   // Function to get a list of all tracked tokens:
   getAllTokens: () => {
-    let tokens: Record<Chain, (TokenData | TerraTokenData)[]> = { 'eth': [], 'bsc': [], 'poly': [], 'ftm': [], 'avax': [], 'one': [], 'terra': [] };
+    let tokens: Record<Chain, (TokenData | TerraTokenData)[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], terra: [] };
     Object.keys(tokens).forEach(stringChain => {
       let chain = stringChain as Chain;
       if(chain === 'terra') {
@@ -183,6 +226,11 @@ export const WeaverFi = {
       }
     });
     return tokens;
+  },
+
+  // Function to get all tracked token's prices:
+  getAllTokenPrices: () => {
+    return $.getAllTokenPrices();
   }
 }
 

@@ -29,7 +29,7 @@ import { WeaverFi } from 'weaverfi'
 const weaver = require('weaverfi').default
 ```
 
-The `WeaverFi` object (or `weaver` if you prefer to import it that way) contains some global methods such as `WeaverFi.getAllProjects()` or `WeaverFi.getAllTokens()`.
+The `WeaverFi` object (or `weaver` if you prefer to import it that way) contains some global methods such as `WeaverFi.getAllProjects()`, `WeaverFi.getAllTokens()` or `WeaverFi.getAllTokenPrices()`.
 
 Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWalletBalance(wallet)`, for example.
 
@@ -55,6 +55,8 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 - `getProjectBalance(wallet, project)`
 - `getTokens()`
 - `getProjects()`
+- `getTokenPrices()`
+- `getTokenPrice(address)`
 
 ---
 

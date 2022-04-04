@@ -7,7 +7,7 @@ import { WeaverFi as weaver } from './index';
 // import type { Chain, ChainData } from './types';
 
 // Initializations:
-const wallet = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E';
+// const wallet = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E';
 
 /* ========================================================================================================================================================================= */
 
@@ -15,8 +15,8 @@ const wallet = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E';
 const tests = async () => {
 
   // Project Balance Tests:
-  let projectBalance = await weaver.AVAX.getProjectBalance(wallet, 'snowball');
-  console.log('🕷️ ~ projectBalance', projectBalance);
+  // let projectBalance = await weaver.AVAX.getProjectBalance(wallet, 'snowball');
+  // console.log('🕷️ ~ projectBalance', projectBalance);
 
   /* ================================================== */
   
@@ -108,6 +108,11 @@ const tests = async () => {
   // let terraQueryResult = parseInt((await weaver.TERRA.query('terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76', { balance: { address: wallet } })).balance);
   // console.log('🕷️ ~ terraQueryResult', terraQueryResult);
 
+    /* ================================================== */
+
+  // Token Pricing Tests:
+  // <TODO>
+
   /* ================================================== */
 
   // Generic Tests:
@@ -115,6 +120,8 @@ const tests = async () => {
   // console.log('🕷️ ~ allProjects', allProjects);
   // let allTokens = weaver.getAllTokens();
   // console.log('🕷️ ~ allTokens', allTokens);
+  let allTokenPrices = await weaver.getAllTokenPrices();
+  console.log('🕷️ ~ allTokenPrices', allTokenPrices);
 
 }
 

@@ -50,7 +50,7 @@ const getEarnBalance = async (wallet: TerraAddress) => {
   let balance = parseInt((await query(aust, { balance: { address: wallet } })).balance);
   if(balance > 0) {
     let exchangeRate = (await query(market, {state: {}})).prev_exchange_rate;
-    let newToken = await addNativeToken(project, 'staked', balance * exchangeRate, wallet, 'usd');
+    let newToken = await addNativeToken(project, 'staked', balance * exchangeRate, wallet, 'uusd');
     return [newToken];
   } else {
     return [];
@@ -63,7 +63,7 @@ const getBAssetRewards = async (wallet: TerraAddress) => {
   ustRewards += parseInt((await query(bLunaReward, { accrued_rewards: { address: wallet } })).rewards);
   ustRewards += parseInt((await query(bEthReward, { accrued_rewards: { address: wallet } })).rewards);
   if(ustRewards > 0) {
-    let newToken = await addNativeToken(project, 'unclaimed', ustRewards, wallet, 'usd');
+    let newToken = await addNativeToken(project, 'unclaimed', ustRewards, wallet, 'uusd');
     return [newToken];
   } else {
     return [];
@@ -78,7 +78,7 @@ const getBorrowedTokens = async (wallet: TerraAddress) => {
   // Borrowed Tokens:
   let borrowedBalance = parseInt(borrowerInfo.loan_amount);
   if(borrowedBalance > 0) {
-    tokens.push(await addNativeDebtToken(project, 'borrowed', borrowedBalance, wallet, 'usd'));
+    tokens.push(await addNativeDebtToken(project, 'borrowed', borrowedBalance, wallet, 'uusd'));
   }
 
   // Borrowing Rewards:

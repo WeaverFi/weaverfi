@@ -15,6 +15,9 @@ export type TokenStatus = 'none' | 'staked' | 'liquidity' | 'lent' | 'borrowed' 
 // Transaction Types:
 export type TXType = 'transfer' | 'approve' | 'revoke';
 
+// Price Source Types:
+export type PriceSource = 'chain' | 'coingecko' | '1inch' | 'paraswap' | 'proxy';
+
 // Generic Types:
 export type URL = `https://${string}`;
 export type Hash = `0x${string}`;
@@ -154,23 +157,40 @@ export interface ABITupleIO {
 
 /* ========================================================================================================================================================================= */
 
-// Chain Data Interface:
+// Chain Data Interfaces:
+export interface Chains {
+    eth: ChainData
+    bsc: ChainData
+    poly: ChainData
+    ftm: ChainData
+    avax: ChainData
+    one: ChainData
+    terra: TerraChainData
+}
 export interface ChainData {
     id: ChainID
     token: string
-    cgID: string
-    nativeID: string
     wrappedToken: Address
     usdc: Address
     usdcDecimals: number
     inch: boolean
     paraswap: boolean,
     rpcs: URL[]
+    coingeckoIDs: CoinGeckoIDs
+}
+export interface TerraChainData {
+    token: string
+    rpcs: URL[]
+    coingeckoIDs: CoinGeckoIDs
+}
+export interface CoinGeckoIDs {
+    chainID: string
+    nativeTokenID: string
 }
 
 /* ========================================================================================================================================================================= */
 
-// Chain Token Data Interface:
+// Chain Token Data Interfaces:
 export interface BaseChainTokenData {
     logos: LogoData[]
 }
@@ -197,6 +217,17 @@ export interface TerraTokenData {
 export interface LogoData {
     symbol: string
     logo: URL
+}
+
+/* ========================================================================================================================================================================= */
+
+// Token Price Data Interface:
+export interface TokenPriceData {
+    symbol: string | null
+    address: Address | TerraAddress
+    price: number
+    source: PriceSource
+    timestamp: number
 }
 
 /* ========================================================================================================================================================================= */
