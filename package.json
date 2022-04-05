@@ -23,7 +23,9 @@
     "ethers",
     "wallet",
     "nodejs",
-    "typescript"
+    "typescript",
+    "weaver",
+    "spider"
   ],
   "author": "WeaverFi",
   "license": "MIT",
