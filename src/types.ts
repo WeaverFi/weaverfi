@@ -18,6 +18,9 @@ export type TXType = 'transfer' | 'approve' | 'revoke';
 // Price Source Types:
 export type PriceSource = 'chain' | 'coingecko' | '1inch' | 'paraswap' | 'proxy';
 
+// Terra Native Token Denoms:
+export type TerraDenom = 'uluna' | 'uaud' | 'ucad' | 'uchf' | 'ucny' | 'udkk' | 'ueur' | 'ugbp' | 'uhkd' | 'uidr' | 'uinr' | 'ujpy' | 'ukrw' | 'umnt' | 'uphp' | 'usdr' | 'usek' | 'usgd' | 'uthb' | 'uusd' | 'umyr' | 'utwd';
+
 // Generic Types:
 export type URL = `https://${string}`;
 export type Hash = `0x${string}`;

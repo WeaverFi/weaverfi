@@ -54,6 +54,7 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 - `getWalletBalance(wallet)`
 - `getProjectBalance(wallet, project)`
 - `getTokens()`
+- `getTokenLogo(symbol)`
 - `getProjects()`
 - `getTokenPrices()`
 - `getTokenPrice(address)`

@@ -5,13 +5,12 @@ import { terra_data } from './tokens';
 import { getTokenPrice } from './prices';
 import { Pagination } from '@terra-money/terra.js/dist/client/lcd/APIRequester';
 import { Coin, Coins, LCDClient, AccPubKey, Delegation } from '@terra-money/terra.js';
-import type { Chain, Address, TerraAddress, URL, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken } from './types';
+import type { Chain, Address, TerraAddress, TerraDenom, URL, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken } from './types';
 
 // Initializations:
 const chain: Chain = 'terra';
 const defaultTokenLogo: URL = 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@d5c68edec1f5eaec59ac77ff2b48144679cebca1/32/icon/generic.png';
 const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
-const nativeTokenSymbols: string[] = ['aud', 'cad', 'chf', 'cny', 'dkk', 'eur', 'gbp', 'hkd', 'idr', 'inr', 'jpy', 'krw', 'mnt', 'php', 'sdr', 'sek', 'sgd', 'thb', 'usd', 'myr', 'twd'];
 
 // Setting Up Blockchain Connection:
 const terra = new LCDClient({ URL: "https://lcd.terra.dev", chainID: "columbus-5" });
@@ -68,27 +67,25 @@ export const isWallet = (address: TerraAddress) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get native token info:
-export const addNativeToken = async (location: string, status: TokenStatus, rawBalance: number, owner: TerraAddress, denom: string): Promise<NativeToken> => {
+export const addNativeToken = async (location: string, status: TokenStatus, rawBalance: number, owner: TerraAddress, denom: TerraDenom): Promise<NativeToken> => {
 
   // Initializing Token Values:
   let type: TokenType = 'nativeToken';
   let address = defaultAddress;
   let balance = rawBalance / (10 ** 6);
-  let symbol = denom.slice(1, -1) + 't';
+  let symbol = '';
+  let price = 0;
 
   // Finding Token Price:
-  let price = await getTokenPrice(chain, defaultAddress + symbol as Address);
-
-  // Correcting Token Symbol:
-  if(symbol != 'luna') {
-    if(nativeTokenSymbols.includes(symbol)) {
-      symbol = symbol.slice(0, -1) + 't';
-    } else {
-      console.error(`TERRA: Native Token Symbol Not Found - ${symbol}`);
-    }
+  if(denom === 'uluna') {
+    symbol = 'LUNA';
+    price = await getTokenPrice(chain, defaultAddress);
+  } else {
+    symbol = denom.slice(1, -1) + 't';
+    price = await getTokenPrice(chain, defaultAddress + symbol as Address);
+    symbol = symbol.toUpperCase();
   }
-  symbol = symbol.toUpperCase();
-
+  
   // Finding Token Logo:
   let logo = getTokenLogo(symbol);
 
@@ -98,7 +95,7 @@ export const addNativeToken = async (location: string, status: TokenStatus, rawB
 /* ========================================================================================================================================================================= */
 
 // Function to get native debt token info:
-export const addNativeDebtToken = async (location: string, status: TokenStatus, rawBalance: number, owner: TerraAddress, denom: string): Promise<DebtToken> => {
+export const addNativeDebtToken = async (location: string, status: TokenStatus, rawBalance: number, owner: TerraAddress, denom: TerraDenom): Promise<DebtToken> => {
 
   // Initializing Token Values:
   let nativeToken = await addNativeToken(location, status, rawBalance, owner, denom);
@@ -184,6 +181,28 @@ export const getTokens = () => {
 
 /* ========================================================================================================================================================================= */
 
+// Function to get a token's logo:
+export const getTokenLogo = (symbol: string) => {
+
+  // Initializing Default Token Logo:
+  let logo = defaultTokenLogo;
+
+  // Finding Token Logo:
+  let trackedToken = terra_data.tokens.find(token => token.symbol === symbol);
+  if(trackedToken) {
+    logo = trackedToken.logo;
+  } else {
+    let token = terra_data.logos.find(i => i.symbol === symbol);
+    if(token) {
+      logo = token.logo;
+    }
+  }
+
+  return logo;
+}
+
+/* ========================================================================================================================================================================= */
+
 // Function to get a wallet's native token balance:
 const getWalletNativeTokenBalance = async (wallet: TerraAddress) => {
 
@@ -219,13 +238,13 @@ const getWalletNativeTokenBalance = async (wallet: TerraAddress) => {
   // Adding Tokens:
   let promises = [
     ...bankBalances.map((token: Coin) => (async () => {
-      balances.push(await addNativeToken('wallet', 'none', token.amount.toNumber(), wallet, token.denom.slice(1)));
+      balances.push(await addNativeToken('wallet', 'none', token.amount.toNumber(), wallet, token.denom as TerraDenom));
     })()),
     ...stakingDelegations.map((delegation) => (async () => {
-      balances.push(await addNativeToken('staking_luna', 'staked', delegation.balance.amount.toNumber(), wallet, delegation.balance.denom.slice(1)));
+      balances.push(await addNativeToken('staking_luna', 'staked', delegation.balance.amount.toNumber(), wallet, delegation.balance.denom as TerraDenom));
     })()),
     ...rewards.map((token: Coin) => (async () => {
-      balances.push(await addNativeToken('staking_luna', 'unclaimed', token.amount.toNumber(), wallet, token.denom.slice(1)));
+      balances.push(await addNativeToken('staking_luna', 'unclaimed', token.amount.toNumber(), wallet, token.denom as TerraDenom));
     })())
   ];
   await Promise.all(promises);
@@ -251,33 +270,11 @@ const getWalletTokenBalance = async (wallet: TerraAddress) => {
 
 /* ========================================================================================================================================================================= */
 
-// Function to get a token's logo:
-const getTokenLogo = (symbol: string) => {
-
-  // Initializing Default Token Logo:
-  let logo = defaultTokenLogo;
-
-  // Finding Token Logo:
-  let trackedToken = terra_data.tokens.find(token => token.symbol === symbol);
-  if(trackedToken) {
-    logo = trackedToken.logo;
-  } else {
-    let token = terra_data.logos.find(i => i.symbol === symbol);
-    if(token) {
-      logo = token.logo;
-    }
-  }
-
-  return logo;
-}
-
-/* ========================================================================================================================================================================= */
-
 // Underlying LP Token Helper Function:
-const addNativePricedToken = async (rawBalance: number, denom: string): Promise<PricedToken> => {
+const addNativePricedToken = async (rawBalance: number, denom: TerraDenom): Promise<PricedToken> => {
 
   // Finding Underlying Token Info:
-  let nativeToken = await addNativeToken('', 'none', rawBalance, 'terra1', denom.slice(1));
+  let nativeToken = await addNativeToken('', 'none', rawBalance, 'terra1', denom);
   let symbol = nativeToken.symbol;
   let address = defaultAddress;
   let balance = nativeToken.balance;

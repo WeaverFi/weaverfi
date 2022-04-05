@@ -329,6 +329,33 @@ export const getChainTokenData = (chain: EVMChain) => {
 
 /* ========================================================================================================================================================================= */
 
+// Function to get a token's logo:
+export const getTokenLogo = (chain: EVMChain, symbol: string) => {
+
+  // Initializing Default Token Logo:
+  let logo = defaultTokenLogo;
+
+  // Selecting Token Data:
+  let data = getChainTokenData(chain);
+
+  // Finding Token Logo:
+  if(data) {
+    let trackedToken = data.tokens.find(token => token.symbol === symbol);
+    if(trackedToken) {
+      logo = trackedToken.logo;
+    } else {
+      let token = data.logos.find(i => i.symbol === symbol);
+      if(token) {
+        logo = token.logo;
+      }
+    }
+  }
+
+  return logo;
+}
+
+/* ========================================================================================================================================================================= */
+
 // Function to get a wallet's native token balance:
 const getWalletNativeTokenBalance = async (chain: EVMChain, wallet: Address) => {
   let balance;
@@ -369,33 +396,6 @@ const getWalletTokenBalance = async (chain: EVMChain, wallet: Address) => {
     await Promise.all(promises);
   }
   return tokens;
-}
-
-/* ========================================================================================================================================================================= */
-
-// Function to get a token's logo:
-const getTokenLogo = (chain: EVMChain, symbol: string) => {
-
-  // Initializing Default Token Logo:
-  let logo = defaultTokenLogo;
-
-  // Selecting Token Data:
-  let data = getChainTokenData(chain);
-
-  // Finding Token Logo:
-  if(data) {
-    let trackedToken = data.tokens.find(token => token.symbol === symbol);
-    if(trackedToken) {
-      logo = trackedToken.logo;
-    } else {
-      let token = data.logos.find(i => i.symbol === symbol);
-      if(token) {
-        logo = token.logo;
-      }
-    }
-  }
-
-  return logo;
 }
 
 /* ========================================================================================================================================================================= */

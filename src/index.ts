@@ -28,6 +28,9 @@ export const WeaverFi = {
     getTokens: () => {
       return evm.getTokens('eth');
     },
+    getTokenLogo: (symbol: string) => {
+      return evm.getTokenLogo('eth', symbol);
+    },
     getProjects: () => {
       return projects['eth'];
     },
@@ -55,6 +58,9 @@ export const WeaverFi = {
     },
     getTokens: () => {
       return evm.getTokens('bsc');
+    },
+    getTokenLogo: (symbol: string) => {
+      return evm.getTokenLogo('bsc', symbol);
     },
     getProjects: () => {
       return projects['bsc'];
@@ -84,6 +90,9 @@ export const WeaverFi = {
     getTokens: () => {
       return evm.getTokens('poly');
     },
+    getTokenLogo: (symbol: string) => {
+      return evm.getTokenLogo('poly', symbol);
+    },
     getProjects: () => {
       return projects['poly'];
     },
@@ -111,6 +120,9 @@ export const WeaverFi = {
     },
     getTokens: () => {
       return evm.getTokens('ftm');
+    },
+    getTokenLogo: (symbol: string) => {
+      return evm.getTokenLogo('ftm', symbol);
     },
     getProjects: () => {
       return projects['ftm'];
@@ -140,6 +152,9 @@ export const WeaverFi = {
     getTokens: () => {
       return evm.getTokens('avax');
     },
+    getTokenLogo: (symbol: string) => {
+      return evm.getTokenLogo('avax', symbol);
+    },
     getProjects: () => {
       return projects['avax'];
     },
@@ -168,6 +183,9 @@ export const WeaverFi = {
     getTokens: () => {
       return evm.getTokens('one');
     },
+    getTokenLogo: (symbol: string) => {
+      return evm.getTokenLogo('one', symbol);
+    },
     getProjects: () => {
       return projects['one'];
     },
@@ -195,6 +213,9 @@ export const WeaverFi = {
     },
     getTokens: () => {
       return terra.getTokens();
+    },
+    getTokenLogo: (symbol: string) => {
+      return terra.getTokenLogo(symbol);
     },
     getProjects: () => {
       return projects['terra'];
