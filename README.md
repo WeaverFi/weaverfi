@@ -35,17 +35,15 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 
 ---
 
-## Chains Supported
+## Global Methods Available
 
-- ETH (Ethereum)
-- BSC (Binance Smart Chain)
-- POLY (Polygon)
-- FTM (Fantom)
-- AVAX (Avalanche)
-- ONE (Harmony)
-- TERRA (Terra)
-
----
+- `getAllProjects()`
+- `getAllTokens()`
+- `getAllTokenPrices()`
+- `getNativeTokenPrices()`
+- `fetchPrices()`
+- `resolveENS(ens)`
+- `lookupENS(address)`
 
 ## Chain Methods Available
 
@@ -59,15 +57,15 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 - `getTokenPrices()`
 - `getTokenPrice(address)`
 
-## Global Methods Available
+## Chains Supported
 
-- `getAllProjects()`
-- `getAllTokens()`
-- `getAllTokenPrices()`
-- `getNativeTokenPrices()`
-- `fetchPrices()`
-- `resolveENS(ens)`
-- `lookupENS(address)`
+- ETH (Ethereum)
+- BSC (Binance Smart Chain)
+- POLY (Polygon)
+- FTM (Fantom)
+- AVAX (Avalanche)
+- ONE (Harmony)
+- TERRA (Terra)
 
 ---
 
