@@ -231,6 +231,20 @@ export const WeaverFi = {
   // Function to get all tracked token's prices:
   getAllTokenPrices: () => {
     return $.getAllTokenPrices();
+  },
+
+  // Function to get native token prices from each chain:
+  getNativeTokenPrices: () => {
+    return $.getNativeTokenPrices();
+  },
+
+  // Function to fetch all previously queried token prices:
+  fetchPrices: (chain?: Chain) => {
+    if(chain) {
+      return $.prices[chain];
+    } else {
+      return $.prices;
+    }
   }
 }
 

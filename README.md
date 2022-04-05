@@ -58,6 +58,14 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 - `getTokenPrices()`
 - `getTokenPrice(address)`
 
+## Global Methods Available
+
+- `getAllProjects()`
+- `getAllTokens()`
+- `getAllTokenPrices()`
+- `getNativeTokenPrices()`
+- `fetchPrices()`
+
 ---
 
 ## Contributing

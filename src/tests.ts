@@ -1,18 +1,35 @@
 
 // Imports:
 import { WeaverFi as weaver } from './index';
-// import { chains } from './chains';
-// import { projects } from './projects';
-// import { minABI } from './ABIs';
-// import type { Chain, ChainData } from './types';
+import { chains } from './chains';
+import { projects } from './projects';
+import { minABI } from './ABIs';
+import type { Address, TerraAddress, Chain, ChainData } from './types';
 
 // Initializations:
-// const wallet = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E';
+const wallet: Address | TerraAddress = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E';
+const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
 
 // Tests Function:
 const tests = async () => {
+
+  /* ================================================== */
+
+  // Generic Tests:
+  // let allProjects = weaver.getAllProjects();
+  // console.log('🕷️ ~ allProjects', allProjects);
+  // let allTokens = weaver.getAllTokens();
+  // console.log('🕷️ ~ allTokens', allTokens);
+  // let allTokenPrices = await weaver.getAllTokenPrices();
+  // console.log('🕷️ ~ allTokenPrices', allTokenPrices);
+  // let nativeTokenPrices = await weaver.getNativeTokenPrices();
+  // console.log('🕷️ ~ nativeTokenPrices', nativeTokenPrices);
+  // let prices = weaver.fetchPrices();
+  // console.log('🕷️ ~ prices', prices);
+
+  /* ================================================== */
 
   // Project Balance Tests:
   // let projectBalance = await weaver.AVAX.getProjectBalance(wallet, 'snowball');
@@ -108,20 +125,41 @@ const tests = async () => {
   // let terraQueryResult = parseInt((await weaver.TERRA.query('terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76', { balance: { address: wallet } })).balance);
   // console.log('🕷️ ~ terraQueryResult', terraQueryResult);
 
-    /* ================================================== */
+  /* ================================================== */
 
-  // Token Pricing Tests:
-  // <TODO>
+  // Chain-Specific Token Pricing Tests:
+  // let ethTokenPrices = await weaver.ETH.getTokenPrices();
+  // console.log('🕷️ ~ ethTokenPrices', ethTokenPrices);
+  // let bscTokenPrices = await weaver.BSC.getTokenPrices();
+  // console.log('🕷️ ~ bscTokenPrices', bscTokenPrices);
+  // let polyTokenPrices = await weaver.POLY.getTokenPrices();
+  // console.log('🕷️ ~ polyTokenPrices', polyTokenPrices);
+  // let ftmTokenPrices = await weaver.FTM.getTokenPrices();
+  // console.log('🕷️ ~ ftmTokenPrices', ftmTokenPrices);
+  // let avaxTokenPrices = await weaver.AVAX.getTokenPrices();
+  // console.log('🕷️ ~ avaxTokenPrices', avaxTokenPrices);
+  // let oneTokenPrices = await weaver.ONE.getTokenPrices();
+  // console.log('🕷️ ~ oneTokenPrices', oneTokenPrices);
+  // let terraTokenPrices = await weaver.TERRA.getTokenPrices();
+  // console.log('🕷️ ~ terraTokenPrices', terraTokenPrices);
 
   /* ================================================== */
 
-  // Generic Tests:
-  // let allProjects = weaver.getAllProjects();
-  // console.log('🕷️ ~ allProjects', allProjects);
-  // let allTokens = weaver.getAllTokens();
-  // console.log('🕷️ ~ allTokens', allTokens);
-  let allTokenPrices = await weaver.getAllTokenPrices();
-  console.log('🕷️ ~ allTokenPrices', allTokenPrices);
+  // Token Pricing Tests:
+  // let ethTokenPrice = await weaver.ETH.getTokenPrice(defaultAddress, 18);
+  // console.log('🕷️ ~ ethTokenPrice', ethTokenPrice);
+  // let bscTokenPrice = await weaver.BSC.getTokenPrice(defaultAddress, 18);
+  // console.log('🕷️ ~ bscTokenPrice', bscTokenPrice);
+  // let polyTokenPrice = await weaver.POLY.getTokenPrice(defaultAddress, 18);
+  // console.log('🕷️ ~ polyTokenPrice', polyTokenPrice);
+  // let ftmTokenPrice = await weaver.FTM.getTokenPrice(defaultAddress, 18);
+  // console.log('🕷️ ~ ftmTokenPrice', ftmTokenPrice);
+  // let avaxTokenPrice = await weaver.AVAX.getTokenPrice(defaultAddress, 18);
+  // console.log('🕷️ ~ avaxTokenPrice', avaxTokenPrice);
+  // let oneTokenPrice = await weaver.ONE.getTokenPrice(defaultAddress, 18);
+  // console.log('🕷️ ~ oneTokenPrice', oneTokenPrice);
+  // let terraTokenPrice = await weaver.TERRA.getTokenPrice(defaultAddress, 18);
+  // console.log('🕷️ ~ terraTokenPrice', terraTokenPrice);
 
 }
 

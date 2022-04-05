@@ -106,6 +106,47 @@ export const getChainTokenPrices = async (chain: Chain) => {
 
 /* ========================================================================================================================================================================= */
 
+// Function to populate prices object with all native tokens:
+export const getNativeTokenPrices = async () => {
+
+  // Initializations:
+  let nativeTokens: { chain: Chain, id: string }[] = [];
+  let stringNativeTokens = '';
+
+  // Formatting Token IDs:
+  Object.keys(chains).forEach(stringChain => {
+    let chain = stringChain as Chain;
+    let id = chains[chain].coingeckoIDs.nativeTokenID;
+    nativeTokens.push({ chain, id });
+    stringNativeTokens += id + ',';
+  });
+
+  // Querying Native Token Prices:
+  let apiQuery = `https://api.coingecko.com/api/v3/simple/price/?ids=${stringNativeTokens.slice(0, -1)}&vs_currencies=usd`;
+  try {
+    let response = (await axios.get(apiQuery)).data;
+    nativeTokens.forEach(token => {
+      updatePrices(token.chain, {
+        symbol: chains[token.chain].token,
+        address: defaultAddress,
+        price: response[token.id].usd,
+        source: 'coingecko',
+        timestamp: Date.now()
+      });
+    });
+
+    // Querying Terra Native Stablecoin Prices:
+    let luna = checkTokenPrice('terra', defaultAddress);
+    if(luna) {
+      await queryTerraNativeTokenPrices(luna.price);
+    }
+    
+  } catch {}
+  return prices;
+}
+
+/* ========================================================================================================================================================================= */
+
 // Function to get a token's current price:
 export const getTokenPrice = async (chain: Chain, address: Address | TerraAddress, decimals?: number): Promise<number> => {
 
