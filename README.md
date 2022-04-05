@@ -66,6 +66,8 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 - `getAllTokenPrices()`
 - `getNativeTokenPrices()`
 - `fetchPrices()`
+- `resolveENS(ens)`
+- `lookupENS(address)`
 
 ---
 

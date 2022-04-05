@@ -4,7 +4,7 @@ import * as $ from './prices';
 import * as evm from './functions';
 import * as terra from './terra-functions';
 import { projects } from './projects';
-import type { Chain, Address, TerraAddress, TokenData, TerraTokenData, ABI } from './types';
+import type { Chain, Address, TerraAddress, ENS, TokenData, TerraTokenData, ABI } from './types';
 
 /* ========================================================================================================================================================================= */
 
@@ -266,6 +266,16 @@ export const WeaverFi = {
     } else {
       return $.prices;
     }
+  },
+
+  // Function to resolve an ENS domain:
+  resolveENS: (address: ENS) => {
+    return evm.resolveENS(address);
+  },
+
+  // Function to reverse lookup an ENS domain:
+  lookupENS: (address: Address) => {
+    return evm.lookupENS(address);
   }
 }
 

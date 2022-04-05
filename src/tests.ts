@@ -31,6 +31,14 @@ const tests = async () => {
 
   /* ================================================== */
 
+  // Domain Name Tests:
+  // let ensAddress = await weaver.resolveENS('ncookie.eth');
+  // console.log('🕷️ ~ ensAddress', ensAddress);
+  // let ensDomain = await weaver.lookupENS(wallet);
+  // console.log('🕷️ ~ ensDomain', ensDomain);
+
+  /* ================================================== */
+
   // Project Balance Tests:
   // let projectBalance = await weaver.AVAX.getProjectBalance(wallet, 'snowball');
   // console.log('🕷️ ~ projectBalance', projectBalance);

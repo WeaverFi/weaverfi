@@ -6,7 +6,7 @@ import { projects } from './projects';
 import { getTokenPrice } from './prices';
 import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data } from './tokens';
 import { minABI, lpABI, traderjoe, aave, balancer, belt, alpaca, curve, bzx, iron, axial, mstable, cookiegame } from './ABIs';
-import type { EVMChain, Address, URL, ABI, TokenData, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken } from './types';
+import type { EVMChain, Address, URL, ABI, ENS, TokenData, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken } from './types';
 
 // Initializations:
 const defaultTokenLogo: URL = 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@d5c68edec1f5eaec59ac77ff2b48144679cebca1/32/icon/generic.png';
@@ -352,6 +352,32 @@ export const getTokenLogo = (chain: EVMChain, symbol: string) => {
   }
 
   return logo;
+}
+
+/* ========================================================================================================================================================================= */
+
+// Function to resolve an ENS domain:
+export const resolveENS = async (ens: ENS) => {
+  let ethers_provider = new ethers.providers.JsonRpcProvider(chains['eth'].rpcs[0]);
+  let address = await ethers_provider.resolveName(ens);
+  if(address) {
+    return address as Address;
+  } else {
+    return null;
+  }
+}
+
+/* ========================================================================================================================================================================= */
+
+// Function to reverse lookup an ENS domain:
+export const lookupENS = async (address: Address) => {
+  let ethers_provider = new ethers.providers.JsonRpcProvider(chains['eth'].rpcs[0]);
+  let ens = await ethers_provider.lookupAddress(address);
+  if(ens) {
+    return ens as ENS;
+  } else {
+    return null;
+  }
 }
 
 /* ========================================================================================================================================================================= */
