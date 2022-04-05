@@ -25,7 +25,8 @@
     "nodejs",
     "typescript",
     "weaver",
-    "spider"
+    "spider",
+    "web"
   ],
   "author": "WeaverFi",
   "license": "MIT",
