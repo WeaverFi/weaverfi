@@ -7,7 +7,10 @@ export type ChainID = 1 | 56 | 137 | 250 | 43114 | 1666600000;
 // Address Types:
 export type Address = `0x${string}`;
 export type TerraAddress = `terra1${string}`;
-export type ENS = `${string}.eth`;
+
+// Domain Types:
+export type ENSDomain = `${string}.eth`;
+export type TNSDomain = `${string}.ust`;
 
 // Token Types:
 export type TokenType = 'nativeToken' | 'token' | 'lpToken' | 'debt' | 'xToken';

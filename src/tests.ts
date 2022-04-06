@@ -36,6 +36,10 @@ const tests = async () => {
   // console.log('🕷️ ~ ensAddress', ensAddress);
   // let ensDomain = await weaver.lookupENS(wallet);
   // console.log('🕷️ ~ ensDomain', ensDomain);
+  // let tnsAddress = await weaver.resolveTNS('ncookie.ust');
+  // console.log('🕷️ ~ tnsAddress', tnsAddress);
+  // let tnsDomain = await weaver.lookupTNS(wallet);
+  // console.log('🕷️ ~ tnsDomain', tnsDomain);
 
   /* ================================================== */
 

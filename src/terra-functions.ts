@@ -3,9 +3,10 @@
 import { projects } from './projects';
 import { terra_data } from './tokens';
 import { getTokenPrice } from './prices';
+import { TNS } from '@tns-money/tns.js';
 import { Pagination } from '@terra-money/terra.js/dist/client/lcd/APIRequester';
 import { Coin, Coins, LCDClient, AccPubKey, Delegation } from '@terra-money/terra.js';
-import type { Chain, Address, TerraAddress, TerraDenom, URL, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken } from './types';
+import type { Chain, Address, TerraAddress, TerraDenom, URL, TNSDomain, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken } from './types';
 
 // Initializations:
 const chain: Chain = 'terra';
@@ -14,6 +15,9 @@ const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 // Setting Up Blockchain Connection:
 const terra = new LCDClient({ URL: "https://lcd.terra.dev", chainID: "columbus-5" });
+
+// Setting Up Terra Name Service Object:
+const tns = new TNS();
 
 /* ========================================================================================================================================================================= */
 
@@ -199,6 +203,31 @@ export const getTokenLogo = (symbol: string) => {
   }
 
   return logo;
+}
+
+/* ========================================================================================================================================================================= */
+
+// Function to resolve a TNS domain:
+export const resolveTNS = async (tnsAddress: TNSDomain) => {
+  let name = tns.name(tnsAddress);
+  let address = await name.getOwner();
+  if(address) {
+    return address as TerraAddress;
+  } else {
+    return null;
+  }
+}
+
+/* ========================================================================================================================================================================= */
+
+// Function to reverse lookup a TNS domain:
+export const lookupTNS = async (address: TerraAddress) => {
+  let tnsAddress = await tns.getName(address);
+  if(tnsAddress) {
+    return tnsAddress as TNSDomain;
+  } else {
+    return null;
+  }
 }
 
 /* ========================================================================================================================================================================= */
