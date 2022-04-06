@@ -39,6 +39,12 @@ export const WeaverFi = {
     },
     getTokenPrice: (address: Address, decimals?: number) => {
       return $.getTokenPrice('eth', address, decimals);
+    },
+    resolveENS: (address: ENSDomain) => {
+      return evm.resolveENS(address);
+    },
+    lookupENS: (address: Address) => {
+      return evm.lookupENS(address);
     }
   },
 
@@ -225,6 +231,12 @@ export const WeaverFi = {
     },
     getTokenPrice: (address: Address, decimals?: number) => {
       return $.getTokenPrice('terra', address, decimals);
+    },
+    resolveTNS: (address: TNSDomain) => {
+      return terra.resolveTNS(address);
+    },
+    lookupTNS: (address: TerraAddress) => {
+      return terra.lookupTNS(address);
     }
   },
 
@@ -266,26 +278,6 @@ export const WeaverFi = {
     } else {
       return $.prices;
     }
-  },
-
-  // Function to resolve an ENS domain:
-  resolveENS: (address: ENSDomain) => {
-    return evm.resolveENS(address);
-  },
-
-  // Function to reverse lookup an ENS domain:
-  lookupENS: (address: Address) => {
-    return evm.lookupENS(address);
-  },
-
-  // Function to resolve a TNS domain:
-  resolveTNS: (address: TNSDomain) => {
-    return terra.resolveTNS(address);
-  },
-
-  // Function to reverse lookup a TNS domain:
-  lookupTNS: (address: TerraAddress) => {
-    return terra.lookupTNS(address);
   }
 }
 

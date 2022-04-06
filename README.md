@@ -42,10 +42,6 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 - `getAllTokenPrices()`
 - `getNativeTokenPrices()`
 - `fetchPrices()`
-- `resolveENS(ensDomain)`
-- `lookupENS(address)`
-- `resolveTNS(tnsDomain)`
-- `lookupTNS(address)`
 
 ## Chain Methods Available
 
@@ -58,6 +54,10 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 - `getProjects()`
 - `getTokenPrices()`
 - `getTokenPrice(address)`
+
+The ETH chain also contains the `resolveENS(ensDomain)` and `lookupENS(address)` methods.
+
+The TERRA chain also contains the `resolveTNS(tnsDomain)` and `lookupTNS(address)` methods.
 
 ## Chains Supported
 
