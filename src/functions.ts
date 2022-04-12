@@ -5,7 +5,7 @@ import { chains } from './chains';
 import { projects } from './projects';
 import { getTokenPrice } from './prices';
 import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data } from './tokens';
-import { minABI, lpABI, traderjoe, aave, balancer, belt, alpaca, curve, bzx, iron, axial, mstable, cookiegame } from './ABIs';
+import { minABI, lpABI, aave, balancer, belt, alpaca, curve, bzx, iron, axial, mstable, cookiegame } from './ABIs';
 import type { EVMChain, Address, URL, ABI, ENSDomain, TokenData, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken } from './types';
 
 // Initializations:
@@ -456,23 +456,35 @@ const addTrackedToken = async (chain: EVMChain, location: string, status: TokenS
 /* ========================================================================================================================================================================= */
 
 // Function to get Trader Joe token info (xJOE):
-export const addTraderJoeToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addTraderJoeToken = async (chain: EVMChain, location: string, status: TokenStatus, rawBalance: number, owner: Address) => {
+  const xjoe: Address = '0x57319d41F71E81F3c65F2a47CA4e001EbAFd4F33';
+  const joe: Address = '0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd';
+  let joeStaked = parseInt(await query(chain, joe, minABI, 'balanceOf', [xjoe]));
+  let xjoeSupply = parseInt(await query(chain, xjoe, minABI, 'totalSupply', []));
+  let newToken = await addXToken(chain, location, status, xjoe, rawBalance, owner, joe, rawBalance * (joeStaked / xjoeSupply));
+  return newToken;
+}
 
-  // Initializing Token Values:
-  let type: TokenType = 'token';
-  let symbol = await query(chain, address, minABI, 'symbol', []);
-  let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
-  let balance = rawBalance / (10 ** decimals);
-  let logo = getTokenLogo(chain, symbol);
+/* ========================================================================================================================================================================= */
 
-  // Finding Token Price:
-  let underlyingToken = await query(chain, address, traderjoe.joeABI, 'joe', []);
-  let joeStaked = parseInt(await query(chain, underlyingToken, minABI, 'balanceOf', [address]));
-  let xjoeSupply = parseInt(await query(chain, address, minABI, 'totalSupply', []));
-  let multiplier = joeStaked / xjoeSupply;
-  let price = multiplier * (await getTokenPrice(chain, underlyingToken, decimals));
+// Function to get Belt token info (beltBTC, beltETH, etc.):
+export const addBeltToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address) => {
+  let exchangeRate = parseInt(await query(chain, address, belt.tokenABI, 'getPricePerFullShare', [])) / (10 ** 18);
+  let underlyingToken = await query(chain, address, belt.tokenABI, 'token', []);
+  let newToken = await addXToken(chain, location, status, address, rawBalance, owner, underlyingToken, rawBalance * exchangeRate);
+  return newToken;
+}
 
-  return { type, chain, location, status, owner, symbol, address, balance, price, logo };
+/* ========================================================================================================================================================================= */
+
+// Function to get SpookySwap token info (xBOO):
+export const addSpookyToken = async (chain: EVMChain, location: string, status: TokenStatus, rawBalance: number, owner: Address) => {
+  const xboo: Address = '0xa48d959AE2E88f1dAA7D5F611E01908106dE7598';
+  const boo: Address = '0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE';
+  let booStaked = parseInt(await query(chain, boo, minABI, 'balanceOf', [xboo]));
+  let xbooSupply = parseInt(await query(chain, xboo, minABI, 'totalSupply', []));
+  let newToken = await addXToken(chain, location, status, xboo, rawBalance, owner, boo, rawBalance * (booStaked / xbooSupply));
+  return newToken;
 }
 
 /* ========================================================================================================================================================================= */
@@ -528,30 +540,10 @@ export const add4BeltToken = async (chain: EVMChain, location: string, status: T
   // Initializing Token Values:
   let type: TokenType = 'token';
   let symbol = '4Belt';
-  let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
+  let decimals = 18;
   let balance = rawBalance / (10 ** decimals);
   let logo = getTokenLogo(chain, symbol);
   let price = 1;
-
-  return { type, chain, location, status, owner, symbol, address, balance, price, logo };
-}
-
-/* ========================================================================================================================================================================= */
-
-// Function to get Belt token info:
-export const addBeltToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
-
-  // Initializing Token Values:
-  let type: TokenType = 'token';
-  let symbol = await query(chain, address, minABI, 'symbol', []);
-  let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
-  let balance = rawBalance / (10 ** decimals);
-  let logo = getTokenLogo(chain, symbol);
-
-  // Finding Token Price:
-  let multiplier = parseInt(await query(chain, address, belt.tokenABI, 'getPricePerFullShare', [])) / (10 ** decimals);
-  let underlyingToken = await query(chain, address, belt.tokenABI, 'token', []);
-  let price = multiplier * (await getTokenPrice(chain, underlyingToken, decimals));
 
   return { type, chain, location, status, owner, symbol, address, balance, price, logo };
 }
@@ -1194,48 +1186,6 @@ export const addStableToken = async (chain: EVMChain, location: string, status: 
 
   // Finding Token Symbol:
   logo = price > 1000 ? getTokenLogo(chain, 'mBTC') : getTokenLogo(chain, 'mUSD');
-
-  return { type, chain, location, status, owner, symbol, address, balance, price, logo };
-}
-
-/* ========================================================================================================================================================================= */
-
-// Function to get Cookie token info:
-export const addCookieToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
-
-  // Initializing Token Values:
-  let type: TokenType = 'token';
-  let symbol = await query(chain, address, minABI, 'symbol', []);
-  let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
-  let balance = rawBalance / (10 ** decimals);
-  let logo = getTokenLogo(chain, symbol);
-
-  // Finding Token Price:
-  let fortunePrice = await getTokenPrice(chain, '0xd8187f630A93A1d841dbBC99cd5fe06587A984DE', 9);
-  let exchangeRate = parseInt(await query(chain, '0x9eE8817Fe46f4620708a9FA1119972bC4c131641', cookiegame.exchangeABI, 'price', []));
-  let price = fortunePrice / exchangeRate;
-
-  return { type, chain, location, status, owner, symbol, address, balance, price, logo };
-}
-
-/* ========================================================================================================================================================================= */
-
-// Function to get Alligator token info (xGTR):
-export const addAlligatorToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
-
-  // Initializing Token Values:
-  let type: TokenType = 'token';
-  let symbol = await query(chain, address, minABI, 'symbol', []);
-  let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
-  let balance = rawBalance / (10 ** decimals);
-  let logo = getTokenLogo(chain, symbol);
-
-  // Finding Token Price:
-  let gtr: Address = '0x43c812ba28cb061b1be7514145a15c9e18a27342';
-  let gtrStaked = parseInt(await query(chain, gtr, minABI, 'balanceOf', [address]));
-  let xgtrSupply = parseInt(await query(chain, address, minABI, 'totalSupply', []));
-  let multiplier = gtrStaked / xgtrSupply;
-  let price = multiplier * (await getTokenPrice(chain, gtr, decimals));
 
   return { type, chain, location, status, owner, symbol, address, balance, price, logo };
 }

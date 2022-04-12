@@ -8,6 +8,7 @@ import type { Chain, Address, Token, LPToken } from '../../types';
 const chain: Chain = 'eth';
 const project = 'curve';
 const registry: Address = '0x90E00ACe148ca3b23Ac1bC8C240C2a7Dd9c2d7f5';
+const zero: Address = '0x0000000000000000000000000000000000000000';
 
 /* ========================================================================================================================================================================= */
 
@@ -32,7 +33,7 @@ const getPoolBalances = async (wallet: Address) => {
   let promises = pools.map(poolID => (async () => {
     let address = await query(chain, registry, curve.registryABI, 'pool_list', [poolID]);
     let gauge = (await query(chain, registry, curve.registryABI, 'get_gauges', [address]))[0][0];
-    if(gauge != '0x0000000000000000000000000000000000000000') {
+    if(gauge != zero) {
       let balance = parseInt(await query(chain, gauge, minABI, 'balanceOf', [wallet]));
       if(balance > 0) {
         let token = await query(chain, gauge, curve.gaugeABI, 'lp_token', []);

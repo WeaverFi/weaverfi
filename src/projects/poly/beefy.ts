@@ -3,7 +3,7 @@
 import axios from 'axios';
 import { minABI, beefy } from '../../ABIs';
 import { query, addToken, addLPToken, addCurveToken, addIronToken } from '../../functions';
-import type { Chain, Address, Token, LPToken } from '../../types';
+import type { Chain, Address, URL, Token, LPToken, BeefyAPIResponse } from '../../types';
 
 // Initializations:
 const chain: Chain = 'poly';
@@ -11,7 +11,7 @@ const project = 'beefy';
 const staking: Address = '0xDeB0a777ba6f59C78c654B8c92F80238c8002DD2';
 const bifi: Address = '0xfbdd194376de19a88118e84e279b977f165d01b8';
 const wmatic: Address = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270';
-const chars = 'abcdefghijklmnopqrstuvwxyz';
+const apiURL: URL = 'https://api.beefy.finance';
 
 /* ========================================================================================================================================================================= */
 
@@ -19,14 +19,10 @@ const chars = 'abcdefghijklmnopqrstuvwxyz';
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
   try {
-    let result;
-    try {
-      result = await axios.get(`https://api.beefy.finance/vaults?${chars[Math.floor(Math.random() * chars.length)]}`);
-    } catch {
-      result = await axios.get(`https://api.beefy.finance/vaults?${chars[Math.floor(Math.random() * chars.length)]}`);
-    }
-    let vaults = result.data.filter((vault: any) => vault.chain === 'polygon' && vault.status === 'active' && vault.tokenAddress);
-    balance.push(...(await getVaultBalances(wallet, vaults)));
+    let vaultsData: BeefyAPIResponse[] = (await axios.get(apiURL + '/vaults')).data;
+    let apyData: Record<string, number | null> = (await axios.get(apiURL + '/apy')).data;
+    let vaults = vaultsData.filter(vault => vault.chain === 'polygon' && vault.status === 'active');
+    balance.push(...(await getVaultBalances(wallet, vaults, apyData)));
     balance.push(...(await getStakedBIFI(wallet)));
   } catch {
     console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
@@ -37,7 +33,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get vault balances:
-const getVaultBalances = async (wallet: Address, vaults: any[]) => {
+const getVaultBalances = async (wallet: Address, vaults: BeefyAPIResponse[], apys: Record<string, number | null>) => {
   let balances: (Token | LPToken)[] = [];
   let promises = vaults.map(vault => (async () => {
     let balance = parseInt(await query(chain, vault.earnedTokenAddress, minABI, 'balanceOf', [wallet]));
@@ -46,27 +42,68 @@ const getVaultBalances = async (wallet: Address, vaults: any[]) => {
       let exchangeRate = parseInt(await query(chain, vault.earnedTokenAddress, beefy.vaultABI, 'getPricePerFullShare', []));
       let underlyingBalance = balance * (exchangeRate / (10 ** decimals));
 
-      // Curve Vaults:
-      if(vault.platform === 'Curve') {
-        let newToken = await addCurveToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
-        balances.push(newToken);
-
-      // Unique Vaults (3+ Assets):
-      } else if(vault.assets.length > 2) {
-        if(vault.paltform === 'IronFinance') {
-          let newToken = await addIronToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
+      // Native Token Vaults:
+      if(!vault.tokenAddress) {
+        if(vault.token === 'MATIC') {
+          let newToken = await addToken(chain, project, 'staked', wmatic, underlyingBalance, wallet);
+          let vaultAPY = apys[vault.id];
+          if(vaultAPY) {
+            newToken.info = {
+              apy: vaultAPY
+            }
+          }
           balances.push(newToken);
         }
 
-      // LP Token Vaults:
-      } else if(vault.assets.length === 2 && vault.platform != 'Kyber' && !vault.id.includes('jarvis')) {
-        let newToken = await addLPToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
-        balances.push(newToken);
+      // All Other Vaults:
+      } else {
 
-      // Single-Asset Vaults:
-      } else if(vault.assets.length === 1) {
-        let newToken = await addToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
-        balances.push(newToken);
+        // Curve Vaults:
+        if(vault.platform === 'Curve') {
+          let newToken = await addCurveToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
+          let vaultAPY = apys[vault.id];
+          if(vaultAPY) {
+            newToken.info = {
+              apy: vaultAPY
+            }
+          }
+          balances.push(newToken);
+
+        // Unique Vaults (3+ Assets):
+        } else if(vault.assets.length > 2) {
+          if(vault.platform === 'IronFinance') {
+            let newToken = await addIronToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
+            let vaultAPY = apys[vault.id];
+            if(vaultAPY) {
+              newToken.info = {
+                apy: vaultAPY
+              }
+            }
+            balances.push(newToken);
+          }
+  
+        // LP Token Vaults:
+        } else if(vault.assets.length === 2 && vault.platform != 'Kyber' && !vault.id.includes('jarvis')) {
+          let newToken = await addLPToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
+          let vaultAPY = apys[vault.id];
+          if(vaultAPY) {
+            newToken.info = {
+              apy: vaultAPY
+            }
+          }
+          balances.push(newToken);
+  
+        // Single-Asset Vaults:
+        } else if(vault.assets.length === 1) {
+          let newToken = await addToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
+          let vaultAPY = apys[vault.id];
+          if(vaultAPY) {
+            newToken.info = {
+              apy: vaultAPY
+            }
+          }
+          balances.push(newToken);
+        }
       }
     }
   })());

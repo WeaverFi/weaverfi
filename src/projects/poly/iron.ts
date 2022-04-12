@@ -1,22 +1,23 @@
 
 // Imports:
 import { minABI, iron } from '../../ABIs';
-import { query, addToken, addLPToken, addDebtToken, addIronToken } from '../../functions';
-import type { Chain, Address, Token, LPToken, DebtToken } from '../../types';
+import { query, addToken, addLPToken, addDebtToken, addXToken, addIronToken } from '../../functions';
+import type { Chain, Address, Token, LPToken, DebtToken, XToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'poly';
 const project = 'iron';
 const registry: Address = '0x1fD1259Fa8CdC60c6E8C86cfA592CA1b8403DFaD';
 const lending: Address = '0xF20fcd005AFDd3AD48C85d0222210fe168DDd10c';
-const staking: Address = '0xB1Bf26c7B43D2485Fa07694583d2F17Df0DDe010';
+const blueice: Address = '0xB1Bf26c7B43D2485Fa07694583d2F17Df0DDe010';
 const ice: Address = '0x4A81f8796e0c6Ad4877A51C86693B0dE8093F2ef';
+const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
 
 // Function to get project balance:
 export const get = async (wallet: Address) => {
-  let balance: (Token | LPToken | DebtToken)[] = [];
+  let balance: (Token | LPToken | DebtToken | XToken)[] = [];
   try {
     balance.push(...(await getFarmBalances(wallet)));
     balance.push(...(await getMarketBalances(wallet)));
@@ -77,7 +78,7 @@ const getMarketBalances = async (wallet: Address) => {
     if(balance > 0) {
       let tokenAddress: Address;
       if(market.toLowerCase() === '0xCa0F37f73174a28a64552D426590d3eD601ecCa1'.toLowerCase()) {
-        tokenAddress = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+        tokenAddress = defaultAddress;
       } else {
         tokenAddress = await query(chain, market, iron.marketABI, 'underlying', []);
       }
@@ -90,7 +91,7 @@ const getMarketBalances = async (wallet: Address) => {
     if(debt > 0) {
       let tokenAddress: Address;
       if(market.toLowerCase() === '0xCa0F37f73174a28a64552D426590d3eD601ecCa1'.toLowerCase()) {
-        tokenAddress = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+        tokenAddress = defaultAddress;
       } else {
         tokenAddress = await query(chain, market, iron.marketABI, 'underlying', []);
       }
@@ -115,9 +116,13 @@ const getMarketRewards = async (wallet: Address) => {
 
 // Function to get staked ICE balance:
 const getStakedICE = async (wallet: Address) => {
-  let balance = parseInt((await query(chain, staking, iron.stakingABI, 'locked', [wallet])).amount);
+  let balance = parseInt(await query(chain, blueice, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
-    let newToken = await addToken(chain, project, 'staked', ice, balance, wallet);
+    let locked = await query(chain, blueice, iron.stakingABI, 'locked', [wallet]);
+    let newToken = await addXToken(chain, project, 'staked', blueice, balance, wallet, ice, parseInt(locked.amount));
+    newToken.info = {
+      unlock: parseInt(locked.end)
+    }
     return [newToken];
   } else {
     return [];

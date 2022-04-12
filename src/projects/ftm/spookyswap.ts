@@ -1,8 +1,8 @@
 
 // Imports:
-import { spookyswap } from '../../ABIs';
-import { query, addToken, addLPToken } from '../../functions';
-import type { Chain, Address, Token, LPToken } from '../../types';
+import { minABI, spookyswap } from '../../ABIs';
+import { query, addToken, addLPToken, addSpookyToken } from '../../functions';
+import type { Chain, Address, Token, LPToken, XToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'ftm';
@@ -15,7 +15,7 @@ const xboo: Address = '0xa48d959AE2E88f1dAA7D5F611E01908106dE7598';
 
 // Function to get project balance:
 export const get = async (wallet: Address) => {
-  let balance: (Token | LPToken)[] = [];
+  let balance: (Token | LPToken | XToken)[] = [];
   try {
     balance.push(...(await getPoolBalances(wallet)));
     balance.push(...(await getStakedBOO(wallet)));
@@ -51,9 +51,9 @@ const getPoolBalances = async (wallet: Address) => {
 
 // Function to get staked BOO:
 const getStakedBOO = async (wallet: Address) => {
-  let balance = parseInt(await query(chain, xboo, spookyswap.xbooABI, 'BOOBalance', [wallet]));
+  let balance = parseInt(await query(chain, xboo, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
-    let newToken = await addToken(chain, project, 'staked', boo, balance, wallet);
+    let newToken = await addSpookyToken(chain, project, 'staked', balance, wallet);
     return [newToken];
   } else {
     return [];

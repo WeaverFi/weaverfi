@@ -8,6 +8,7 @@ import type { Chain, Address, Token, DebtToken } from '../../types';
 const chain: Chain = 'eth';
 const project = 'compound';
 const controller: Address = '0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b';
+const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
 
@@ -38,7 +39,7 @@ const getMarketBalances = async (wallet: Address) => {
     if(balance > 0) {
       let tokenAddress: Address;
       if(market.toLowerCase() === '0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5') {
-        tokenAddress = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+        tokenAddress = defaultAddress;
       } else {
         tokenAddress = await query(chain, market, compound.marketABI, 'underlying', []);
       }
@@ -51,7 +52,7 @@ const getMarketBalances = async (wallet: Address) => {
     if(debt > 0) {
       let tokenAddress: Address;
       if(market.toLowerCase() === '0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5') {
-        tokenAddress = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+        tokenAddress = defaultAddress;
       } else {
         tokenAddress = await query(chain, market, compound.marketABI, 'underlying', []);
       }

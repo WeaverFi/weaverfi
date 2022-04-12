@@ -16,6 +16,7 @@ const staking: Address[] = [
   '0xE618C25f580684770f2578FAca31fb7aCB2F5945'
 ];
 const creamToken: Address = '0x2ba592f78db6436527729929aaf6c908497cb200';
+const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
 
@@ -49,7 +50,7 @@ const getMarketBalances = async (wallet: Address) => {
       let symbol = await query(chain, market, minABI, 'symbol', []);
       let tokenAddress: Address;
       if(market.toLowerCase() === '0xd06527d5e56a3495252a528c4987003b712860ee' || market.toLowerCase() === '0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5') {
-        tokenAddress = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+        tokenAddress = defaultAddress;
       } else {
         tokenAddress = await query(chain, market, cream.tokenABI, 'underlying', []);
       }
@@ -69,7 +70,7 @@ const getMarketBalances = async (wallet: Address) => {
       let symbol = await query(chain, market, minABI, 'symbol', []);
       let tokenAddress: Address;
       if(market.toLowerCase() === '0xd06527d5e56a3495252a528c4987003b712860ee' || market.toLowerCase() === '0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5') {
-        tokenAddress = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+        tokenAddress = defaultAddress;
       } else {
         tokenAddress = await query(chain, market, cream.tokenABI, 'underlying', []);
       }

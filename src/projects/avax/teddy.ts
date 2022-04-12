@@ -12,7 +12,7 @@ const stabilityPool: Address = '0x7AEd63385C03Dc8ed2133F705bbB63E8EA607522';
 const staking: Address = '0xb4387D93B5A9392f64963cd44389e7D9D2E1053c';
 const tsd: Address = '0x4fbf0429599460D327BD5F55625E30E4fC066095';
 const teddyToken: Address = '0x094bd7B2D99711A1486FB94d4395801C6d0fdDcC';
-const avax: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
 
@@ -43,7 +43,7 @@ const getTroveBalance = async (wallet: Address) => {
     }
     let collateral = parseInt(userInfo.coll);
     if(collateral > 0) {
-      let newToken = await addToken(chain, project, 'staked', avax, collateral, wallet);
+      let newToken = await addToken(chain, project, 'staked', defaultAddress, collateral, wallet);
       balances.push(newToken);
     }
   }
@@ -60,7 +60,7 @@ const getStabilityPoolBalance = async (wallet: Address) => {
     balances.push(newToken);
     let avaxRewards = await query(chain, stabilityPool, teddy.stabilityPoolABI, 'getDepositorETHGain', [wallet]);
     if(avaxRewards > 0) {
-      let newToken = await addToken(chain, project, 'unclaimed', avax, avaxRewards, wallet);
+      let newToken = await addToken(chain, project, 'unclaimed', defaultAddress, avaxRewards, wallet);
       balances.push(newToken);
     }
     let teddyRewards = await query(chain, stabilityPool, teddy.stabilityPoolABI, 'getDepositorLQTYGain', [wallet]);
@@ -81,7 +81,7 @@ const getStakedTEDDY = async (wallet: Address) => {
     balances.push(newToken);
     let avaxRewards = await query(chain, staking, teddy.stakingABI, 'getPendingETHGain', [wallet]);
     if(avaxRewards > 0) {
-      let newToken = await addToken(chain, project, 'unclaimed', avax, avaxRewards, wallet);
+      let newToken = await addToken(chain, project, 'unclaimed', defaultAddress, avaxRewards, wallet);
       balances.push(newToken);
     }
     let tsdRewards = await query(chain, staking, teddy.stakingABI, 'getPendingLUSDGain', [wallet]);

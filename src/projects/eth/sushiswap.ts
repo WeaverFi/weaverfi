@@ -18,6 +18,7 @@ export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
   try {
     balance.push(...(await getFarmBalances(wallet)));
+    balance.push(...(await getFarmV2Balances(wallet)));
   } catch {
     console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
@@ -30,8 +31,6 @@ export const get = async (wallet: Address) => {
 const getFarmBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let sushiRewards = 0;
-
-  // MasterChef Farms:
   let farmCount = parseInt(await query(chain, masterChef, sushiswap.masterChefABI, 'poolLength', []));
   let farms = [...Array(farmCount).keys()];
   let promises = farms.map(farmID => (async () => {
@@ -40,8 +39,6 @@ const getFarmBalances = async (wallet: Address) => {
       let lpToken = await query(chain, masterChef, sushiswap.masterChefABI, 'poolInfo', [farmID]);
       let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);
       balances.push(newToken);
-
-      // Pending SUSHI Rewards:
       let rewards = parseInt(await query(chain, masterChef, sushiswap.masterChefABI, 'pendingSushi', [farmID, wallet]));
       if(rewards > 0) {
         sushiRewards += rewards;
@@ -49,25 +46,32 @@ const getFarmBalances = async (wallet: Address) => {
     }
   })());
   await Promise.all(promises);
+  if(sushiRewards > 0) {
+    let newToken = await addToken(chain, project, 'unclaimed', sushi, sushiRewards, wallet);
+    balances.push(newToken);
+  }
+  return balances;
+}
 
-  // MasterChef V2 Farms:
-  let farmCount_V2 = parseInt(await query(chain, masterChefV2, sushiswap.masterChefABI, 'poolLength', []));
-  let farms_V2 = [...Array(farmCount_V2).keys()];
-  let promises_V2 = farms_V2.map(farmID => (async () => {
+// Function to get farm V2 balances:
+const getFarmV2Balances = async (wallet: Address) => {
+  let balances: (Token | LPToken)[] = [];
+  let sushiRewards = 0;
+  let farmCount = parseInt(await query(chain, masterChefV2, sushiswap.masterChefABI, 'poolLength', []));
+  let farms = [...Array(farmCount).keys()];
+  let promises = farms.map(farmID => (async () => {
     let balance = parseInt((await query(chain, masterChefV2, sushiswap.masterChefABI, 'userInfo', [farmID, wallet])).amount);
     if(balance > 0) {
       let lpToken = await query(chain, masterChefV2, sushiswap.masterChefABI, 'lpToken', [farmID]);
       let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);
       balances.push(newToken);
-
-      // Pending SUSHI Rewards:
       let rewards = parseInt(await query(chain, masterChefV2, sushiswap.masterChefABI, 'pendingSushi', [farmID, wallet]));
       if(rewards > 0) {
         sushiRewards += rewards;
       }
     }
   })());
-  await Promise.all(promises_V2);
+  await Promise.all(promises);
   if(sushiRewards > 0) {
     let newToken = await addToken(chain, project, 'unclaimed', sushi, sushiRewards, wallet);
     balances.push(newToken);

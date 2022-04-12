@@ -1,8 +1,8 @@
 
 // Imports:
 import { minABI, scream } from '../../ABIs';
-import { query, addToken, addDebtToken } from '../../functions';
-import type { Chain, Address, Token, DebtToken } from '../../types';
+import { query, addToken, addDebtToken, addXToken } from '../../functions';
+import type { Chain, Address, Token, DebtToken, XToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'ftm';
@@ -15,7 +15,7 @@ const xscream: Address = '0xe3D17C7e840ec140a7A51ACA351a482231760824';
 
 // Function to get project balance:
 export const get = async (wallet: Address) => {
-  let balance: (Token | DebtToken)[] = [];
+  let balance: (Token | DebtToken | XToken)[] = [];
   try {
     balance.push(...(await getMarketBalances(wallet)));
     balance.push(...(await getStakedSCREAM(wallet)));
@@ -62,7 +62,7 @@ const getStakedSCREAM = async (wallet: Address) => {
   let balance = parseInt(await query(chain, xscream, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
     let exchangeRate = parseInt(await query(chain, xscream, scream.stakingABI, 'getShareValue', [])) / (10 ** 18);
-    let newToken = await addToken(chain, project, 'unclaimed', screamToken, balance * exchangeRate, wallet);
+    let newToken = await addXToken(chain, project, 'unclaimed', xscream, balance, wallet, screamToken, balance * exchangeRate);
     return [newToken];
   } else {
     return [];

@@ -8,6 +8,7 @@ import type { Chain, Address, LPToken } from '../../types';
 const chain: Chain = 'one';
 const project = 'autofarm';
 const registry: Address = '0x67da5f2ffaddff067ab9d5f025f8810634d84287';
+const ignoredVaults: number[] = [];
 
 /* ========================================================================================================================================================================= */
 
@@ -30,11 +31,13 @@ const getVaultBalances = async (wallet: Address) => {
   let poolLength = parseInt(await query(chain, registry, autofarm.oneRegistryABI, 'poolLength', []));
   let vaults = [...Array(poolLength).keys()];
   let promises = vaults.map(vaultID => (async () => {
-    let balance = parseInt(await query(chain, registry, autofarm.oneRegistryABI, 'userInfo', [vaultID, wallet]));
-    if(balance > 99) {
-      let lpToken = await query(chain, registry, autofarm.oneRegistryABI, 'lpToken', [vaultID]);
-      let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);
-      balances.push(newToken);
+    if(!ignoredVaults.includes(vaultID)) {
+      let balance = parseInt(await query(chain, registry, autofarm.oneRegistryABI, 'userInfo', [vaultID, wallet]));
+      if(balance > 99) {
+        let lpToken = await query(chain, registry, autofarm.oneRegistryABI, 'lpToken', [vaultID]);
+        let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);
+        balances.push(newToken);
+      }
     }
   })());
   await Promise.all(promises);

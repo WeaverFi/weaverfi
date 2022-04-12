@@ -1,22 +1,22 @@
 
 // Imports:
 import { minABI, penguin } from '../../ABIs';
-import { query, addToken, addLPToken } from '../../functions';
-import type { Chain, Address, Token, LPToken } from '../../types';
+import { query, addToken, addLPToken, addXToken } from '../../functions';
+import type { Chain, Address, Token, LPToken, XToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'avax';
 const project = 'penguin';
 const iglooMaster: Address = '0x256040dc7b3CECF73a759634fc68aA60EA0D68CB';
-const nest: Address = '0xE9476e16FE488B90ada9Ab5C7c2ADa81014Ba9Ee';
 const clubPenguin: Address = '0x86e8935a8F20231dB4b44A2ac3848Fbf44d22ec8';
 const pefi: Address = '0xe896CDeaAC9615145c0cA09C8Cd5C25bced6384c';
+const ipefi: Address = '0xE9476e16FE488B90ada9Ab5C7c2ADa81014Ba9Ee';
 
 /* ========================================================================================================================================================================= */
 
 // Function to get project balance:
 export const get = async (wallet: Address) => {
-  let balance: (Token | LPToken)[] = [];
+  let balance: (Token | LPToken | XToken)[] = [];
   try {
     balance.push(...(await getIglooBalances(wallet)));
     balance.push(...(await getStakedPEFI(wallet)));
@@ -62,12 +62,12 @@ const getIglooBalances = async (wallet: Address) => {
   return balances;
 }
 
-// Function to get staked PEFI balance:
+// Function to get iPEFI balance:
 const getStakedPEFI = async (wallet: Address) => {
-  let balance = parseInt(await query(chain, nest, minABI, 'balanceOf', [wallet]));
+  let balance = parseInt(await query(chain, ipefi, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
-    let exchangeRate = parseInt(await query(chain, nest, penguin.nestABI, 'currentExchangeRate', [])) / (10 ** 18);
-    let newToken = await addToken(chain, project, 'staked', pefi, balance * exchangeRate, wallet);
+    let exchangeRate = parseInt(await query(chain, ipefi, penguin.nestABI, 'currentExchangeRate', [])) / (10 ** 18);
+    let newToken = await addXToken(chain, project, 'staked', ipefi, balance, wallet, pefi, balance * exchangeRate);
     return [newToken];
   } else {
     return [];
@@ -78,8 +78,8 @@ const getStakedPEFI = async (wallet: Address) => {
 const getClubPenguinBalance = async (wallet: Address) => {
   let balance = parseInt(await query(chain, clubPenguin, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
-    let exchangeRate = parseInt(await query(chain, nest, penguin.nestABI, 'currentExchangeRate', [])) / (10 ** 18);
-    let newToken = await addToken(chain, project, 'staked', pefi, balance * exchangeRate, wallet);
+    let exchangeRate = parseInt(await query(chain, ipefi, penguin.nestABI, 'currentExchangeRate', [])) / (10 ** 18);
+    let newToken = await addXToken(chain, project, 'staked', ipefi, balance, wallet, pefi, balance * exchangeRate);
     return [newToken];
   } else {
     return [];

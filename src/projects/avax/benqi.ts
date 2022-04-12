@@ -8,6 +8,7 @@ import type { Chain, Address, Token, DebtToken } from '../../types';
 const chain: Chain = 'avax';
 const project = 'benqi';
 const controller: Address = '0x486Af39519B4Dc9a7fCcd318217352830E8AD9b4';
+const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
 
@@ -38,7 +39,7 @@ const getMarketBalances = async (wallet: Address) => {
     if(balance > 0) {
       let tokenAddress: Address;
       if(market.toLowerCase() === '0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c'.toLowerCase()) {
-        tokenAddress = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+        tokenAddress = defaultAddress;
       } else {
         tokenAddress = await query(chain, market, benqi.marketABI, 'underlying', []);
       }
@@ -51,7 +52,7 @@ const getMarketBalances = async (wallet: Address) => {
     if(debt > 0) {
       let tokenAddress: Address;
       if(market.toLowerCase() === '0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c'.toLowerCase()) {
-        tokenAddress = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+        tokenAddress = defaultAddress;
       } else {
         tokenAddress = await query(chain, market, benqi.marketABI, 'underlying', []);
       }

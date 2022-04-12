@@ -1,13 +1,13 @@
 
 // Imports:
 import { minABI, alligator } from '../../ABIs';
-import { query, addToken, addLPToken, addAlligatorToken } from '../../functions';
-import type { Chain, Address, Token, LPToken } from '../../types';
+import { query, addToken, addLPToken, addXToken } from '../../functions';
+import type { Chain, Address, Token, LPToken, XToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'avax';
 const project = 'alligator';
-const factory = '0xD9362AA8E0405C93299C573036E7FB4ec3bE1240';
+const factory: Address = '0xD9362AA8E0405C93299C573036E7FB4ec3bE1240';
 const masterChef: Address = '0x2cB3FF6894a07A9957Cf6797a29218CEBE13F42f';
 const gtr: Address = '0x43c812ba28cb061b1be7514145a15c9e18a27342';
 const xgtr: Address = '0x32A948F018870548bEd7e888Cd97a257b700D4c6';
@@ -16,7 +16,7 @@ const xgtr: Address = '0x32A948F018870548bEd7e888Cd97a257b700D4c6';
 
 // Function to get project balance:
 export const get = async (wallet: Address) => {
-  let balance: (Token | LPToken)[] = [];
+  let balance: (Token | LPToken | XToken)[] = [];
   try {
     balance.push(...(await getPoolBalances(wallet)));
     balance.push(...(await getFarmBalances(wallet)));
@@ -48,7 +48,7 @@ const getPoolBalances = async (wallet: Address) => {
 
 // Function to get all farm balances:
 const getFarmBalances = async (wallet: Address) => {
-  let balances: (Token | LPToken)[] = [];
+  let balances: (Token | LPToken | XToken)[] = [];
   let farmCount = parseInt(await query(chain, masterChef, alligator.masterChefABI, 'poolLength', []));
   let farms = [...Array(farmCount).keys()];
   let promises = farms.map(farmID => (async () => {
@@ -64,7 +64,9 @@ const getFarmBalances = async (wallet: Address) => {
 
       // xGTR Farm:
       } else if(symbol === 'xGTR') {
-        let newToken = await addAlligatorToken(chain, project, 'staked', token, balance, wallet);
+        let gtrStaked = parseInt(await query(chain, gtr, minABI, 'balanceOf', [xgtr]));
+        let xgtrSupply = parseInt(await query(chain, xgtr, minABI, 'totalSupply', []));
+        let newToken = await addXToken(chain, project, 'staked', xgtr, balance, wallet, gtr, balance * (gtrStaked / xgtrSupply));
         balances.push(newToken);
       }
 
@@ -84,7 +86,9 @@ const getFarmBalances = async (wallet: Address) => {
 const getStakedGTR = async (wallet: Address) => {
   let balance = parseInt(await query(chain, xgtr, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
-    let newToken = await addAlligatorToken(chain, project, 'staked', xgtr, balance, wallet);
+    let gtrStaked = parseInt(await query(chain, gtr, minABI, 'balanceOf', [xgtr]));
+    let xgtrSupply = parseInt(await query(chain, xgtr, minABI, 'totalSupply', []));
+    let newToken = await addXToken(chain, project, 'staked', xgtr, balance, wallet, gtr, balance * (gtrStaked / xgtrSupply));
     return [newToken];
   } else {
     return [];

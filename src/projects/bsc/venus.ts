@@ -12,6 +12,7 @@ const vault: Address = '0x0667eed0a0aab930af74a3dfedd263a73994f216';
 const xvsVault: Address = '0x051100480289e704d20e9DB4804837068f3f9204';
 const vai: Address = '0x4BD17003473389A42DAF6a0a729f6Fdb328BbBd7';
 const xvs: Address = '0xcF6BB5389c92Bdda8a3747Ddb454cB7a64626C63';
+const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
 
@@ -42,7 +43,7 @@ const getMarketBalances = async (wallet: Address) => {
       let decimals = parseInt(await query(chain, market, minABI, 'decimals', []));
       let underlyingToken: Address;
       if(market.toLowerCase() === '0xA07c5b74C9B40447a954e1466938b865b6BBea36'.toLowerCase()) {
-        underlyingToken = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+        underlyingToken = defaultAddress;
       } else {
         underlyingToken = await query(chain, market, venus.marketABI, 'underlying', []);
       }
@@ -54,7 +55,7 @@ const getMarketBalances = async (wallet: Address) => {
     if(debt > 0) {
       let underlyingToken: Address;
       if(market.toLowerCase() === '0xA07c5b74C9B40447a954e1466938b865b6BBea36'.toLowerCase()) {
-        underlyingToken = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+        underlyingToken = defaultAddress;
       } else {
         underlyingToken = await query(chain, market, venus.marketABI, 'underlying', []);
       }

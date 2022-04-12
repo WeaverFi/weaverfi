@@ -3,7 +3,7 @@
 import axios from 'axios';
 import { moonpot } from '../../ABIs';
 import { query, addToken, addLPToken, add4BeltToken, addBeltToken, addAlpacaToken } from '../../functions';
-import type { Chain, Address, Token, LPToken } from '../../types';
+import type { Chain, Address, Token, LPToken, XToken, MoonPotAPIResponse } from '../../types';
 
 // Initializations:
 const chain: Chain = 'bsc';
@@ -13,14 +13,13 @@ const project = 'moonpot';
 
 // Function to get project balance:
 export const get = async (wallet: Address) => {
-  let balance: (Token | LPToken)[] = [];
+  let balance: (Token | LPToken | XToken)[] = [];
   try {
-    let pots: any[] = [];
-    let apiData = ((await axios.get('https://api.moonpot.com/pots')).data.data);
-    Object.keys(apiData).forEach(pot => {
-      if(apiData[pot].status === 'active') {
-        pots.push(apiData[pot]);
-      }
+    let pots: MoonPotAPIResponse[] = [];
+    let potsData: Record<string, MoonPotAPIResponse> = (await axios.get('https://api.moonpot.com/pots')).data.data;
+    let potsKeys = Object.keys(potsData).filter(pot => potsData[pot].status === 'active');
+    potsKeys.forEach(key => {
+      pots.push(potsData[key]);
     });
     balance.push(...(await getPotBalances(wallet, pots)));
   } catch {
@@ -33,7 +32,7 @@ export const get = async (wallet: Address) => {
 
 // Function to get pot balances:
 const getPotBalances = async (wallet: Address, pots: any[]) => {
-  let balances: (Token | LPToken)[] = [];
+  let balances: (Token | LPToken | XToken)[] = [];
   let promises = pots.map(pot => (async () => {
     let balance = parseInt(await query(chain, pot.contractAddress, moonpot.potABI, 'userTotalBalance', [wallet]));
     if(balance > 0) {

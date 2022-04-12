@@ -1,8 +1,8 @@
 
 // Imports:
 import { minABI, quickswap } from '../../ABIs';
-import { query, addToken, addLPToken } from '../../functions';
-import type { Chain, Address, Token, LPToken } from '../../types';
+import { query, addToken, addLPToken, addXToken } from '../../functions';
+import type { Chain, Address, Token, LPToken, XToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'poly';
@@ -20,7 +20,7 @@ const minDualFarmCount = 5;
 
 // Function to get project balance:
 export const get = async (wallet: Address) => {
-  let balance: (Token | LPToken)[] = [];
+  let balance: (Token | LPToken | XToken)[] = [];
   try {
     let farms = await getFarms();
     let dualFarms = await getDualFarms();
@@ -91,7 +91,7 @@ const getDualFarmBalances = async (wallet: Address, dualFarms: Address[], ratio:
 const getStakedQUICK = async (wallet: Address, ratio: number) => {
   let balance = parseInt(await query(chain, dquick, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
-    let newToken = await addToken(chain, project, 'staked', quick, balance * ratio, wallet);
+    let newToken = await addXToken(chain, project, 'staked', dquick, balance, wallet, quick, balance * ratio);
     return [newToken];
   } else {
     return [];

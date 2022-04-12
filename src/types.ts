@@ -252,3 +252,35 @@ export interface SnowballAPIResponse {
         snobYearlyAPR: number
     }
 }
+export interface AaveAPIResponse {
+    isActive: boolean
+    underlyingAsset: Address
+    aTokenAddress: Address
+    avg7DaysLiquidityRate: number
+    borrowingEnabled: boolean
+    variableDebtTokenAddress: Address
+    avg7DaysVariableBorrowRate: number
+    stableBorrowRateEnabled: boolean
+    stableDebtTokenAddress: Address
+    stableBorrowRate: number
+}
+export interface BeefyAPIResponse {
+    id: string
+    chain: string
+    status: 'active' | 'eol'
+    platform: string
+    token: string
+    tokenAddress: Address
+    earnedTokenAddress: Address
+    assets: string[]
+}
+export interface YieldYakAPIResponse {
+    apr: number | null
+    apy: number | null
+}
+export interface MoonPotAPIResponse {
+    status: 'active' | 'eol'
+    token: string
+    tokenAddress: Address
+    contractAddress: Address
+}

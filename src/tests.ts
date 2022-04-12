@@ -2,12 +2,11 @@
 // Imports:
 import { WeaverFi as weaver } from './index';
 import { chains } from './chains';
-import { projects } from './projects';
 import { minABI } from './ABIs';
-import type { Address, TerraAddress, Chain, ChainData } from './types';
+import type { Address, TerraAddress } from './types';
 
 // Initializations:
-const wallet: Address | TerraAddress = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E';
+const wallet: Address | TerraAddress = '0x38747443987d3d4e3FB20f42b771644df9E7710d';
 const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
@@ -17,34 +16,8 @@ const tests = async () => {
 
   /* ================================================== */
 
-  // Generic Tests:
-  // let allProjects = weaver.getAllProjects();
-  // console.log('🕷️ ~ allProjects', allProjects);
-  // let allTokens = weaver.getAllTokens();
-  // console.log('🕷️ ~ allTokens', allTokens);
-  // let allTokenPrices = await weaver.getAllTokenPrices();
-  // console.log('🕷️ ~ allTokenPrices', allTokenPrices);
-  // let nativeTokenPrices = await weaver.getNativeTokenPrices();
-  // console.log('🕷️ ~ nativeTokenPrices', nativeTokenPrices);
-  // let prices = weaver.fetchPrices();
-  // console.log('🕷️ ~ prices', prices);
-
-  /* ================================================== */
-
-  // Domain Name Tests:
-  // let ensAddress = await weaver.resolveENS('ncookie.eth');
-  // console.log('🕷️ ~ ensAddress', ensAddress);
-  // let ensDomain = await weaver.lookupENS(wallet);
-  // console.log('🕷️ ~ ensDomain', ensDomain);
-  // let tnsAddress = await weaver.resolveTNS('ncookie.ust');
-  // console.log('🕷️ ~ tnsAddress', tnsAddress);
-  // let tnsDomain = await weaver.lookupTNS(wallet);
-  // console.log('🕷️ ~ tnsDomain', tnsDomain);
-
-  /* ================================================== */
-
   // Project Balance Tests:
-  // let projectBalance = await weaver.AVAX.getProjectBalance(wallet, 'snowball');
+  // let projectBalance = await weaver.BSC.getProjectBalance(wallet, 'moonpot');
   // console.log('🕷️ ~ projectBalance', projectBalance);
 
   /* ================================================== */
@@ -139,6 +112,32 @@ const tests = async () => {
 
   /* ================================================== */
 
+  // Generic Tests:
+  // let allProjects = weaver.getAllProjects();
+  // console.log('🕷️ ~ allProjects', allProjects);
+  // let allTokens = weaver.getAllTokens();
+  // console.log('🕷️ ~ allTokens', allTokens);
+  // let allTokenPrices = await weaver.getAllTokenPrices();
+  // console.log('🕷️ ~ allTokenPrices', allTokenPrices);
+  // let nativeTokenPrices = await weaver.getNativeTokenPrices();
+  // console.log('🕷️ ~ nativeTokenPrices', nativeTokenPrices);
+  // let prices = weaver.fetchPrices();
+  // console.log('🕷️ ~ prices', prices);
+
+  /* ================================================== */
+
+  // Domain Name Tests:
+  // let ensAddress = await weaver.resolveENS('ncookie.eth');
+  // console.log('🕷️ ~ ensAddress', ensAddress);
+  // let ensDomain = await weaver.lookupENS(wallet);
+  // console.log('🕷️ ~ ensDomain', ensDomain);
+  // let tnsAddress = await weaver.resolveTNS('ncookie.ust');
+  // console.log('🕷️ ~ tnsAddress', tnsAddress);
+  // let tnsDomain = await weaver.lookupTNS(wallet);
+  // console.log('🕷️ ~ tnsDomain', tnsDomain);
+
+  /* ================================================== */
+
   // Chain-Specific Token Pricing Tests:
   // let ethTokenPrices = await weaver.ETH.getTokenPrices();
   // console.log('🕷️ ~ ethTokenPrices', ethTokenPrices);
@@ -157,7 +156,7 @@ const tests = async () => {
 
   /* ================================================== */
 
-  // Token Pricing Tests:
+  // Single Token Pricing Tests:
   // let ethTokenPrice = await weaver.ETH.getTokenPrice(defaultAddress, 18);
   // console.log('🕷️ ~ ethTokenPrice', ethTokenPrice);
   // let bscTokenPrice = await weaver.BSC.getTokenPrice(defaultAddress, 18);

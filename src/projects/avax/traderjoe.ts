@@ -2,7 +2,7 @@
 // Imports:
 import { minABI, traderjoe } from '../../ABIs';
 import { query, addToken, addLPToken, addDebtToken, addTraderJoeToken } from '../../functions';
-import type { Chain, Address, Token, LPToken, DebtToken } from '../../types';
+import type { Chain, Address, Token, LPToken, DebtToken, XToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'avax';
@@ -17,10 +17,11 @@ const xjoe: Address = '0x57319d41F71E81F3c65F2a47CA4e001EbAFd4F33';
 
 // Function to get project balance:
 export const get = async (wallet: Address) => {
-  let balance: (Token | LPToken | DebtToken)[] = [];
+  let balance: (Token | LPToken | DebtToken | XToken)[] = [];
   try {
     balance.push(...(await getStakedJOE(wallet)));
-    balance.push(...(await getFarmBalances(wallet)));
+    balance.push(...(await getFarmV2Balances(wallet)));
+    balance.push(...(await getFarmV3Balances(wallet)));
     balance.push(...(await getMarketBalances(wallet)));
   } catch {
     console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
@@ -34,39 +35,43 @@ export const get = async (wallet: Address) => {
 const getStakedJOE = async (wallet: Address) => {
   let balance = parseInt(await query(chain, xjoe, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
-    let newToken = await addTraderJoeToken(chain, project, 'staked', xjoe, balance, wallet);
+    let newToken = await addTraderJoeToken(chain, project, 'staked', balance, wallet);
     return [newToken];
   } else {
     return [];
   }
 }
 
-// Function to get farm balances:
-const getFarmBalances = async (wallet: Address) => {
-  let balances: (Token | LPToken)[] = [];
-  let farmCountV2 = parseInt(await query(chain, masterChefV2, traderjoe.masterChefABI, 'poolLength', []));
-  let farmCountV3 = parseInt(await query(chain, masterChefV3, traderjoe.masterChefABI, 'poolLength', []));
-  let farmsV2 = [...Array(farmCountV2).keys()];
-  let farmsV3 = [...Array(farmCountV3).keys()];
-  let joeRewards = 0;
-
-  // Farms V2:
-  let promisesV2 = farmsV2.map(farmID => (async () => {
+// Function to get farm V2 balances:
+const getFarmV2Balances = async (wallet: Address) => {
+  let balances: (Token | LPToken | XToken)[] = [];
+  let farmCount = parseInt(await query(chain, masterChefV2, traderjoe.masterChefABI, 'poolLength', []));
+  let farms = [...Array(farmCount).keys()];
+  let promises = farms.map(farmID => (async () => {
     let balance = parseInt((await query(chain, masterChefV2, traderjoe.masterChefABI, 'userInfo', [farmID, wallet])).amount);
     if(balance > 0) {
       let token = (await query(chain, masterChefV2, traderjoe.masterChefABI, 'poolInfo', [farmID])).lpToken;
+
+      // xJOE Farm:
       if(token === xjoe) {
-        let newToken = await addTraderJoeToken(chain, project, 'staked', xjoe, balance, wallet);
+        let newToken = await addTraderJoeToken(chain, project, 'staked', balance, wallet);
         balances.push(newToken);
+
+      // LP Farms:
       } else {
         let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
         balances.push(newToken);
       }
+
+      // JOE Rewards:
       let rewards = await query(chain, masterChefV2, traderjoe.masterChefABI, 'pendingTokens', [farmID, wallet]);
       let pendingJoe = parseInt(rewards.pendingJoe);
       if(pendingJoe > 0) {
-        joeRewards += pendingJoe;
+        let newToken = await addToken(chain, project, 'unclaimed', joe, pendingJoe, wallet);
+        balances.push(newToken);
       }
+
+      // Bonus Rewards:
       let pendingBonus = parseInt(rewards.pendingBonusToken);
       if(pendingBonus > 0) {
         let newToken = await addToken(chain, project, 'unclaimed', rewards.bonusTokenAddress, pendingBonus, wallet);
@@ -74,25 +79,40 @@ const getFarmBalances = async (wallet: Address) => {
       }
     }
   })());
-  await Promise.all(promisesV2);
+  await Promise.all(promises);
+  return balances;
+}
 
-  // Farms V3:
-  let promisesV3 = farmsV3.map(farmID => (async () => {
+// Function to get farm V3 balances:
+const getFarmV3Balances = async (wallet: Address) => {
+  let balances: (Token | LPToken | XToken)[] = [];
+  let farmCount = parseInt(await query(chain, masterChefV3, traderjoe.masterChefABI, 'poolLength', []));
+  let farms = [...Array(farmCount).keys()];
+  let promises = farms.map(farmID => (async () => {
     let balance = parseInt((await query(chain, masterChefV3, traderjoe.masterChefABI, 'userInfo', [farmID, wallet])).amount);
     if(balance > 0) {
       let token = (await query(chain, masterChefV3, traderjoe.masterChefABI, 'poolInfo', [farmID])).lpToken;
+
+      // xJOE Farm:
       if(token === xjoe) {
-        let newToken = await addTraderJoeToken(chain, project, 'staked', xjoe, balance, wallet);
+        let newToken = await addTraderJoeToken(chain, project, 'staked', balance, wallet);
         balances.push(newToken);
+
+      // LP Farms:
       } else {
         let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
         balances.push(newToken);
       }
+
+      // JOE Rewards:
       let rewards = await query(chain, masterChefV3, traderjoe.masterChefABI, 'pendingTokens', [farmID, wallet]);
       let pendingJoe = parseInt(rewards.pendingJoe);
       if(pendingJoe > 0) {
-        joeRewards += pendingJoe;
+        let newToken = await addToken(chain, project, 'unclaimed', joe, pendingJoe, wallet);
+        balances.push(newToken);
       }
+
+      // Bonus Rewards:
       let pendingBonus = parseInt(rewards.pendingBonusToken);
       if(pendingBonus > 0) {
         let newToken = await addToken(chain, project, 'unclaimed', rewards.bonusTokenAddress, pendingBonus, wallet);
@@ -100,11 +120,7 @@ const getFarmBalances = async (wallet: Address) => {
       }
     }
   })());
-  await Promise.all(promisesV3);
-  if(joeRewards > 0) {
-    let newToken = await addToken(chain, project, 'unclaimed', joe, joeRewards, wallet);
-    balances.push(newToken);
-  }
+  await Promise.all(promises);
   return balances;
 }
 

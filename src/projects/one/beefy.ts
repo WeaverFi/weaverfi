@@ -3,7 +3,7 @@
 import axios from 'axios';
 import { minABI, beefy } from '../../ABIs';
 import { query, addToken, addLPToken, addCurveToken } from '../../functions';
-import type { Chain, Address, Token, LPToken } from '../../types';
+import type { Chain, Address, URL, Token, LPToken, BeefyAPIResponse } from '../../types';
 
 // Initializations:
 const chain: Chain = 'one';
@@ -11,7 +11,7 @@ const project = 'beefy';
 const staking: Address = '0x5b96bbaca98d777cb736dd89a519015315e00d02';
 const bifi: Address = '0x6ab6d61428fde76768d7b45d8bfeec19c6ef91a8';
 const wone: Address = '0xcf664087a5bb0237a0bad6742852ec6c8d69a27a';
-const chars = 'abcdefghijklmnopqrstuvwxyz';
+const apiURL: URL = 'https://api.beefy.finance';
 
 /* ========================================================================================================================================================================= */
 
@@ -19,14 +19,10 @@ const chars = 'abcdefghijklmnopqrstuvwxyz';
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
   try {
-    let result;
-    try {
-      result = await axios.get(`https://api.beefy.finance/vaults?${chars[Math.floor(Math.random() * chars.length)]}`);
-    } catch {
-      result = await axios.get(`https://api.beefy.finance/vaults?${chars[Math.floor(Math.random() * chars.length)]}`);
-    }
-    let vaults = result.data.filter((vault: any) => vault.chain === 'one' && vault.status === 'active' && vault.tokenAddress);
-    balance.push(...(await getVaultBalances(wallet, vaults)));
+    let vaultsData: BeefyAPIResponse[] = (await axios.get(apiURL + '/vaults')).data;
+    let apyData: Record<string, number | null> = (await axios.get(apiURL + '/apy')).data;
+    let vaults = vaultsData.filter(vault => vault.chain === 'one' && vault.status === 'active');
+    balance.push(...(await getVaultBalances(wallet, vaults, apyData)));
     balance.push(...(await getStakedBIFI(wallet)));
   } catch {
     console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
@@ -37,33 +33,64 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get vault balances:
-const getVaultBalances = async (wallet: Address, vaults: any) => {
+const getVaultBalances = async (wallet: Address, vaults: BeefyAPIResponse[], apys: Record<string, number | null>) => {
   let balances: (Token | LPToken)[] = [];
-  let promises = vaults.map((vault: any) => (async () => {
+  let promises = vaults.map(vault => (async () => {
     let balance = parseInt(await query(chain, vault.earnedTokenAddress, minABI, 'balanceOf', [wallet]));
     if(balance > 0) {
       let decimals = parseInt(await query(chain, vault.earnedTokenAddress, minABI, 'decimals', []));
       let exchangeRate = parseInt(await query(chain, vault.earnedTokenAddress, beefy.vaultABI, 'getPricePerFullShare', []));
       let underlyingBalance = balance * (exchangeRate / (10 ** decimals));
 
-      // Curve Vaults:
-      if(vault.platform === 'Curve') {
-        let newToken = await addCurveToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
-        balances.push(newToken);
+      // Native Token Vaults:
+      if(!vault.tokenAddress) {
+        if(vault.token === 'ONE') {
+          let newToken = await addToken(chain, project, 'staked', wone, underlyingBalance, wallet);
+          let vaultAPY = apys[vault.id];
+          if(vaultAPY) {
+            newToken.info = {
+              apy: vaultAPY
+            }
+          }
+          balances.push(newToken);
+        }
 
-      // Unique Vaults (3+ Assets):
-      } else if(vault.assets.length > 2) {
-        // None relevant / supported yet.
+      // All Other Vaults:
+      } else {
 
-      // LP Token Vaults:
-      } else if(vault.assets.length === 2) {
-        let newToken = await addLPToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
-        balances.push(newToken);
-
-      // Single-Asset Vaults:
-      } else if(vault.assets.length === 1) {
-        let newToken = await addToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
-        balances.push(newToken);
+        // Curve Vaults:
+        if(vault.platform === 'Curve') {
+          let newToken = await addCurveToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
+          let vaultAPY = apys[vault.id];
+          if(vaultAPY) {
+            newToken.info = {
+              apy: vaultAPY
+            }
+          }
+          balances.push(newToken);
+  
+        // LP Token Vaults:
+        } else if(vault.assets.length === 2) {
+          let newToken = await addLPToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
+          let vaultAPY = apys[vault.id];
+          if(vaultAPY) {
+            newToken.info = {
+              apy: vaultAPY
+            }
+          }
+          balances.push(newToken);
+  
+        // Single-Asset Vaults:
+        } else if(vault.assets.length === 1) {
+          let newToken = await addToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
+          let vaultAPY = apys[vault.id];
+          if(vaultAPY) {
+            newToken.info = {
+              apy: vaultAPY
+            }
+          }
+          balances.push(newToken);
+        }
       }
     }
   })());

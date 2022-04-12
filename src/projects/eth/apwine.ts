@@ -1,8 +1,8 @@
 
 // Imports:
 import { minABI, apwine, paladin, aave, harvest, yearn, paraswap, truefi } from '../../ABIs';
-import { query, addToken, addCurveToken } from '../../functions';
-import type { Chain, Address, Token, LPToken } from '../../types';
+import { query, addToken, addXToken, addCurveToken } from '../../functions';
+import type { Chain, Address, Token, LPToken, XToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'eth';
@@ -15,7 +15,7 @@ const veapw: Address = '0xC5ca1EBF6e912E49A6a70Bb0385Ea065061a4F09';
 
 // Function to get project balance:
 export const get = async (wallet: Address) => {
-  let balance: (Token | LPToken)[] = [];
+  let balance: (Token | LPToken | XToken)[] = [];
   try {
     balance.push(...(await getFutureBalances(wallet)));
     balance.push(...(await getStakedAPW(wallet)));
@@ -53,12 +53,12 @@ const getFutureBalances = async (wallet: Address) => {
           let newToken = await addToken(chain, project, 'staked', underlyingToken, (ptBalance + fytBalance) * underlyingExchangeRate, wallet);
           balances.push(newToken);
         } else {
-          console.info(`Unsupported StakeDAO FutureID on APWine: ${futureID}`);
+          console.warn(`Unsupported StakeDAO FutureID on APWine: ${futureID}`);
         }
 
       // IDLE Finance Futures:
       } else if(platform === 'IDLE Finance') {
-        console.info(`Unsupported IDLE Finance FutureID on APWine: ${futureID}`);
+        console.warn(`Unsupported IDLE Finance FutureID on APWine: ${futureID}`);
 
       // Lido Futures:
       } else if(platform === 'Lido') {
@@ -75,7 +75,7 @@ const getFutureBalances = async (wallet: Address) => {
           let newToken = await addCurveToken(chain, project, 'staked', underlyingToken, (ptBalance + fytBalance) * underlyingExchangeRate, wallet);
           balances.push(newToken);
         } else {
-          console.info(`Unsupported Yearn FutureID on APWine: ${futureID}`);
+          console.warn(`Unsupported Yearn FutureID on APWine: ${futureID}`);
         }
 
       // Harvest Futures:
@@ -164,10 +164,13 @@ const fetchFYTBalance = async (wallet: Address, future: Address, futureToken: Ad
 
 // Function to get staked APW balance:
 const getStakedAPW = async (wallet: Address) => {
-  let locked = await query(chain, veapw, apwine.stakingABI, 'locked', [wallet]);
-  let balance = parseInt(locked.amount);
+  let balance = parseInt(await query(chain, veapw, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
-    let newToken = await addToken(chain, project, 'staked', apw, balance, wallet);
+    let locked = await query(chain, veapw, apwine.stakingABI, 'locked', [wallet]);
+    let newToken = await addXToken(chain, project, 'staked', veapw, balance, wallet, apw, parseInt(locked.amount));
+    newToken.info = {
+      unlock: parseInt(locked.end)
+    }
     return [newToken];
   } else {
     return [];

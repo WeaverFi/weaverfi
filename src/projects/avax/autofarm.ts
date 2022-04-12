@@ -2,7 +2,7 @@
 // Imports:
 import { minABI, autofarm } from '../../ABIs';
 import { query, addToken, addLPToken, addTraderJoeToken } from '../../functions';
-import type { Chain, Address, Token, LPToken } from '../../types';
+import type { Chain, Address, Token, LPToken, XToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'avax';
@@ -14,7 +14,7 @@ const ignoredVaults: number[] = [67, 77, 79];
 
 // Function to get project balance:
 export const get = async (wallet: Address) => {
-  let balance: (Token | LPToken)[] = [];
+  let balance: (Token | LPToken | XToken)[] = [];
   try {
     balance.push(...(await getVaultBalances(wallet)));
   } catch {
@@ -27,7 +27,7 @@ export const get = async (wallet: Address) => {
 
 // Function to get all vault balances:
 const getVaultBalances = async (wallet: Address) => {
-  let balances: (Token | LPToken)[] = [];
+  let balances: (Token | LPToken | XToken)[] = [];
   let poolLength = parseInt(await query(chain, registry, autofarm.registryABI, 'poolLength', []));
   let vaults = [...Array(poolLength).keys()];
   let promises = vaults.map(vaultID => (async () => {
@@ -39,7 +39,7 @@ const getVaultBalances = async (wallet: Address) => {
   
         // xJOE Vault:
         if(vaultID === 17) {
-          let newToken = await addTraderJoeToken(chain, project, 'staked', token, balance, wallet);
+          let newToken = await addTraderJoeToken(chain, project, 'staked', balance, wallet);
           balances.push(newToken);
   
         // LP Token Vaults:

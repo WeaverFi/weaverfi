@@ -1,7 +1,7 @@
 
 // Imports:
 import { minABI, cycle } from '../../ABIs';
-import { query, addToken, addLPToken, addTraderJoeToken } from '../../functions';
+import { query, addToken, addLPToken } from '../../functions';
 import type { Chain, Address, Token, LPToken } from '../../types';
 
 // Initializations:
@@ -15,8 +15,6 @@ const pools: Address[] = [
 ];
 const cycleToken: Address = '0x81440C939f2C1E34fc7048E518a637205A632a74';
 const wavax: Address = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7';
-const xjoe: Address = '0x57319d41f71e81f3c65f2a47ca4e001ebafd4f33';
-const png: Address = '0x60781C2586D68229fde47564546784ab3fACA982';
 
 /* ========================================================================================================================================================================= */
 
@@ -45,26 +43,10 @@ const getVaultBalances = async (wallet: Address) => {
     let balance = parseInt(await query(chain, vaultAddress, minABI, 'balanceOf', [wallet]));
     if(balance > 0) {
       let intermediary = await query(chain, vaultAddress, cycle.vaultABI, 'stakingToken', []);
-
-      // xJOE Vault:
-      if(intermediary.toLowerCase() === '0x04E6F23217C13E1dfE54ee80fb96F7ECC90116Fe'.toLowerCase()) {
-        let actualBalance = parseInt(await query(chain, intermediary, cycle.intermediaryABI, 'getLPamountForShares', [(balance / 10 ** 10).toFixed(0)]));
-        let newToken = await addTraderJoeToken(chain, project, 'staked', xjoe, actualBalance * (10 ** 10), wallet);
-        balances.push(newToken);
-
-      // PNG Vault:
-      } else if(intermediary.toLowerCase() === '0x8AdEaddcB00F4ea34c7EB0B4d48Bff8de0a39244'.toLowerCase()) {
-        let actualBalance = parseInt(await query(chain, intermediary, cycle.intermediaryABI, 'getLPamountForShares', [(balance / 10 ** 10).toFixed(0)]));
-        let newToken = await addToken(chain, project, 'staked', png, actualBalance * (10 ** 10), wallet);
-        balances.push(newToken);
-
-      // All Other LP Vaults:
-      } else {
-        let lpToken = await query(chain, intermediary, cycle.intermediaryABI, 'LPtoken', []);
-        let actualBalance = parseInt(await query(chain, intermediary, cycle.intermediaryABI, 'getAccountLP', [wallet]));
-        let newToken = await addLPToken(chain, project, 'staked', lpToken, actualBalance, wallet);
-        balances.push(newToken);
-      }
+      let lpToken = await query(chain, intermediary, cycle.intermediaryABI, 'LPtoken', []);
+      let actualBalance = parseInt(await query(chain, intermediary, cycle.intermediaryABI, 'getAccountLP', [wallet]));
+      let newToken = await addLPToken(chain, project, 'staked', lpToken, actualBalance, wallet);
+      balances.push(newToken);
 
       // Pending CYCLE Rewards:
       let rewards = parseInt(await query(chain, vaultAddress, cycle.vaultABI, 'earned', [wallet]));

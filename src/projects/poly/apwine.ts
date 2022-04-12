@@ -59,7 +59,7 @@ const getFutureBalances = async (wallet: Address) => {
           let newToken = await addBalancerToken(chain, project, 'staked', underlyingToken, (ptBalance + fytBalance) * underlyingExchangeRate, wallet, poolID);
           balances.push(newToken);
         } else {
-          console.info(`Unsupported Harvest FutureID on APWine: ${futureID}`);
+          console.warn(`Unsupported Harvest FutureID on APWine: ${futureID}`);
         }
 
       // Beefy Futures:
@@ -80,12 +80,12 @@ const getFutureBalances = async (wallet: Address) => {
           let newToken = await addLPToken(chain, project, 'staked', underlyingToken, (ptBalance + fytBalance) * underlyingExchangeRate, wallet);
           balances.push(newToken);
         } else {
-          console.info(`Unsupported Beefy FutureID on APWine: ${futureID}`);
+          console.warn(`Unsupported Beefy FutureID on APWine: ${futureID}`);
         }
 
       // StakeDAO Futures:
       } else if(platform === 'StakeDAO') {
-        console.info(`Unsupported StakeDAO FutureID on APWine: ${futureID}`);
+        console.warn(`Unsupported StakeDAO FutureID on APWine: ${futureID}`);
       } else {
         console.warn(`Unidentified APWine Future Platform: ${platform}`);
       }

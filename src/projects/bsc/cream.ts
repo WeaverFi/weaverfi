@@ -8,6 +8,7 @@ import type { Chain, Address, Token, LPToken, DebtToken } from '../../types';
 const chain: Chain = 'bsc';
 const project = 'cream';
 const controller: Address = '0x589de0f0ccf905477646599bb3e5c622c84cc0ba';
+const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
 
@@ -38,7 +39,7 @@ const getMarketBalances = async (wallet: Address) => {
       let symbol = await query(chain, market, minABI, 'symbol', []);
       let tokenAddress: Address;
       if(market.toLowerCase() === '0x1Ffe17B99b439bE0aFC831239dDECda2A790fF3A'.toLowerCase()) {
-        tokenAddress = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+        tokenAddress = defaultAddress;
       } else {
         tokenAddress = await query(chain, market, cream.tokenABI, 'underlying', []);
       }
@@ -58,7 +59,7 @@ const getMarketBalances = async (wallet: Address) => {
       let symbol = await query(chain, market, minABI, 'symbol', []);
       let tokenAddress: Address;
       if(market.toLowerCase() === '0x1Ffe17B99b439bE0aFC831239dDECda2A790fF3A'.toLowerCase()) {
-        tokenAddress = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+        tokenAddress = defaultAddress;
       } else {
         tokenAddress = await query(chain, market, cream.tokenABI, 'underlying', []);
       }

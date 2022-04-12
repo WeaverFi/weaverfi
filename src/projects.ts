@@ -24,7 +24,6 @@ export const projects: Record<Chain, string[]> = {
    'cream',
    'moonpot',
    'pancakeswap',
-   'pooltogether',
    'venus'
   ],
   poly: [
@@ -61,11 +60,9 @@ export const projects: Record<Chain, string[]> = {
    'axial',
    'beefy',
    'benqi',
-   'cookiegame',
    'cream',
    'curve',
    'cycle',
-   'everest',
    'lydia',
    'pangolin',
    'penguin',

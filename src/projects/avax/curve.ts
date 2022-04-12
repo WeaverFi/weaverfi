@@ -12,6 +12,7 @@ const pools: Address[] = [
   '0x0f9cb53Ebe405d49A0bbdBD291A65Ff571bC83e1', // renBTC Gauge
   '0x445FE580eF8d70FF569aB36e80c647af338db351'  // ATriCrypto Gauge
 ];
+const zero: Address = '0x0000000000000000000000000000000000000000';
 
 /* ========================================================================================================================================================================= */
 
@@ -41,7 +42,7 @@ const getPoolBalances = async (wallet: Address) => {
       // Pending Rewards:
       for(let i = 0; i < 2; i++) {
         let token = await query(chain, gauge, curve.gaugeABI, 'reward_tokens', [i]);
-        if(token != '0x0000000000000000000000000000000000000000') {
+        if(token != zero) {
           let rewards = parseInt(await query(chain, gauge, curve.gaugeABI, 'claimable_reward', [wallet, token]));
           if(rewards > 0) {
             let newToken = await addToken(chain, project, 'unclaimed', token, rewards, wallet);

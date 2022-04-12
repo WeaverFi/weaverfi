@@ -14,6 +14,7 @@ const pools: Address[] = [
   '0x00702bbdead24c40647f235f15971db0867f6bdb', // TriCrypto Gauge
   '0xd4f94d0aaa640bbb72b5eec2d85f6d114d81a88e'  // Geist Gauge
 ];
+const zero: Address = '0x0000000000000000000000000000000000000000';
 
 /* ========================================================================================================================================================================= */
 
@@ -43,7 +44,7 @@ const getPoolBalances = async (wallet: Address) => {
       // Pending Rewards:
       for(let i = 0; i < 2; i++) {
         let token = await query(chain, gauge, curve.gaugeABI, 'reward_tokens', [i]);
-        if(token != '0x0000000000000000000000000000000000000000') {
+        if(token != zero) {
           let rewards = parseInt(await query(chain, gauge, curve.gaugeABI, 'claimable_reward', [wallet, token]));
           if(rewards > 0) {
             let newToken = await addToken(chain, project, 'unclaimed', token, rewards, wallet);

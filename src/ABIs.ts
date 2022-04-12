@@ -33,9 +33,6 @@ export const aave: Record<string, ABI[]> = {
   lpABI: [
     { constant: true, inputs: [], name: "bPool", outputs: [{ name: "", type: "address" }], type: "function" }
   ],
-  registryABI: [
-    { constant: true, inputs: [{ name: "asset", type: "address" }], name: "getReserveTokensAddresses", outputs: [{ name: "aTokenAddress", type: "address" }, { name: "stableDebtTokenAddress", type: "address" }, { name: "variableDebtTokenAddress", type: "address" }], type: "function" }
-  ],
   lendingABI: [
     { constant: true, inputs: [], name: "UNDERLYING_ASSET_ADDRESS", outputs: [{ name: "", type: "address" }], type: "function" }
   ]
@@ -89,9 +86,6 @@ export const snowball: Record<string, ABI[]> = {
 
 // Trader Joe ABIs:
 export const traderjoe: Record<string, ABI[]> = {
-  joeABI: [
-    { constant: true, inputs: [], name: "joe", outputs: [{ name: "", type: "address" }], type: "function" }
-  ],
   masterChefABI: [
     { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "", type: "uint256" }, { name: "", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }], type: "function" },
@@ -159,14 +153,16 @@ export const autofarm: Record<string, ABI[]> = {
 // Belt ABIs:
 export const belt: Record<string, ABI[]> = {
   masterBeltABI: [
-    { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], name: "stakedWantTokens", outputs: [{ name: "", type: "uint256" }], type: "function" },
-    { constant: true, inputs: [{ name: "<input>", type: "uint256" }], name: "poolInfo", outputs: [{ name: "want", type: "address" }, { name: "allocPoint", type: "uint256" }, { name: "lastRewardBlock", type: "uint256" }, { name: "accBELTPerShare", type: "uint256" }, { name: "strat", type: "address" }], type: "function" },
     { constant: true, inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], name: "pendingBELT", outputs: [{ name: "", type: "uint256" }], type: "function" }
   ],
   tokenABI: [
     { constant: true, inputs: [], name: "getPricePerFullShare", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [], name: "token", outputs: [{ name: "", type: "address" }], type: "function" }
+  ],
+  stakingABI: [
+    { constant: true, inputs: [], name: "getPricePerFullShare", outputs: [{ name: "", type: "uint256" }], type: "function" },
+    { constant: true, inputs: [{ name: "userAddr", type: "address" }], name: "getUserLockUpEndTime", outputs: [{ name: "", type: "uint256" }], type: "function" }
   ]
 }
 
@@ -309,9 +305,6 @@ export const spookyswap: Record<string, ABI[]> = {
     { constant: true, inputs: [{ name: "<input>", type: "uint256" }, { name: "<input>", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "<input>", type: "uint256" }], name: "poolInfo", outputs: [{ name: "lpToken", type: "address" }, { name: "allocPoint", type: "uint256" }, { name: "lastRewardTime", type: "uint256" }, { name: "accBOOPerShare", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], name: "pendingBOO", outputs: [{ name: "", type: "uint256" }], type: "function" }
-  ],
-  xbooABI: [
-    { constant: true, inputs: [{ name: "_account", type: "address" }], name: "BOOBalance", outputs: [{ name: "booAmount_", type: "uint256" }], type: "function" }
   ]
 }
 
@@ -557,19 +550,10 @@ export const sushiswap: Record<string, ABI[]> = {
 export const yieldyak: Record<string, ABI[]> = {
   farmABI: [
     { constant: true, inputs: [], name: "depositToken", outputs: [{ name: "", type: "address" }], type: "function" },
-    { constant: true, inputs: [], name: "totalDeposits", outputs: [{ name: "", type: "uint256" }], type: "function" },
-    { constant: true, inputs: [], name: "totalSupply", outputs: [{ name: "", type: "uint256" }], type: "function" },
-    { constant: true, inputs: [], name: "name", outputs: [{ name: "", type: "string" }], type: "function" }
+    { constant: true, inputs: [], name: "totalDeposits", outputs: [{ name: "", type: "uint256" }], type: "function" }
   ],
   stakingABI: [
-    { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
-    { constant: true, inputs: [{ name: "", type: "uint256" }, { name: "", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardTokenDebt", type: "uint256" }], type: "function" },
-    { constant: true, inputs: [{ name: "", type: "uint256" }], name: "poolInfo", outputs: [{ name: "token", type: "address" }, { name: "allocPoint", type: "uint256" }, { name: "lastRewardTimestamp", type: "uint256" }, { name: "accRewardsPerShare", type: "uint256" }, { name: "vpForDeposit", type: "bool" }], type: "function" },
-    { constant: true, inputs: [{ name: "pid", type: "uint256" }, { name: "account", type: "address" }], name: "pendingRewards", outputs: [{ name: "", type: "uint256" }], type: "function" }
-  ],
-  intermediaryABI: [
-    { constant: true, inputs: [], name: "depositToken", outputs: [{ name: "", type: "address" }], type: "function" },
-    { constant: true, inputs: [{ name: "amount", type: "uint256" }], name: "getDepositTokensForShares", outputs: [{ name: "", type: "uint256" }], type: "function" }
+    { constant: true, inputs: [{ name: "", type: "uint256" }, { name: "", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardTokenDebt", type: "uint256" }], type: "function" }
   ]
 }
 

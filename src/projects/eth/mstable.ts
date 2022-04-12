@@ -1,8 +1,8 @@
 
 // Imports:
 import { minABI, mstable } from '../../ABIs';
-import { query, addToken, addStableToken, addBalancerToken } from '../../functions';
-import type { Chain, Address, Token, LPToken } from '../../types';
+import { query, addToken, addXToken, addStableToken, addBalancerToken } from '../../functions';
+import type { Chain, Address, Token, LPToken, XToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'eth';
@@ -11,7 +11,7 @@ const imUSD: Address = '0x30647a72dc82d7fbb1123ea74716ab8a317eac19';
 const imBTC: Address = '0x17d8CBB6Bce8cEE970a4027d1198F6700A7a6c24';
 const imUSDVault: Address = '0x78BefCa7de27d07DC6e71da295Cc2946681A6c7B';
 const imBTCVault: Address = '0xF38522f63f40f9Dd81aBAfD2B8EFc2EC958a3016';
-const staking: Address = '0x8f2326316ec696f6d023e37a9931c2b2c177a3d7';
+const stakedMTA: Address = '0x8f2326316eC696F6d023E37A9931c2b2C177a3D7';
 const balStaking: Address = '0xeFbe22085D9f29863Cfb77EEd16d3cC0D927b011';
 const mta: Address = '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2';
 const pools: Address[] = [
@@ -37,7 +37,7 @@ const vaults: Address[] = [
 
 // Function to get project balance:
 export const get = async (wallet: Address) => {
-  let balance: (Token | LPToken)[] = [];
+  let balance: (Token | LPToken | XToken)[] = [];
   try {
     balance.push(...(await getAssetBalances(wallet)));
     balance.push(...(await getPoolBalances(wallet)));
@@ -148,16 +148,17 @@ const getVaultBalances = async (wallet: Address) => {
 
 // Function to get staked balances:
 const getStaked = async (wallet: Address) => {
-  let balances: (Token | LPToken)[] = [];
-  let mtaSum = 0;
+  let balances: (Token | LPToken | XToken)[] = [];
 
   // MTA Staking:
-  let mtaBalance = parseInt((await query(chain, staking, mstable.stakingABI, 'rawBalanceOf', [wallet]))[0]);
+  let mtaBalance = parseInt((await query(chain, stakedMTA, mstable.stakingABI, 'rawBalanceOf', [wallet]))[0]);
   if(mtaBalance > 0) {
-    mtaSum += mtaBalance;
-    let mtaRewards = parseInt(await query(chain, staking, mstable.stakingABI, 'earned', [wallet]));
+    let newToken = await addXToken(chain, project, 'staked', stakedMTA, mtaBalance, wallet, mta, mtaBalance);
+    balances.push(newToken);
+    let mtaRewards = parseInt(await query(chain, stakedMTA, mstable.stakingABI, 'earned', [wallet]));
     if(mtaRewards > 0) {
-      mtaSum += mtaRewards;
+      let newToken = await addToken(chain, project, 'unclaimed', mta, mtaRewards, wallet);
+      balances.push(newToken);
     }
   }
 
@@ -166,16 +167,14 @@ const getStaked = async (wallet: Address) => {
   if(balBalance > 0) {
     let token = await query(chain, balStaking, mstable.stakingABI, 'STAKED_TOKEN', []);
     let id = await query(chain, token, mstable.mbptABI, 'getPoolId', []);
-    let newToken = await addBalancerToken(chain, project, 'staked', mta, mtaSum, wallet, id);
+    let newToken = await addBalancerToken(chain, project, 'staked', mta, balBalance, wallet, id);
     balances.push(newToken);
     let mtaRewards = parseInt(await query(chain, balStaking, mstable.stakingABI, 'earned', [wallet]));
     if(mtaRewards > 0) {
-      mtaSum += mtaRewards;
+      let newToken = await addToken(chain, project, 'unclaimed', mta, mtaRewards, wallet);
+      balances.push(newToken);
     }
   }
-  if(mtaSum > 0) {
-    let newToken = await addToken(chain, project, 'unclaimed', mta, mtaSum, wallet);
-    balances.push(newToken);
-  }
+
   return balances;
 }
