@@ -15,7 +15,7 @@ const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 const terra = new LCDClient({ URL: chains.terra.rpcs[0], chainID: "columbus-5" });
 
 // Prices Object:
-export let prices: Record<Chain, TokenPriceData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], terra: [] };
+export let prices: Record<Chain, TokenPriceData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [], terra: [] };
 
 /* ========================================================================================================================================================================= */
 
@@ -474,6 +474,19 @@ const redirectTokenPriceFeed = async (chain: Chain, address: Address | TerraAddr
           break;
         case '0xeb6c08ccb4421b6088e581ce04fcfbed15893ac3': // 1FRAX
           tokenPrice = await getTokenPrice('eth', '0x853d955acef822db058eb8505911ed77f175b99e', 18);
+          break;
+      }
+      break;
+    case 'cronos':
+      switch(address.toLowerCase()) {
+        case '0xbed48612bc69fa1cab67052b42a95fb30c1bcfee': // SHIB
+          tokenPrice = await getTokenPrice('eth', '0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce', 18);
+          break;
+        case '0xb888d8dd1733d72681b30c00ee76bde93ae7aa93': // ATOM
+          tokenPrice = await getTokenPrice('bsc', '0x0eb3a705fc54725037cc9e008bdede697f62f335', 18);
+          break;
+        case '0x1a8e39ae59e5556b56b76fcba98d22c9ae557396': // DOGE
+          tokenPrice = await getTokenPrice('bsc', '0xba2ae424d960c26247dd6c32edc70b295c744c43', 8);
           break;
       }
       break;

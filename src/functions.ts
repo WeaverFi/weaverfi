@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import { chains } from './chains';
 import { projects } from './projects';
 import { getTokenPrice } from './prices';
-import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data } from './tokens';
+import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data, cronos_data } from './tokens';
 import { minABI, lpABI, aave, balancer, belt, alpaca, curve, bzx, iron, axial, mstable, cookiegame } from './ABIs';
 import type { EVMChain, Address, URL, ABI, ENSDomain, TokenData, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken } from './types';
 
@@ -92,16 +92,7 @@ export const addNativeToken = async (chain: EVMChain, rawBalance: number, owner:
   let decimals = 18;
   let balance = rawBalance / (10 ** decimals);
   let price = await getTokenPrice(chain, defaultAddress, decimals);
-  let symbol = '';
-
-  // Finding Token Symbol:
-  if(chain === 'bsc') {
-    symbol = 'BNB';
-  } else if(chain === 'poly') {
-    symbol = 'MATIC';
-  } else {
-    symbol = chain.toUpperCase();
-  }
+  let symbol = getNativeTokenSymbol(chain);
 
   // Finding Token Logo:
   let logo = getTokenLogo(chain, symbol);
@@ -122,13 +113,7 @@ export const addToken = async (chain: EVMChain, location: string, status: TokenS
 
   // Finding Token Info:
   if(address.toLowerCase() === defaultAddress) {
-    if(chain === 'bsc') {
-      symbol = 'BNB';
-    } else if(chain === 'poly') {
-      symbol = 'MATIC';
-    } else {
-      symbol = chain.toUpperCase();
-    }
+    symbol = getNativeTokenSymbol(chain);
     logo = getTokenLogo(chain, symbol);
   } else {
     let token = getTrackedTokenInfo(chain, address);
@@ -224,13 +209,7 @@ export const addDebtToken = async (chain: EVMChain, location: string, address: A
 
   // Finding Token Info:
   if(address.toLowerCase() === defaultAddress) {
-    if(chain === 'bsc') {
-      symbol = 'BNB';
-    } else if(chain === 'poly') {
-      symbol = 'MATIC';
-    } else {
-      symbol = chain.toUpperCase();
-    }
+    symbol = getNativeTokenSymbol(chain);
     logo = getTokenLogo(chain, symbol);
   } else {
     let token = getTrackedTokenInfo(chain, address);
@@ -322,6 +301,8 @@ export const getChainTokenData = (chain: EVMChain) => {
       return avax_data;
     case 'one':
       return one_data;
+    case 'cronos':
+      return cronos_data;
     default:
       return undefined;
   }
@@ -451,6 +432,21 @@ const addTrackedToken = async (chain: EVMChain, location: string, status: TokenS
   let price = await getTokenPrice(chain, address, decimals);
 
   return { type, chain, location, status, owner, symbol, address, balance, price, logo };
+}
+
+/* ========================================================================================================================================================================= */
+
+// Function to get native token symbol:
+const getNativeTokenSymbol = (chain: EVMChain) => {
+  if(chain === 'bsc') {
+    return 'BNB';
+  } else if(chain === 'poly') {
+    return 'MATIC';
+  } else if(chain === 'cronos') {
+    return 'CRO';
+  } else {
+    return chain.toUpperCase();
+  }
 }
 
 /* ========================================================================================================================================================================= */

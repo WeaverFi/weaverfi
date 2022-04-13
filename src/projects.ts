@@ -77,6 +77,7 @@ export const projects: Record<Chain, string[]> = {
    'beefy',
    'sushiswap'
   ],
+  cronos: [],
   terra: [
    'anchor'
   ]

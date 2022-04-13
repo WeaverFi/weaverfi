@@ -688,6 +688,37 @@ export const one_data: ChainTokenData = {
 
 /* ========================================================================================================================================================================= */
 
+// Cronos:
+export const cronos_data: ChainTokenData = {
+  tokens: [
+    { address: '0x97749c9B61F878a880DfE312d2594AE07AEd7656', symbol: 'MMF', logo: 'https://cronoscan.com/token/images/mmfinance_32.png', decimals: 18 },
+    { address: '0x83b2AC8642aE46FC2823Bc959fFEB3c1742c48B5', symbol: 'DARK', logo: 'https://cronoscan.com/token/images/darkcryptodark_32.png', decimals: 18 },
+    { address: '0x9D3BBb0e988D9Fb2d55d07Fe471Be2266AD9c81c', symbol: 'SKY', logo: 'https://cronoscan.com/token/images/darkcryptofinance_32.png', decimals: 18 },
+    { address: '0xE727240728C1a5f95437b8b50AFDd0EA4AE5F0c8', symbol: 'NESS', logo: 'https://cronoscan.com/token/images/darknessshare_32.png', decimals: 18 },
+    { address: '0x6582C738660bf0701f05b04DcE3c4E5Fcfcda47a', symbol: 'DUSD', logo: 'https://cronoscan.com/token/images/darknessdollar_32.png', decimals: 18 },
+    { address: '0xDD73dEa10ABC2Bff99c60882EC5b2B81Bb1Dc5B2', symbol: 'TONIC', logo: 'https://cronoscan.com/token/images/tectoniccro_32.png', decimals: 18 },
+    { address: '0xABd380327Fe66724FFDa91A87c772FB8D00bE488', symbol: 'LIQ', logo: 'https://assets.coingecko.com/coins/images/18749/small/liq.png?1635004173', decimals: 18 },
+    { address: '0xB888d8Dd1733d72681b30c00ee76BDE93ae7aa93', symbol: 'ATOM', logo: 'https://cronoscan.com/token/images/cosmos_32.png', decimals: 6 },
+    { address: '0x1a8E39ae59e5556B56b76fCBA98d22c9ae557396', symbol: 'DOGE', logo: 'https://cronoscan.com/token/images/dogecoin_32.png', decimals: 8 },
+    { address: '0xbED48612BC69fA1CaB67052b42a95FB30C1bcFee', symbol: 'SHIB', logo: 'https://cronoscan.com/token/images/shibatoken_32.png', decimals: 18 },
+    { address: '0x2D03bECE6747ADC00E1a131BBA1469C15fD11e03', symbol: 'VVS', logo: 'https://cronoscan.com/token/images/vvsfinance_32.png', decimals: 18 },
+    { address: '0xadbd1231fb360047525BEdF962581F3eee7b49fe', symbol: 'CRONA', logo: 'https://cronoscan.com/token/images/cronaswap_32.png', decimals: 18 },
+    { address: '0x66e428c3f67a68878562e79A0234c1F83c208770', symbol: 'USDT', logo: 'https://cronoscan.com/token/images/mmfinance_32.png', decimals: 6 },
+    { address: '0xc21223249CA28397B4B6541dfFaEcC539BfF0c59', symbol: 'USDC', logo: 'https://cronoscan.com/token/images/usdcbttc_32.png', decimals: 6 },
+    { address: '0x062E66477Faf219F25D27dCED647BF57C3107d52', symbol: 'WBTC', logo: 'https://cronoscan.com/token/images/wbtc_32.png', decimals: 8 },
+    { address: '0xe44Fd7fCb2b1581822D0c862B68222998a0c299a', symbol: 'WETH', logo: 'https://cronoscan.com/token/images/weth_32.png', decimals: 18 },
+    { address: '0x57d06bB1e3B60C875cD3A4445a53217F9B44d390', symbol: 'PHNX', logo: 'https://cronoscan.com/token/images/phenixfinance_32.png', decimals: 18 },
+    { address: '0xF2001B145b43032AAF5Ee2884e456CCd805F677D', symbol: 'DAI', logo: 'https://cronoscan.com/token/images/MCDDai_32.png', decimals: 18 },
+    { address: '0xe6801928061CDbE32AC5AD0634427E140EFd05F9', symbol: 'BIFI', logo: 'https://assets.coingecko.com/coins/images/12704/small/token.png?1601876182', decimals: 18 }
+  ],
+  logos: [
+    { symbol: 'CRO', logo: 'https://cronoscan.com/token/images/cryptocom_32.png' }
+  ],
+  blacklist: []
+}
+
+/* ========================================================================================================================================================================= */
+
 // Terra:
 export const terra_data: TerraChainTokenData = {
   tokens: [

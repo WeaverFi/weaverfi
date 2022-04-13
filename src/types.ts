@@ -1,8 +1,8 @@
 
 // Chain Types:
-export type Chain = 'eth' | 'bsc' | 'poly' | 'ftm' | 'avax' | 'one' | 'terra';
-export type EVMChain = 'eth' | 'bsc' | 'poly' | 'ftm' | 'avax' | 'one';
-export type ChainID = 1 | 56 | 137 | 250 | 43114 | 1666600000;
+export type Chain = 'eth' | 'bsc' | 'poly' | 'ftm' | 'avax' | 'one' | 'cronos' | 'terra';
+export type EVMChain = 'eth' | 'bsc' | 'poly' | 'ftm' | 'avax' | 'one' | 'cronos';
+export type ChainID = 1 | 56 | 137 | 250 | 43114 | 1666600000 | 25;
 
 // Address Types:
 export type Address = `0x${string}`;
@@ -172,6 +172,7 @@ export interface Chains {
     ftm: ChainData
     avax: ChainData
     one: ChainData
+    cronos: ChainData
     terra: TerraChainData
 }
 export interface ChainData {

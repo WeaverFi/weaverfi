@@ -67,6 +67,7 @@ The TERRA chain also contains the `resolveTNS(tnsDomain)` and `lookupTNS(address
 - FTM (Fantom)
 - AVAX (Avalanche)
 - ONE (Harmony)
+- CRONOS (Cronos)
 - TERRA (Terra)
 
 ---

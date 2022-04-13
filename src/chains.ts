@@ -106,6 +106,22 @@ export const chains: Chains = {
       nativeTokenID: 'harmony',
     }
   },
+  cronos: {
+    id: 25,
+    token: 'CRO',
+    wrappedToken: '0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23',
+    usdc: '0xc21223249ca28397b4b6541dffaecc539bff0c59',
+    usdcDecimals: 6,
+    inch: false,
+    paraswap: false,
+    rpcs: [
+      'https://evm.cronos.org'
+    ],
+    coingeckoIDs: {
+      chainID: 'cronos',
+      nativeTokenID: 'crypto-com-chain',
+    }
+  },
   terra: {
     token: 'LUNA',
     rpcs: [

@@ -203,6 +203,37 @@ export const WeaverFi = {
     }
   },
 
+  // Cronos Functions:
+  CRONOS: {
+    query: (address: Address, abi: ABI[], method: string, args: any[]) => {
+      return evm.query('cronos', address, abi, method, args);
+    },
+    isWallet: (address: Address) => {
+      return evm.isWallet(address);
+    },
+    getWalletBalance: (wallet: Address) => {
+      return evm.getWalletBalance('cronos', wallet);
+    },
+    getProjectBalance: (wallet: Address, project: string) => {
+      return evm.getProjectBalance('cronos', wallet, project);
+    },
+    getTokens: () => {
+      return evm.getTokens('cronos');
+    },
+    getTokenLogo: (symbol: string) => {
+      return evm.getTokenLogo('cronos', symbol);
+    },
+    getProjects: () => {
+      return projects['cronos'];
+    },
+    getTokenPrices: () => {
+      return $.getChainTokenPrices('cronos');
+    },
+    getTokenPrice: (address: Address, decimals?: number) => {
+      return $.getTokenPrice('cronos', address, decimals);
+    }
+  },
+
   // Terra Functions:
   TERRA: {
     query: (address: TerraAddress, query: any) => {
@@ -249,7 +280,7 @@ export const WeaverFi = {
 
   // Function to get a list of all tracked tokens:
   getAllTokens: () => {
-    let tokens: Record<Chain, (TokenData | TerraTokenData)[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], terra: [] };
+    let tokens: Record<Chain, (TokenData | TerraTokenData)[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [], terra: [] };
     Object.keys(tokens).forEach(stringChain => {
       let chain = stringChain as Chain;
       if(chain === 'terra') {
