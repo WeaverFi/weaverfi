@@ -28,7 +28,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get farm balances:
-const getFarmBalances = async (wallet: Address) => {
+export const getFarmBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let cakeRewards = 0;
   let poolLength = parseInt(await query(chain, registry, pancakeswap.registryABI, 'poolLength', []));
@@ -65,7 +65,7 @@ const getFarmBalances = async (wallet: Address) => {
 }
 
 // Function to get CAKE in auto-compounding pool:
-const getAutoCakePoolBalance = async (wallet: Address): Promise<Token[]> => {
+export const getAutoCakePoolBalance = async (wallet: Address): Promise<Token[]> => {
   let balance = parseInt((await query(chain, autoCakePool, pancakeswap.autoCakePoolABI, 'userInfo', [wallet]))[0]);
   if(balance > 0) {
     let multiplier = parseInt(await query(chain, autoCakePool, pancakeswap.autoCakePoolABI, 'getPricePerFullShare', [])) / (10 ** 18);

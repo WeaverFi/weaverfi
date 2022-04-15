@@ -33,7 +33,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get vault balances:
-const getVaultBalances = async (wallet: Address, vaults: BeefyAPIResponse[], apys: Record<string, number | null>) => {
+export const getVaultBalances = async (wallet: Address, vaults: BeefyAPIResponse[], apys: Record<string, number | null>) => {
   let balances: (Token | LPToken | XToken)[] = [];
   let promises = vaults.map(vault => (async () => {
     let balance = parseInt(await query(chain, vault.earnedTokenAddress, minABI, 'balanceOf', [wallet]));
@@ -121,7 +121,7 @@ const getVaultBalances = async (wallet: Address, vaults: BeefyAPIResponse[], apy
 }
 
 // Function to get staked BIFI balance:
-const getStakedBIFI = async (wallet: Address) => {
+export const getStakedBIFI = async (wallet: Address) => {
   let balances: Token[] = [];
   let balance = parseInt(await query(chain, staking, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {

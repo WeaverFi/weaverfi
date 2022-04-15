@@ -26,7 +26,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Example function (Change this to whatever you need):
-const getSomething = async (wallet: Address) => {
+export const getSomething = async (wallet: Address) => { // This function should be exported unless it is a helper function.
   let balance = parseInt(await query(chain, aaveToken, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
     let newToken = await addToken(chain, project, 'none', aaveToken, balance, wallet);

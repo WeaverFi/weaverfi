@@ -28,7 +28,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get farm balances:
-const getFarmBalances = async (wallet: Address) => {
+export const getFarmBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let sushiRewards = 0;
   let farmCount = parseInt(await query(chain, masterChef, sushiswap.masterChefABI, 'poolLength', []));
@@ -54,7 +54,7 @@ const getFarmBalances = async (wallet: Address) => {
 }
 
 // Function to get farm V2 balances:
-const getFarmV2Balances = async (wallet: Address) => {
+export const getFarmV2Balances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let sushiRewards = 0;
   let farmCount = parseInt(await query(chain, masterChefV2, sushiswap.masterChefABI, 'poolLength', []));

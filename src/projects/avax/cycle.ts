@@ -33,7 +33,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get vault balances:
-const getVaultBalances = async (wallet: Address) => {
+export const getVaultBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let vaultCount = parseInt(await query(chain, distributor, cycle.distributorABI, 'getVaultRewardsCount', []));
   let vaults = [...Array(vaultCount).keys()];
@@ -64,7 +64,7 @@ const getVaultBalances = async (wallet: Address) => {
 }
 
 // Function to get staked CYCLE balance in 'Earn' pools:
-const getStakedCYCLE = async (wallet: Address) => {
+export const getStakedCYCLE = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let promises = pools.map(pool => (async () => {
     let balance = parseInt(await query(chain, pool, minABI, 'balanceOf', [wallet]));

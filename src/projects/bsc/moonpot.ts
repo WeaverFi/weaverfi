@@ -31,7 +31,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get pot balances:
-const getPotBalances = async (wallet: Address, pots: any[]) => {
+export const getPotBalances = async (wallet: Address, pots: any[]) => {
   let balances: (Token | LPToken | XToken)[] = [];
   let promises = pots.map(pot => (async () => {
     let balance = parseInt(await query(chain, pot.contractAddress, moonpot.potABI, 'userTotalBalance', [wallet]));

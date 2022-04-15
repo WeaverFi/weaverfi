@@ -52,7 +52,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get asset balances:
-const getAssetBalances = async (wallet: Address) => {
+export const getAssetBalances = async (wallet: Address) => {
   let balances: Token[] = [];
 
   // imUSD:
@@ -109,7 +109,7 @@ const getAssetBalances = async (wallet: Address) => {
 }
 
 // Function to get pool balances:
-const getPoolBalances = async (wallet: Address) => {
+export const getPoolBalances = async (wallet: Address) => {
   let balances: Token[] = [];
   let promises = pools.map(lpToken => (async () => {
     let balance = parseInt(await query(chain, lpToken, minABI, 'balanceOf', [wallet]));
@@ -123,7 +123,7 @@ const getPoolBalances = async (wallet: Address) => {
 }
 
 // Function to get vault balances:
-const getVaultBalances = async (wallet: Address) => {
+export const getVaultBalances = async (wallet: Address) => {
   let balances: Token[] = [];
   let mtaRewards = 0;
   let promises = vaults.map(vault => (async () => {
@@ -147,7 +147,7 @@ const getVaultBalances = async (wallet: Address) => {
 }
 
 // Function to get staked balances:
-const getStaked = async (wallet: Address) => {
+export const getStaked = async (wallet: Address) => {
   let balances: (Token | LPToken | XToken)[] = [];
 
   // MTA Staking:

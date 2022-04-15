@@ -29,7 +29,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get staked XAVA balance:
-const getStakedXAVA = async (wallet: Address) => {
+export const getStakedXAVA = async (wallet: Address) => {
   let xavaBalance = 0;
   let balance = parseInt(await query(chain, staking, avalaunch.stakingABI, 'deposited', [0, wallet]));
   if(balance > 0) {
@@ -46,7 +46,7 @@ const getStakedXAVA = async (wallet: Address) => {
 }
 
 // Function to get staked LP balance:
-const getStakedLP = async (wallet: Address) => {
+export const getStakedLP = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let balance = parseInt(await query(chain, lpStaking, avalaunch.stakingABI, 'deposited', [0, wallet]));
   if(balance > 0) {

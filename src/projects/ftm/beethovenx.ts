@@ -166,7 +166,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get all pool balances:
-const getPoolBalances = async (wallet: Address) => {
+export const getPoolBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let promises = poolIDs.map(id => (async () => {
     let address = (await query(chain, vault, beethovenx.vaultABI, 'getPool', [id]))[0];
@@ -181,7 +181,7 @@ const getPoolBalances = async (wallet: Address) => {
 }
 
 // Function to get all staked pool balances:
-const getStakedBalances = async (wallet: Address) => {
+export const getStakedBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let numRewardPools = parseInt(await query(chain, masterChef, beethovenx.masterChefABI, 'poolLength', []));
   let pendingBeets = 0;

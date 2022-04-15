@@ -31,7 +31,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get lending market balances:
-const getMarketBalances = async (markets: AaveAPIResponse[], wallet: Address) => {
+export const getMarketBalances = async (markets: AaveAPIResponse[], wallet: Address) => {
   let balances: (Token | DebtToken)[] = [];
   let promises = markets.map(market => (async () => {
 
@@ -64,7 +64,7 @@ const getMarketBalances = async (markets: AaveAPIResponse[], wallet: Address) =>
 }
 
 // Function to get unclaimed incentives:
-const getIncentives = async (wallet: Address) => {
+export const getIncentives = async (wallet: Address) => {
   let rewards = parseInt(await query(chain, incentives, aave.incentivesABI, 'getUserUnclaimedRewards', [wallet]));
   if(rewards > 0) {
     let newToken = await addToken(chain, project, 'unclaimed', wavax, rewards, wallet);

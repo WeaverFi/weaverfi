@@ -28,7 +28,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get farm balances:
-const getFarmBalances = async (wallet: Address) => {
+export const getFarmBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let bananaRewards = 0;
   let farmCount = parseInt(await query(chain, masterApe, apeswap.masterApeABI, 'poolLength', []));
@@ -65,7 +65,7 @@ const getFarmBalances = async (wallet: Address) => {
 }
 
 // Function to get vault balances:
-const getVaultBalances = async (wallet: Address) => {
+export const getVaultBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let vaultCount = parseInt(await query(chain, vaultMaster, apeswap.vaultMasterABI, 'poolLength', []));
   let vaults = [...Array(vaultCount).keys()];

@@ -33,7 +33,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get market balances:
-const getMarketBalances = async (wallet: Address) => {
+export const getMarketBalances = async (wallet: Address) => {
   let balances: (Token | DebtToken)[] = [];
   let markets: any[] = await query(chain, controller, venus.controllerABI, 'getAllMarkets', []);
   let promises = markets.map(market => (async () => {
@@ -68,7 +68,7 @@ const getMarketBalances = async (wallet: Address) => {
 }
 
 // Function to get pending XVS rewards:
-const getPendingRewards = async (wallet: Address) => {
+export const getPendingRewards = async (wallet: Address) => {
   let rewards = parseInt(await query(chain, controller, venus.controllerABI, 'venusAccrued', [wallet]));
   if(rewards > 0) {
     let newToken = await addToken(chain, project, 'unclaimed', xvs, rewards, wallet);
@@ -79,7 +79,7 @@ const getPendingRewards = async (wallet: Address) => {
 }
 
 // Function to get staked VAI balance:
-const getStakedVAI = async (wallet: Address) => {
+export const getStakedVAI = async (wallet: Address) => {
   let balances: Token[] = [];
   let balance = parseInt((await query(chain, vault, venus.vaultABI, 'userInfo', [wallet])).amount);
   if(balance > 0) {
@@ -95,7 +95,7 @@ const getStakedVAI = async (wallet: Address) => {
 }
 
 // Function to get staked XVS balance:
-const getStakedXVS = async (wallet: Address) => {
+export const getStakedXVS = async (wallet: Address) => {
   let xvsBalance = 0;
   let balance = parseInt(await query(chain, xvsVault, venus.xvsVaultABI, 'getUserInfo', [xvs, 0, wallet]));
   if(balance > 0) {

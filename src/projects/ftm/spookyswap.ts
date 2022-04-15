@@ -28,7 +28,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get all pool balances:
-const getPoolBalances = async (wallet: Address) => {
+export const getPoolBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let poolCount = parseInt(await query(chain, masterChef, spookyswap.masterChefABI, 'poolLength', []));
   let poolList = [...Array(poolCount).keys()];
@@ -50,7 +50,7 @@ const getPoolBalances = async (wallet: Address) => {
 }
 
 // Function to get staked BOO:
-const getStakedBOO = async (wallet: Address) => {
+export const getStakedBOO = async (wallet: Address) => {
   let balance = parseInt(await query(chain, xboo, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
     let newToken = await addSpookyToken(chain, project, 'staked', balance, wallet);

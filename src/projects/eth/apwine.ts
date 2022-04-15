@@ -17,8 +17,8 @@ const veapw: Address = '0xC5ca1EBF6e912E49A6a70Bb0385Ea065061a4F09';
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken | XToken)[] = [];
   try {
-    balance.push(...(await getFutureBalances(wallet)));
     balance.push(...(await getStakedAPW(wallet)));
+    balance.push(...(await getFutureBalances(wallet)));
   } catch {
     console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
@@ -27,8 +27,23 @@ export const get = async (wallet: Address) => {
 
 /* ========================================================================================================================================================================= */
 
+// Function to get staked APW balance:
+export const getStakedAPW = async (wallet: Address) => {
+  let balance = parseInt(await query(chain, veapw, minABI, 'balanceOf', [wallet]));
+  if(balance > 0) {
+    let locked = await query(chain, veapw, apwine.stakingABI, 'locked', [wallet]);
+    let newToken = await addXToken(chain, project, 'staked', veapw, balance, wallet, apw, parseInt(locked.amount));
+    newToken.info = {
+      unlock: parseInt(locked.end)
+    }
+    return [newToken];
+  } else {
+    return [];
+  }
+}
+
 // Function to get future balances:
-const getFutureBalances = async (wallet: Address) => {
+export const getFutureBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let poolLength = parseInt(await query(chain, registry, apwine.registryABI, 'futureVaultCount', []));
   let futures = [...Array(poolLength).keys()];
@@ -141,6 +156,8 @@ const getFutureBalances = async (wallet: Address) => {
   return balances;
 }
 
+/* ========================================================================================================================================================================= */
+
 // Function to fetch FYT Balances for any future:
 const fetchFYTBalance = async (wallet: Address, future: Address, futureToken: Address) => {
   let balance = 0;
@@ -160,19 +177,4 @@ const fetchFYTBalance = async (wallet: Address, future: Address, futureToken: Ad
     }
   }
   return balance;
-}
-
-// Function to get staked APW balance:
-const getStakedAPW = async (wallet: Address) => {
-  let balance = parseInt(await query(chain, veapw, minABI, 'balanceOf', [wallet]));
-  if(balance > 0) {
-    let locked = await query(chain, veapw, apwine.stakingABI, 'locked', [wallet]);
-    let newToken = await addXToken(chain, project, 'staked', veapw, balance, wallet, apw, parseInt(locked.amount));
-    newToken.info = {
-      unlock: parseInt(locked.end)
-    }
-    return [newToken];
-  } else {
-    return [];
-  }
 }

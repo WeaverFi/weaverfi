@@ -25,7 +25,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get future balances:
-const getFutureBalances = async (wallet: Address) => {
+export const getFutureBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let poolLength = parseInt(await query(chain, registry, apwine.registryABI, 'futureVaultCount', []));
   let futures = [...Array(poolLength).keys()];

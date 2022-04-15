@@ -40,7 +40,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get staked BELT balance:
-const getStakedBELT = async (wallet: Address) => {
+export const getStakedBELT = async (wallet: Address) => {
   let balance = parseInt(await query(chain, stakedBelt, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
     let exchangeRate = parseInt(await query(chain, stakedBelt, belt.stakingABI, 'getPricePerFullShare', [])) / (10 ** 18);
@@ -56,7 +56,7 @@ const getStakedBELT = async (wallet: Address) => {
 }
 
 // Function to get pool balances:
-const getPoolBalances = async (wallet: Address) => {
+export const getPoolBalances = async (wallet: Address) => {
   let balances: (Token | LPToken | XToken)[] = [];
   let promises = Object.keys(pools).map(pool => (async () => {
     let balance = parseInt(await query(chain, pools[pool].token, minABI, 'balanceOf', [wallet]));
@@ -84,7 +84,7 @@ const getPoolBalances = async (wallet: Address) => {
 }
 
 // Function to get vault balances:
-const getVaultBalances = async (wallet: Address) => {
+export const getVaultBalances = async (wallet: Address) => {
   let balances: (Token | LPToken | XToken)[] = [];
   let beltRewards = 0;
   let promises = Object.keys(pools).map(pool => (async () => {

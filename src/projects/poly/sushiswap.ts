@@ -26,7 +26,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get farm balances:
-const getFarmBalances = async (wallet: Address) => {
+export const getFarmBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let sushiRewards = 0;
 

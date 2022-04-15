@@ -36,7 +36,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get farm balances:
-const getFarmBalances = async (farms: SnowballAPIResponse[], wallet: Address) => {
+export const getFarmBalances = async (farms: SnowballAPIResponse[], wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let snobRewards = 0;
   let promises = farms.map(farm => (async () => {
@@ -85,7 +85,7 @@ const getFarmBalances = async (farms: SnowballAPIResponse[], wallet: Address) =>
 }
 
 // Function to get staked SNOB balance:
-const getStakedSNOB = async (wallet: Address) => {
+export const getStakedSNOB = async (wallet: Address) => {
   let balance = parseInt(await query(chain, xsnob, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
     let locked = await query(chain, xsnob, snowball.stakingABI, 'locked', [wallet]);

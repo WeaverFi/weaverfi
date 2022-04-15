@@ -28,7 +28,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get all vault balances:
-const getVaultBalances = async (wallet: Address) => {
+export const getVaultBalances = async (wallet: Address) => {
   let balances: (Token | LPToken | XToken)[] = [];
   let autoRewards = 0;
   let poolLength = parseInt(await query(chain, registry, autofarm.registryABI, 'poolLength', []));

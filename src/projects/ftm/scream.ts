@@ -28,7 +28,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get all market balances and debt:
-const getMarketBalances = async (wallet: Address) => {
+export const getMarketBalances = async (wallet: Address) => {
   let balances: (Token | DebtToken)[] = [];
   let markets: any[] = await query(chain, controller, scream.controllerABI, 'getAllMarkets', []);
   let promises = markets.map(market => (async () => {
@@ -58,7 +58,7 @@ const getMarketBalances = async (wallet: Address) => {
 }
 
 // Function to get staked SCREAM balance:
-const getStakedSCREAM = async (wallet: Address) => {
+export const getStakedSCREAM = async (wallet: Address) => {
   let balance = parseInt(await query(chain, xscream, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
     let exchangeRate = parseInt(await query(chain, xscream, scream.stakingABI, 'getShareValue', [])) / (10 ** 18);

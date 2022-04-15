@@ -30,7 +30,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get all pool balances:
-const getPoolBalances = async (wallet: Address) => {
+export const getPoolBalances = async (wallet: Address) => {
   let balances: LPToken[] = [];
   let poolCount = parseInt(await query(chain, factory, alligator.factoryABI, 'allPairsLength', []));
   let pools = [...Array(poolCount).keys()];
@@ -47,7 +47,7 @@ const getPoolBalances = async (wallet: Address) => {
 }
 
 // Function to get all farm balances:
-const getFarmBalances = async (wallet: Address) => {
+export const getFarmBalances = async (wallet: Address) => {
   let balances: (Token | LPToken | XToken)[] = [];
   let farmCount = parseInt(await query(chain, masterChef, alligator.masterChefABI, 'poolLength', []));
   let farms = [...Array(farmCount).keys()];
@@ -83,7 +83,7 @@ const getFarmBalances = async (wallet: Address) => {
 }
 
 // Function to get staked GTR balance:
-const getStakedGTR = async (wallet: Address) => {
+export const getStakedGTR = async (wallet: Address) => {
   let balance = parseInt(await query(chain, xgtr, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
     let gtrStaked = parseInt(await query(chain, gtr, minABI, 'balanceOf', [xgtr]));

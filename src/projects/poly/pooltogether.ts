@@ -31,7 +31,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get pool balances:
-const getPoolBalances = async (wallet: Address) => {
+export const getPoolBalances = async (wallet: Address) => {
   let balances: Token[] = [];
 
   // Populating Pools Array:
@@ -79,7 +79,7 @@ const getPoolBalances = async (wallet: Address) => {
 }
 
 // Function to get V4 pool balance:
-const getPoolBalanceV4 = async (wallet: Address) => {
+export const getPoolBalanceV4 = async (wallet: Address) => {
   let balance = parseInt(await query(chain, poolV4, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
     let newToken = await addToken(chain, project, 'staked', usdc, balance, wallet);

@@ -26,7 +26,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get all pool balances:
-const getPoolBalances = async (wallet: Address) => {
+export const getPoolBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let poolCount = parseInt(await query(chain, masterChef, axial.masterChefABI, 'poolLength', []));
   let pools = [...Array(poolCount).keys()];

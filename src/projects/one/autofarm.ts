@@ -26,7 +26,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get all vault balances:
-const getVaultBalances = async (wallet: Address) => {
+export const getVaultBalances = async (wallet: Address) => {
   let balances: LPToken[] = [];
   let poolLength = parseInt(await query(chain, registry, autofarm.oneRegistryABI, 'poolLength', []));
   let vaults = [...Array(poolLength).keys()];

@@ -38,7 +38,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get all farm balances:
-const getFarmBalances = async (wallet: Address) => {
+export const getFarmBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let farmCount = parseInt(await query(chain, registry, lydia.registryABI, 'poolLength', []));
   let farms = [...Array(farmCount).keys()];
@@ -65,7 +65,7 @@ const getFarmBalances = async (wallet: Address) => {
 }
 
 // Function to get Auto LYD farm balance:
-const getAutoLYDFarmBalance = async (wallet: Address) => {
+export const getAutoLYDFarmBalance = async (wallet: Address) => {
   let shares = parseInt(await query(chain, autoLydFarm, lydia.lydFarmABI, 'sharesOf', [wallet]));
   if(shares > 0) {
     let exchangeRate = parseInt(await query(chain, autoLydFarm, lydia.lydFarmABI, 'getPricePerFullShare', [])) / (10 ** 18);
@@ -78,7 +78,7 @@ const getAutoLYDFarmBalance = async (wallet: Address) => {
 }
 
 // Function to get Maximus farm balances:
-const getMaximusFarmBalances = async (wallet: Address): Promise<(Token | LPToken)[]> => {
+export const getMaximusFarmBalances = async (wallet: Address): Promise<(Token | LPToken)[]> => {
   let balances: (Token | LPToken)[] = [];
   let promises = maximusFarms.map(farm => (async () => {
     let balance = parseInt(await query(chain, farm, minABI, 'balanceOf', [wallet]));

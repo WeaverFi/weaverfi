@@ -35,7 +35,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get lending market balances:
-const getMarketBalances = async (markets: AaveAPIResponse[], wallet: Address) => {
+export const getMarketBalances = async (markets: AaveAPIResponse[], wallet: Address) => {
   let balances: (Token | DebtToken)[] = [];
   let promises = markets.map(market => (async () => {
 
@@ -80,7 +80,7 @@ const getMarketBalances = async (markets: AaveAPIResponse[], wallet: Address) =>
 }
 
 // Function to get unclaimed incentives:
-const getIncentives = async (wallet: Address) => {
+export const getIncentives = async (wallet: Address) => {
   let rewards = parseInt(await query(chain, incentives, aave.incentivesABI, 'getUserUnclaimedRewards', [wallet]));
   if(rewards > 0) {
     let newToken = await addToken(chain, project, 'unclaimed', aaveToken, rewards, wallet);
@@ -91,7 +91,7 @@ const getIncentives = async (wallet: Address) => {
 }
 
 // Function to get staked AAVE balance:
-const getStakedAAVE = async (wallet: Address) => {
+export const getStakedAAVE = async (wallet: Address) => {
   let balance = parseInt(await query(chain, stakedAave, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
     let newToken = await addXToken(chain, project, 'staked', stakedAave, balance, wallet, aaveToken, balance);
@@ -102,7 +102,7 @@ const getStakedAAVE = async (wallet: Address) => {
 }
 
 // Function to get staked LP balance:
-const getStakedLP = async (wallet: Address) => {
+export const getStakedLP = async (wallet: Address) => {
   let balance = parseInt(await query(chain, lpStaking, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
     let tokenAddress = await query(chain, lpStaking, aave.stakingABI, 'STAKED_TOKEN', []);

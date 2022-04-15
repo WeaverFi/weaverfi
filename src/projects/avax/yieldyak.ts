@@ -34,7 +34,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get farm balances:
-const getFarmBalances = async (wallet: Address, farms: Record<Address, YieldYakAPIResponse>) => {
+export const getFarmBalances = async (wallet: Address, farms: Record<Address, YieldYakAPIResponse>) => {
   let balances: (Token | LPToken)[] = [];
   let farmAddresses = Object.keys(farms) as Address[];
   let promises = farmAddresses.map(farm => (async () => {
@@ -105,7 +105,7 @@ const getFarmBalances = async (wallet: Address, farms: Record<Address, YieldYakA
 }
 
 // Function to get staked YAK:
-const getStakedYAK = async (wallet: Address) => {
+export const getStakedYAK = async (wallet: Address) => {
   let balance = parseInt((await query(chain, staking, yieldyak.stakingABI, 'userInfo', [0, wallet])).amount);
   if(balance > 0) {
     let newToken = await addToken(chain, project, 'staked', yak, balance, wallet);

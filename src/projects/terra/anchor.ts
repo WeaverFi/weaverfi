@@ -46,7 +46,7 @@ export const get = async (wallet: TerraAddress) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get Earn aUST balance:
-const getEarnBalance = async (wallet: TerraAddress) => {
+export const getEarnBalance = async (wallet: TerraAddress) => {
   let balance = parseInt((await query(aust, { balance: { address: wallet } })).balance);
   if(balance > 0) {
     let exchangeRate = (await query(market, {state: {}})).prev_exchange_rate;
@@ -58,7 +58,7 @@ const getEarnBalance = async (wallet: TerraAddress) => {
 }
 
 // Function to get bLUNA and bETH rewards:
-const getBAssetRewards = async (wallet: TerraAddress) => {
+export const getBAssetRewards = async (wallet: TerraAddress) => {
   let ustRewards = 0;
   ustRewards += parseInt((await query(bLunaReward, { accrued_rewards: { address: wallet } })).rewards);
   ustRewards += parseInt((await query(bEthReward, { accrued_rewards: { address: wallet } })).rewards);
@@ -71,7 +71,7 @@ const getBAssetRewards = async (wallet: TerraAddress) => {
 }
 
 // Function to get borrowed token info:
-const getBorrowedTokens = async (wallet: TerraAddress) => {
+export const getBorrowedTokens = async (wallet: TerraAddress) => {
   let tokens: (NativeToken | Token | DebtToken)[] = [];
   let borrowerInfo = await query(market, { borrower_info: { borrower: wallet } });
 
@@ -103,7 +103,7 @@ const getBorrowedTokens = async (wallet: TerraAddress) => {
 }
 
 // Function to get staked ANC:
-const getAncGovTokens = async (wallet: TerraAddress) => {
+export const getAncGovTokens = async (wallet: TerraAddress) => {
   let govAncBalance = parseInt((await query(gov, { staker: { address: wallet } })).balance);
   if(govAncBalance > 0) {
     let newToken = await addToken(project, 'staked', anc, 'ANC', 6, govAncBalance, wallet);
@@ -114,7 +114,7 @@ const getAncGovTokens = async (wallet: TerraAddress) => {
 }
 
 // Function to get staked ANC-UST LP:
-const getStakedLP = async (wallet: TerraAddress) => {
+export const getStakedLP = async (wallet: TerraAddress) => {
   let tokens: (Token | LPToken)[] = [];
 
   // LP Balance:

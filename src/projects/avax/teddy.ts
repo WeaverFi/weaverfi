@@ -32,7 +32,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get trove balance:
-const getTroveBalance = async (wallet: Address) => {
+export const getTroveBalance = async (wallet: Address) => {
   let balances: (Token | DebtToken)[] = [];
   let userInfo = await query(chain, trove, teddy.troveABI, 'Troves', [wallet]);
   if(parseInt(userInfo.status) === 1) {
@@ -51,7 +51,7 @@ const getTroveBalance = async (wallet: Address) => {
 }
 
 // Function to get stability pool balance:
-const getStabilityPoolBalance = async (wallet: Address) => {
+export const getStabilityPoolBalance = async (wallet: Address) => {
   let balances: Token[] = [];
   let userInfo = await query(chain, stabilityPool, teddy.stabilityPoolABI, 'deposits', [wallet]);
   let balance = parseInt(userInfo.initialValue);
@@ -73,7 +73,7 @@ const getStabilityPoolBalance = async (wallet: Address) => {
 }
 
 // Function to get staked TEDDY balance:
-const getStakedTEDDY = async (wallet: Address) => {
+export const getStakedTEDDY = async (wallet: Address) => {
   let balances: Token[] = [];
   let balance = await query(chain, staking, teddy.stakingABI, 'stakes', [wallet]);
   if(balance > 0) {

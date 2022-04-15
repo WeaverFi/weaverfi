@@ -32,7 +32,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get all farm balances:
-const getFarmBalances = async (wallet: Address) => {
+export const getFarmBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let poolCount = parseInt(await query(chain, registry, iron.registryABI, 'poolLength', []));
   let farms = [...Array(poolCount).keys()];
@@ -65,7 +65,7 @@ const getFarmBalances = async (wallet: Address) => {
 }
 
 // Function to get all market balances and debt:
-const getMarketBalances = async (wallet: Address) => {
+export const getMarketBalances = async (wallet: Address) => {
   let balances: (Token | DebtToken)[] = [];
   let markets: any[] = await query(chain, lending, iron.lendingABI, 'getAllMarkets', []);
   let promises = markets.map(market => (async () => {
@@ -104,7 +104,7 @@ const getMarketBalances = async (wallet: Address) => {
 }
 
 // Function to get all market rewards:
-const getMarketRewards = async (wallet: Address) => {
+export const getMarketRewards = async (wallet: Address) => {
   let rewards = parseInt(await query(chain, lending, iron.lendingABI, 'rewardAccrued', [wallet]));
   if(rewards > 0) {
     let newToken = await addToken(chain, project, 'unclaimed', ice, rewards, wallet);
@@ -115,7 +115,7 @@ const getMarketRewards = async (wallet: Address) => {
 }
 
 // Function to get staked ICE balance:
-const getStakedICE = async (wallet: Address) => {
+export const getStakedICE = async (wallet: Address) => {
   let balance = parseInt(await query(chain, blueice, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
     let locked = await query(chain, blueice, iron.stakingABI, 'locked', [wallet]);

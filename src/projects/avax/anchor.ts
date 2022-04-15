@@ -28,7 +28,7 @@ export const get = async (wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 // Function to get Earn aUST balance:
-const getEarnBalance = async (wallet: Address) => {
+export const getEarnBalance = async (wallet: Address) => {
   let balance = parseInt(await query(chain, aust, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
     let exchangeRate = (await queryTerra(market, {state: {}})).prev_exchange_rate;
