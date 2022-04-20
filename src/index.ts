@@ -275,7 +275,7 @@ export const WeaverFi = {
 
   // Function to get all supported chains:
   getAllChains: () => {
-    return Object.keys(projects).map(chain => chain.toUpperCase());
+    return Object.keys(projects) as Chain[];
   },
 
   // Function to get all supported projects:
