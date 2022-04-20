@@ -21,10 +21,16 @@ Install the package using the following:
 npm i weaverfi
 ```
 
-Importing the package can be done through any one of the following methods, depending on your app's setup:
+Importing the package can be done through the following:
 
 ```
 import weaver from 'weaverfi'
+```
+
+Other options to suit different app setups:
+
+```
+import WeaverFi from 'weaverfi'
 import { WeaverFi } from 'weaverfi'
 const weaver = require('weaverfi').default
 ```
