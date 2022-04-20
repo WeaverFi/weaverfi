@@ -97,7 +97,7 @@ export const getChainTokenPrices = async (chain: Chain) => {
     missingPrices.forEach(token => {
       stringMissingPrices += ` ${token.symbol} (${token.address}),`;
     });
-    console.error(`${chain.toUpperCase()}: Missing Token Prices:${stringMissingPrices.slice(0, -1)}`);
+    console.warn(`${chain.toUpperCase()}: Missing Token Prices:${stringMissingPrices.slice(0, -1)}`);
   }
 
   // Returning Token Prices:
@@ -220,7 +220,7 @@ export const getTokenPrice = async (chain: Chain, address: Address | TerraAddres
   }
 
   // Logging Error & Returning Price 0:
-  console.error(`${chain.toUpperCase()}: Token Price Not Found - ${address}`);
+  console.warn(`${chain.toUpperCase()}: Token Price Not Found - ${address}`);
   return 0;
 }
 
@@ -387,7 +387,7 @@ export const queryTerraNativeTokenPrices = async (lunaPrice: number) => {
         timestamp: Date.now()
       });
     } catch {
-      console.error(`TERRA: Token Price Not Found - ${token.denom}`);
+      console.warn(`TERRA: Token Price Not Found - ${token.denom}`);
     }
   })());
   await Promise.all(promises);

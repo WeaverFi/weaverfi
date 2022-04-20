@@ -51,7 +51,7 @@ export const getProjectBalance = async (wallet: TerraAddress, project: string) =
     let balance = await dapp.get(wallet);
     projectBalance.push(...(balance));
   } else {
-    console.error(`Invalid Project Queried: ${project} (Chain: ${chain.toUpperCase()})`);
+    console.warn(`Invalid Project Queried: ${project} (Chain: ${chain.toUpperCase()})`);
   }
   return projectBalance;
 }

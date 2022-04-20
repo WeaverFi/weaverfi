@@ -15,8 +15,8 @@ const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 const tests = async () => {
 
   // Project Balance Tests:
-  let projectBalance = await weaver.BSC.getProjectBalance(wallet, 'moonpot');
-  console.log('🕷️ ~ projectBalance', projectBalance);
+  // let projectBalance = await weaver.BSC.getProjectBalance(wallet, 'moonpot');
+  // console.log('🕷️ ~ projectBalance', projectBalance);
 
   /* ================================================== */
   
@@ -121,6 +121,8 @@ const tests = async () => {
   /* ================================================== */
 
   // Generic Tests:
+  // let allChains = weaver.getAllChains();
+  // console.log('🕷️ ~ allChains', allChains);
   // let allProjects = weaver.getAllProjects();
   // console.log('🕷️ ~ allProjects', allProjects);
   // let allTokens = weaver.getAllTokens();
