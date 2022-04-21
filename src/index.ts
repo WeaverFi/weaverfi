@@ -16,8 +16,8 @@ export const WeaverFi = {
     query: (address: Address, abi: ABI[], method: string, args: any[]) => {
       return evm.query('eth', address, abi, method, args);
     },
-    isWallet: (address: Address) => {
-      return evm.isWallet(address);
+    isAddress: (address: Address) => {
+      return evm.isAddress(address);
     },
     getWalletBalance: (wallet: Address) => {
       return evm.getWalletBalance('eth', wallet);
@@ -53,8 +53,8 @@ export const WeaverFi = {
     query: (address: Address, abi: ABI[], method: string, args: any[]) => {
       return evm.query('bsc', address, abi, method, args);
     },
-    isWallet: (address: Address) => {
-      return evm.isWallet(address);
+    isAddress: (address: Address) => {
+      return evm.isAddress(address);
     },
     getWalletBalance: (wallet: Address) => {
       return evm.getWalletBalance('bsc', wallet);
@@ -84,8 +84,8 @@ export const WeaverFi = {
     query: (address: Address, abi: ABI[], method: string, args: any[]) => {
       return evm.query('poly', address, abi, method, args);
     },
-    isWallet: (address: Address) => {
-      return evm.isWallet(address);
+    isAddress: (address: Address) => {
+      return evm.isAddress(address);
     },
     getWalletBalance: (wallet: Address) => {
       return evm.getWalletBalance('poly', wallet);
@@ -115,8 +115,8 @@ export const WeaverFi = {
     query: (address: Address, abi: ABI[], method: string, args: any[]) => {
       return evm.query('ftm', address, abi, method, args);
     },
-    isWallet: (address: Address) => {
-      return evm.isWallet(address);
+    isAddress: (address: Address) => {
+      return evm.isAddress(address);
     },
     getWalletBalance: (wallet: Address) => {
       return evm.getWalletBalance('ftm', wallet);
@@ -146,8 +146,8 @@ export const WeaverFi = {
     query: (address: Address, abi: ABI[], method: string, args: any[]) => {
       return evm.query('avax', address, abi, method, args);
     },
-    isWallet: (address: Address) => {
-      return evm.isWallet(address);
+    isAddress: (address: Address) => {
+      return evm.isAddress(address);
     },
     getWalletBalance: (wallet: Address) => {
       return evm.getWalletBalance('avax', wallet);
@@ -177,8 +177,8 @@ export const WeaverFi = {
     query: (address: Address, abi: ABI[], method: string, args: any[]) => {
       return evm.query('one', address, abi, method, args);
     },
-    isWallet: (address: Address) => {
-      return evm.isWallet(address);
+    isAddress: (address: Address) => {
+      return evm.isAddress(address);
     },
     getWalletBalance: (wallet: Address) => {
       return evm.getWalletBalance('one', wallet);
@@ -208,8 +208,8 @@ export const WeaverFi = {
     query: (address: Address, abi: ABI[], method: string, args: any[]) => {
       return evm.query('cronos', address, abi, method, args);
     },
-    isWallet: (address: Address) => {
-      return evm.isWallet(address);
+    isAddress: (address: Address) => {
+      return evm.isAddress(address);
     },
     getWalletBalance: (wallet: Address) => {
       return evm.getWalletBalance('cronos', wallet);
@@ -239,8 +239,8 @@ export const WeaverFi = {
     query: (address: TerraAddress, query: any) => {
       return terra.query(address, query);
     },
-    isWallet: (address: TerraAddress) => {
-      return terra.isWallet(address);
+    isAddress: (address: TerraAddress) => {
+      return terra.isAddress(address);
     },
     getWalletBalance: (wallet: TerraAddress) => {
       return terra.getWalletBalance(wallet);

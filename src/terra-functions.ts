@@ -58,8 +58,8 @@ export const getProjectBalance = async (wallet: TerraAddress, project: string) =
 
 /* ========================================================================================================================================================================= */
 
-// Function to check if a hash corresponds to a valid wallet address:
-export const isWallet = (address: TerraAddress) => {
+// Function to check if a hash corresponds to a valid wallet/contract address:
+export const isAddress = (address: TerraAddress) => {
   try {
     AccPubKey.fromAccAddress(address);
     return true;

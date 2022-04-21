@@ -52,7 +52,7 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 ## Chain Methods Available
 
 - `query(address, abi, method, args)`
-- `isWallet(address)`
+- `isAddress(address)`
 - `getWalletBalance(wallet)`
 - `getProjectBalance(wallet, project)`
 - `getTokens()`

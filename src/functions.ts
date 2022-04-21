@@ -74,8 +74,8 @@ export const getProjectBalance = async (chain: EVMChain, wallet: Address, projec
 
 /* ========================================================================================================================================================================= */
 
-// Function to check if a hash corresponds to a valid wallet address:
-export const isWallet = async (address: Address) => {
+// Function to check if a hash corresponds to a valid wallet/contract address:
+export const isAddress = (address: Address) => {
   return ethers.utils.isAddress(address);
 }
 

@@ -40,22 +40,22 @@ const tests = async () => {
 
   /* ================================================== */
 
-  // Wallet Validation Tests:
-  // let ethWalletCheck = await weaver.ETH.isWallet(wallet);
+  // Address Validation Tests:
+  // let ethWalletCheck = await weaver.ETH.isAddress(wallet);
   // console.log('🕷️ ~ ethWalletCheck', ethWalletCheck);
-  // let bscWalletCheck = await weaver.BSC.isWallet(wallet);
+  // let bscWalletCheck = await weaver.BSC.isAddress(wallet);
   // console.log('🕷️ ~ bscWalletCheck', bscWalletCheck);
-  // let polyWalletCheck = await weaver.POLY.isWallet(wallet);
+  // let polyWalletCheck = await weaver.POLY.isAddress(wallet);
   // console.log('🕷️ ~ polyWalletCheck', polyWalletCheck);
-  // let ftmWalletCheck = await weaver.FTM.isWallet(wallet);
+  // let ftmWalletCheck = await weaver.FTM.isAddress(wallet);
   // console.log('🕷️ ~ ftmWalletCheck', ftmWalletCheck);
-  // let avaxWalletCheck = await weaver.AVAX.isWallet(wallet);
+  // let avaxWalletCheck = await weaver.AVAX.isAddress(wallet);
   // console.log('🕷️ ~ avaxWalletCheck', avaxWalletCheck);
-  // let oneWalletCheck = await weaver.ONE.isWallet(wallet);
+  // let oneWalletCheck = await weaver.ONE.isAddress(wallet);
   // console.log('🕷️ ~ oneWalletCheck', oneWalletCheck);
-  // let cronosWalletCheck = await weaver.CRONOS.isWallet(wallet);
+  // let cronosWalletCheck = await weaver.CRONOS.isAddress(wallet);
   // console.log('🕷️ ~ cronosWalletCheck', cronosWalletCheck);
-  // let terraWalletCheck = await weaver.TERRA.isWallet(wallet);
+  // let terraWalletCheck = await weaver.TERRA.isAddress(wallet);
   // console.log('🕷️ ~ terraWalletCheck', terraWalletCheck);
 
   /* ================================================== */
