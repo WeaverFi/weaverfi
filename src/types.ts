@@ -1,6 +1,7 @@
 
 // Chain Types:
 export type Chain = 'eth' | 'bsc' | 'poly' | 'ftm' | 'avax' | 'one' | 'cronos' | 'terra';
+export type UpperCaseChain = 'ETH' | 'BSC' | 'POLY' | 'FTM' | 'AVAX' | 'ONE' | 'CRONOS' | 'TERRA';
 export type EVMChain = 'eth' | 'bsc' | 'poly' | 'ftm' | 'avax' | 'one' | 'cronos';
 export type ChainID = 1 | 56 | 137 | 250 | 43114 | 1666600000 | 25;
 

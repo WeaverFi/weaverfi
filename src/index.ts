@@ -4,7 +4,7 @@ import * as $ from './prices';
 import * as evm from './functions';
 import * as terra from './terra-functions';
 import { projects } from './projects';
-import type { Chain, Address, TerraAddress, ENSDomain, TNSDomain, TokenData, TerraTokenData, ABI } from './types';
+import type { Chain, Address, TerraAddress, ENSDomain, TNSDomain, TokenData, TerraTokenData, ABI, UpperCaseChain } from './types';
 
 /* ========================================================================================================================================================================= */
 
@@ -275,7 +275,7 @@ export const WeaverFi = {
 
   // Function to get all supported chains:
   getAllChains: () => {
-    return Object.keys(projects) as Chain[];
+    return Object.keys(projects).map(chain => chain.toUpperCase() as UpperCaseChain);
   },
 
   // Function to get all supported projects:
