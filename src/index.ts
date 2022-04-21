@@ -260,7 +260,7 @@ export const WeaverFi = {
     getTokenPrices: () => {
       return $.getChainTokenPrices('terra');
     },
-    getTokenPrice: (address: Address, decimals?: number) => {
+    getTokenPrice: (address: Address | TerraAddress, decimals?: number) => {
       return $.getTokenPrice('terra', address, decimals);
     },
     resolveTNS: (address: TNSDomain) => {
