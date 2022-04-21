@@ -23,13 +23,13 @@ npm i weaverfi
 
 Importing the package can be done through the following:
 
-```
+```ts
 import weaver from 'weaverfi'
 ```
 
-Other options to suit different app setups:
+Other options to suit different app configurations:
 
-```
+```ts
 import WeaverFi from 'weaverfi'
 import { WeaverFi } from 'weaverfi'
 const weaver = require('weaverfi').default
@@ -75,6 +75,18 @@ The TERRA chain also contains the `resolveTNS(tnsDomain)` and `lookupTNS(address
 - ONE (Harmony)
 - CRONOS (Cronos)
 - TERRA (Terra)
+
+---
+
+## Types
+
+Any extra types used within the SDK are located in the `types.ts` file.
+
+If needed, these can be imported from `weaverfi/dist/types`. Example:
+
+```ts
+import type { ChainID, Address, Token } from 'weaverfi/dist/types';
+```
 
 ---
 
