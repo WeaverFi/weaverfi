@@ -123,6 +123,8 @@ const tests = async () => {
   // Generic Tests:
   // let allChains = weaver.getAllChains();
   // console.log('🕷️ ~ allChains', allChains);
+  // let allChainInfo = weaver.getAllChainInfo();
+  // console.log('🕷️ ~ allChainInfo', allChainInfo);
   // let allProjects = weaver.getAllProjects();
   // console.log('🕷️ ~ allProjects', allProjects);
   // let allTokens = weaver.getAllTokens();
@@ -137,13 +139,13 @@ const tests = async () => {
   /* ================================================== */
 
   // Domain Name Tests:
-  // let ensAddress = await weaver.resolveENS('ncookie.eth');
+  // let ensAddress = await weaver.ETH.resolveENS('ncookie.eth');
   // console.log('🕷️ ~ ensAddress', ensAddress);
-  // let ensDomain = await weaver.lookupENS(wallet);
+  // let ensDomain = await weaver.ETH.lookupENS(wallet);
   // console.log('🕷️ ~ ensDomain', ensDomain);
-  // let tnsAddress = await weaver.resolveTNS('ncookie.ust');
+  // let tnsAddress = await weaver.TERRA.resolveTNS('ncookie.ust');
   // console.log('🕷️ ~ tnsAddress', tnsAddress);
-  // let tnsDomain = await weaver.lookupTNS(wallet);
+  // let tnsDomain = await weaver.TERRA.lookupTNS(wallet);
   // console.log('🕷️ ~ tnsDomain', tnsDomain);
 
   /* ================================================== */

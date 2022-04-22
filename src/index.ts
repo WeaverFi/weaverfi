@@ -3,6 +3,7 @@
 import * as $ from './prices';
 import * as evm from './functions';
 import * as terra from './terra-functions';
+import { chains } from './chains';
 import { projects } from './projects';
 import type { Chain, Address, TerraAddress, ENSDomain, TNSDomain, TokenData, TerraTokenData, ABI, UpperCaseChain } from './types';
 
@@ -31,6 +32,9 @@ export const WeaverFi = {
     getTokenLogo: (symbol: string) => {
       return evm.getTokenLogo('eth', symbol);
     },
+    getInfo: () => {
+      return chains['eth'];
+    },    
     getProjects: () => {
       return projects['eth'];
     },
@@ -68,6 +72,9 @@ export const WeaverFi = {
     getTokenLogo: (symbol: string) => {
       return evm.getTokenLogo('bsc', symbol);
     },
+    getInfo: () => {
+      return chains['bsc'];
+    },    
     getProjects: () => {
       return projects['bsc'];
     },
@@ -99,6 +106,9 @@ export const WeaverFi = {
     getTokenLogo: (symbol: string) => {
       return evm.getTokenLogo('poly', symbol);
     },
+    getInfo: () => {
+      return chains['poly'];
+    },    
     getProjects: () => {
       return projects['poly'];
     },
@@ -129,6 +139,9 @@ export const WeaverFi = {
     },
     getTokenLogo: (symbol: string) => {
       return evm.getTokenLogo('ftm', symbol);
+    },
+    getInfo: () => {
+      return chains['ftm'];
     },
     getProjects: () => {
       return projects['ftm'];
@@ -161,6 +174,9 @@ export const WeaverFi = {
     getTokenLogo: (symbol: string) => {
       return evm.getTokenLogo('avax', symbol);
     },
+    getInfo: () => {
+      return chains['avax'];
+    },
     getProjects: () => {
       return projects['avax'];
     },
@@ -191,6 +207,9 @@ export const WeaverFi = {
     },
     getTokenLogo: (symbol: string) => {
       return evm.getTokenLogo('one', symbol);
+    },
+    getInfo: () => {
+      return chains['one'];
     },
     getProjects: () => {
       return projects['one'];
@@ -223,6 +242,9 @@ export const WeaverFi = {
     getTokenLogo: (symbol: string) => {
       return evm.getTokenLogo('cronos', symbol);
     },
+    getInfo: () => {
+      return chains['cronos'];
+    },
     getProjects: () => {
       return projects['cronos'];
     },
@@ -254,6 +276,9 @@ export const WeaverFi = {
     getTokenLogo: (symbol: string) => {
       return terra.getTokenLogo(symbol);
     },
+    getInfo: () => {
+      return chains['terra'];
+    },
     getProjects: () => {
       return projects['terra'];
     },
@@ -276,6 +301,11 @@ export const WeaverFi = {
   // Function to get all supported chains:
   getAllChains: () => {
     return Object.keys(projects).map(chain => chain.toUpperCase() as UpperCaseChain);
+  },
+
+  // Function to get info from all supported chains:
+  getAllChainInfo: () => {
+    return chains;
   },
 
   // Function to get all supported projects:

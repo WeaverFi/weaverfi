@@ -43,6 +43,8 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 
 ## Global Methods Available
 
+- `getAllChains()`
+- `getAllChainInfo()`
 - `getAllProjects()`
 - `getAllTokens()`
 - `getAllTokenPrices()`
@@ -57,6 +59,7 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 - `getProjectBalance(wallet, project)`
 - `getTokens()`
 - `getTokenLogo(symbol)`
+- `getInfo()`
 - `getProjects()`
 - `getTokenPrices()`
 - `getTokenPrice(address)`
