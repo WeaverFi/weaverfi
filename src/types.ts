@@ -204,11 +204,9 @@ export interface BaseChainTokenData {
 }
 export interface ChainTokenData extends BaseChainTokenData {
     tokens: TokenData[]
-    blacklist: Address[]
 }
 export interface TerraChainTokenData extends BaseChainTokenData {
     tokens: TerraTokenData[]
-    blacklist: TerraAddress[]
 }
 export interface TokenData {
     address: Address
