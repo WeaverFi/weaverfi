@@ -28,13 +28,22 @@ export const aave: Record<string, ABI[]> = {
     { constant: true, inputs: [], name: "STAKED_TOKEN", outputs: [{ name: "", type: "address" }], type: "function" }
   ],
   incentivesABI: [
-    { constant: true, inputs: [{ name: "_user", type: "address" }], name: "getUserUnclaimedRewards", outputs: [{ name: "", type: "uint256" }], type: "function" }
+    { constant: true, inputs: [{ name: "_user", type: "address" }], name: "getUserUnclaimedRewards", outputs: [{ name: "", type: "uint256" }], type: "function" },
+    { constant: true, inputs: [{ name: "assets", type: "address[]" }, { name: "user", type: "address" }, { name: "reward", type: "address" }], name: "getUserRewards", outputs: [{ name: "", type: "uint256" }], type: "function" }
   ],
   lpABI: [
     { constant: true, inputs: [], name: "bPool", outputs: [{ name: "", type: "address" }], type: "function" }
   ],
   lendingABI: [
     { constant: true, inputs: [], name: "UNDERLYING_ASSET_ADDRESS", outputs: [{ name: "", type: "address" }], type: "function" }
+  ],
+  uiDataProviderABI: [
+    { constant: true, inputs: [{ name: "provider", type: "address" }], name: "getReservesList", outputs: [{ name: "", type: "address[]" }], type: "function" }
+  ],
+  dataProviderABI: [
+    { constant: true, inputs: [{ name: "asset", type: "address" }, { name: "user", type: "address" }], name: "getUserReserveData", outputs: [{ name: "currentATokenBalance", type: "uint256" }, { name: "currentStableDebt", type: "uint256" }, { name: "currentVariableDebt", type: "uint256" }, { name: "principalStableDebt", type: "uint256" }, { name: "scaledVariableDebt", type: "uint256" }, { name: "stableBorrowRate", type: "uint256" }, { name: "liquidityRate", type: "uint256" }], type: "function" },
+    { constant: true, inputs: [{ name: "asset", type: "address" }], name: "getReserveData", outputs: [{ name: "unbacked", type: "uint256" }, { name: "accruedToTreasuryScaled", type: "uint256" }, { name: "totalAToken", type: "uint256" }, { name: "totalStableDebt", type: "uint256" }, { name: "totalVariableDebt", type: "uint256" }, { name: "liquidityRate", type: "uint256" }, { name: "variableBorrowRate", type: "uint256" }, { name: "stableBorrowRate", type: "uint256" }], type: "function" },
+    { constant: true, inputs: [{ name: "asset", type: "address" }], name: "getReserveTokensAddresses", outputs: [{ name: "aTokenAddress", type: "address" }, { name: "stableDebtTokenAddress", type: "address" }, { name: "variableDebtTokenAddress", type: "address" }], type: "function" }
   ]
 }
 
@@ -604,17 +613,6 @@ export const avalaunch: Record<string, ABI[]> = {
   stakingABI: [
     { constant: true, inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], name: "deposited", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], name: "pending", outputs: [{ name: "", type: "uint256" }], type: "function" }
-  ]
-}
-
-// Cookie Game ABIs:
-export const cookiegame: Record<string, ABI[]> = {
-  bakeryABI: [
-    { constant: true, inputs: [{ name: "_owner", type: "address" }, { name: "_offset", type: "uint256" }, { name: "_maxSize", type: "uint256" }], name: "batchedStakesOfOwner", outputs: [{ type: "tuple[]", components: [{ name: "", type: "uint256" }, { name: "", type: "uint256" }, { name: "", type: "uint256" }] }], type: "function" },
-    { constant: true, inputs: [{ name: "_tokenIds", type: "uint256[]" }], name: "getCookiesAccruedForMany", outputs: [{ name: "", type: "uint256[]" }], type: "function" }
-  ],
-  exchangeABI: [
-    { constant: true, inputs: [], name: "price", outputs: [{ name: "", type: "uint256" }], type: "function" }
   ]
 }
 

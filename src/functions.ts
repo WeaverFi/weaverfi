@@ -5,7 +5,7 @@ import { chains } from './chains';
 import { projects } from './projects';
 import { getTokenPrice } from './prices';
 import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data, cronos_data } from './tokens';
-import { minABI, lpABI, aave, balancer, belt, alpaca, curve, bzx, iron, axial, mstable, cookiegame } from './ABIs';
+import { minABI, lpABI, aave, balancer, belt, alpaca, curve, bzx, iron, axial, mstable } from './ABIs';
 import type { EVMChain, Address, URL, ABI, ENSDomain, TokenData, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken } from './types';
 
 // Initializations:
