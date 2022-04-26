@@ -97,4 +97,4 @@ import type { ChainID, Address, Token } from 'weaverfi/dist/types';
 
 Contribution guidelines can be found [here](CONTRIBUTING.md).
 
-[logo]: https://github.com/CookieTrack-io/weaverfi/blob/master/favicon.svg "WeaverFi"
+[logo]: /favicon.ico "WeaverFi"
