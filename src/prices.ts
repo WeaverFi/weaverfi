@@ -399,9 +399,11 @@ export const queryTerraNativeTokenPrices = async (lunaPrice: number) => {
 export const updatePrices = (chain: Chain, priceData: TokenPriceData) => {
   let foundPrice = prices[chain].findIndex(token => token.address == priceData.address);
   if(foundPrice != -1) {
-    prices[chain][foundPrice].price = priceData.price;
-    prices[chain][foundPrice].source = priceData.source;
-    prices[chain][foundPrice].timestamp = priceData.timestamp;
+    if(priceData.timestamp > prices[chain][foundPrice].timestamp) {
+      prices[chain][foundPrice].price = priceData.price;
+      prices[chain][foundPrice].source = priceData.source;
+      prices[chain][foundPrice].timestamp = priceData.timestamp;
+    }
   } else {
     if(!priceData.symbol) {
       let foundToken: TokenData | TerraTokenData | undefined;
