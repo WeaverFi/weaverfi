@@ -5,7 +5,7 @@ import * as evm from './functions';
 import * as terra from './terra-functions';
 import { chains } from './chains';
 import { projects } from './projects';
-import type { Chain, Address, TerraAddress, ENSDomain, TNSDomain, TokenData, TerraTokenData, ABI, UpperCaseChain } from './types';
+import type { Chain, Address, TerraAddress, ENSDomain, TNSDomain, TokenData, TerraTokenData, TokenPriceData, ABI, UpperCaseChain } from './types';
 
 /* ========================================================================================================================================================================= */
 
@@ -43,6 +43,9 @@ export const WeaverFi = {
     },
     getTokenPrice: (address: Address, decimals?: number) => {
       return $.getTokenPrice('eth', address, decimals);
+    },
+    updateTokenPrice: (priceData: TokenPriceData) => {
+      return $.updatePrices('eth', priceData);
     },
     resolveENS: (address: ENSDomain) => {
       return evm.resolveENS(address);
@@ -83,6 +86,9 @@ export const WeaverFi = {
     },
     getTokenPrice: (address: Address, decimals?: number) => {
       return $.getTokenPrice('bsc', address, decimals);
+    },
+    updateTokenPrice: (priceData: TokenPriceData) => {
+      return $.updatePrices('bsc', priceData);
     }
   },
 
@@ -117,6 +123,9 @@ export const WeaverFi = {
     },
     getTokenPrice: (address: Address, decimals?: number) => {
       return $.getTokenPrice('poly', address, decimals);
+    },
+    updateTokenPrice: (priceData: TokenPriceData) => {
+      return $.updatePrices('poly', priceData);
     }
   },
 
@@ -151,6 +160,9 @@ export const WeaverFi = {
     },
     getTokenPrice: (address: Address, decimals?: number) => {
       return $.getTokenPrice('ftm', address, decimals);
+    },
+    updateTokenPrice: (priceData: TokenPriceData) => {
+      return $.updatePrices('ftm', priceData);
     }
   },
 
@@ -185,6 +197,9 @@ export const WeaverFi = {
     },
     getTokenPrice: (address: Address, decimals?: number) => {
       return $.getTokenPrice('avax', address, decimals);
+    },
+    updateTokenPrice: (priceData: TokenPriceData) => {
+      return $.updatePrices('avax', priceData);
     }
   },
 
@@ -219,6 +234,9 @@ export const WeaverFi = {
     },
     getTokenPrice: (address: Address, decimals?: number) => {
       return $.getTokenPrice('one', address, decimals);
+    },
+    updateTokenPrice: (priceData: TokenPriceData) => {
+      return $.updatePrices('one', priceData);
     }
   },
 
@@ -253,6 +271,9 @@ export const WeaverFi = {
     },
     getTokenPrice: (address: Address, decimals?: number) => {
       return $.getTokenPrice('cronos', address, decimals);
+    },
+    updateTokenPrice: (priceData: TokenPriceData) => {
+      return $.updatePrices('cronos', priceData);
     }
   },
 
@@ -287,6 +308,9 @@ export const WeaverFi = {
     },
     getTokenPrice: (address: Address | TerraAddress, decimals?: number) => {
       return $.getTokenPrice('terra', address, decimals);
+    },
+    updateTokenPrice: (priceData: TokenPriceData) => {
+      return $.updatePrices('terra', priceData);
     },
     resolveTNS: (address: TNSDomain) => {
       return terra.resolveTNS(address);

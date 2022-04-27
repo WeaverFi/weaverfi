@@ -63,6 +63,7 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 - `getProjects()`
 - `getTokenPrices()`
 - `getTokenPrice(address)`
+- `updateTokenPrice(priceData)`
 
 The ETH chain also contains the `resolveENS(ensDomain)` and `lookupENS(address)` methods.
 
