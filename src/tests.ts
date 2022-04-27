@@ -15,8 +15,8 @@ const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 const tests = async () => {
 
   // Project Balance Tests:
-  let projectBalance = await weaver.FTM.getProjectBalance(wallet, 'aave');
-  console.log('🕷️ ~ projectBalance', projectBalance);
+  // let projectBalance = await weaver.FTM.getProjectBalance(wallet, 'aave');
+  // console.log('🕷️ ~ projectBalance', projectBalance);
 
   /* ================================================== */
   

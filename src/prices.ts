@@ -430,14 +430,14 @@ export const updatePrices = (chain: Chain, priceData: TokenPriceData) => {
 const redirectTokenPriceFeed = async (chain: Chain, address: Address | TerraAddress) => {
 
   // Initializations:
-  let tokenPrice = 0;
+  let proxyToken: { chain: Chain, address: Address | TerraAddress, decimals?: number } | undefined = undefined;
 
   // Redirecting Price Feed:
   switch(chain) {
     case 'eth':
       switch(address.toLowerCase()) {
         case '0x799a4202c12ca952cb311598a024c80ed371a41e': // ONE
-          tokenPrice = await getTokenPrice('one', defaultAddress, 18);
+          proxyToken = { chain: 'one', address: defaultAddress, decimals: 18 };
           break;
       }
       break;
@@ -449,14 +449,14 @@ const redirectTokenPriceFeed = async (chain: Chain, address: Address | TerraAddr
     case 'poly':
       switch(address.toLowerCase()) {
         case '0x3ba4c387f786bfee076a58914f5bd38d668b42c3': // BNB
-          tokenPrice = await getTokenPrice('bsc', defaultAddress, 18);
+          proxyToken = { chain: 'bsc', address: defaultAddress, decimals: 18 };
           break;
       }
       break;
     case 'ftm':
       switch(address.toLowerCase()) {
         case '0x3d8f1accee8e263f837138829b6c4517473d0688': // fWINGS
-          tokenPrice = await getTokenPrice('bsc', '0x0487b824c8261462f88940f97053e65bdb498446', 18);
+          proxyToken = { chain: 'bsc', address: '0x0487b824c8261462f88940f97053e65bdb498446', decimals: 18 };
           break;
       }
       break;
@@ -468,29 +468,29 @@ const redirectTokenPriceFeed = async (chain: Chain, address: Address | TerraAddr
     case 'one':
       switch(address.toLowerCase()) {
         case '0x95ce547d730519a90def30d647f37d9e5359b6ae': // LUNA
-          tokenPrice = await getTokenPrice('terra', defaultAddress);
+          proxyToken = { chain: 'terra', address: defaultAddress };
           break;
         case '0x7a791e76bf4d4f3b9b492abb74e5108180be6b5a': // 1LINK
-          tokenPrice = await getTokenPrice('eth', '0x514910771af9ca656af840dff83e8264ecf986ca', 18);
+          proxyToken = { chain: 'eth', address: '0x514910771af9ca656af840dff83e8264ecf986ca', decimals: 18 };
           break;
         case '0x352cd428efd6f31b5cae636928b7b84149cf369f': // 1CRV
-          tokenPrice = await getTokenPrice('eth', '0xd533a949740bb3306d119cc777fa900ba034cd52', 18);
+          proxyToken = { chain: 'eth', address: '0xd533a949740bb3306d119cc777fa900ba034cd52', decimals: 18 };
           break;
         case '0xeb6c08ccb4421b6088e581ce04fcfbed15893ac3': // 1FRAX
-          tokenPrice = await getTokenPrice('eth', '0x853d955acef822db058eb8505911ed77f175b99e', 18);
+          proxyToken = { chain: 'eth', address: '0x853d955acef822db058eb8505911ed77f175b99e', decimals: 18 };
           break;
       }
       break;
     case 'cronos':
       switch(address.toLowerCase()) {
         case '0xbed48612bc69fa1cab67052b42a95fb30c1bcfee': // SHIB
-          tokenPrice = await getTokenPrice('eth', '0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce', 18);
+          proxyToken = { chain: 'eth', address: '0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce', decimals: 18 };
           break;
         case '0xb888d8dd1733d72681b30c00ee76bde93ae7aa93': // ATOM
-          tokenPrice = await getTokenPrice('bsc', '0x0eb3a705fc54725037cc9e008bdede697f62f335', 18);
+          proxyToken = { chain: 'bsc', address: '0x0eb3a705fc54725037cc9e008bdede697f62f335', decimals: 18 };
           break;
         case '0x1a8e39ae59e5556b56b76fcba98d22c9ae557396': // DOGE
-          tokenPrice = await getTokenPrice('bsc', '0xba2ae424d960c26247dd6c32edc70b295c744c43', 8);
+          proxyToken = { chain: 'bsc', address: '0xba2ae424d960c26247dd6c32edc70b295c744c43', decimals: 8 };
           break;
       }
       break;
@@ -501,14 +501,18 @@ const redirectTokenPriceFeed = async (chain: Chain, address: Address | TerraAddr
       break;
   }
 
-  // Updating Token Price:
-  if(tokenPrice) {
-    updatePrices(chain, {
-      symbol: null,
-      address: address.toLowerCase() as Address | TerraAddress,
-      price: tokenPrice,
-      source: 'proxy',
-      timestamp: Date.now()
-    });
+  // Fetching Proxy Token Price & Updating Token Price:
+  if(proxyToken) {
+    let tokenPrice = await getTokenPrice(proxyToken.chain, proxyToken.address, proxyToken.decimals);
+    let proxyTokenData = checkTokenPrice(proxyToken.chain, proxyToken.address);
+    if(proxyTokenData) {
+      updatePrices(chain, {
+        symbol: null,
+        address: address.toLowerCase() as Address | TerraAddress,
+        price: tokenPrice,
+        source: proxyTokenData.source,
+        timestamp: Date.now()
+      });
+    }
   }
 }
