@@ -8,7 +8,7 @@ import { Coin, LCDClient } from '@terra-money/terra.js';
 import type { Address, TerraAddress, Chain, EVMChain, TokenPriceData, TokenData, TerraTokenData } from './types';
 
 // Initializations:
-const maxPriceAge = 900000; // 15 Minutes
+const maxPriceAge = 60000 * 20; // 20 Minutes
 const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 // Terra Connection:
@@ -152,10 +152,11 @@ export const getTokenPrice = async (chain: Chain, address: Address | TerraAddres
 
   // Initializations:
   let priceFound = false;
+  let maxTime = Date.now() - maxPriceAge;
 
   // Checking Prices Array For Recent Data:
   let token = checkTokenPrice(chain, address);
-  if(token && (Date.now() - token.timestamp) < maxPriceAge) {
+  if(token && maxTime < token.timestamp) {
     priceFound = true;
     return token.price;
   }
@@ -173,7 +174,7 @@ export const getTokenPrice = async (chain: Chain, address: Address | TerraAddres
       }
     }
     let token = checkTokenPrice(chain, address);
-    if(token && (Date.now() - token.timestamp) < maxPriceAge) {
+    if(token && maxTime < token.timestamp) {
       priceFound = true;
       return token.price;
     }
@@ -183,7 +184,7 @@ export const getTokenPrice = async (chain: Chain, address: Address | TerraAddres
   if(!priceFound) {
     await queryCoinGeckoPrices(chain, [address]);
     let token = checkTokenPrice(chain, address);
-    if(token && (Date.now() - token.timestamp) < maxPriceAge) {
+    if(token && maxTime < token.timestamp) {
       priceFound = true;
       return token.price;
     }
@@ -193,7 +194,7 @@ export const getTokenPrice = async (chain: Chain, address: Address | TerraAddres
   if(chain != 'terra' && chains[chain].inch && decimals && !priceFound) {
     await query1InchPrice(chain, address as Address, decimals);
     let token = checkTokenPrice(chain, address);
-    if(token && (Date.now() - token.timestamp) < maxPriceAge) {
+    if(token && maxTime < token.timestamp) {
       priceFound = true;
       return token.price;
     }
@@ -203,7 +204,7 @@ export const getTokenPrice = async (chain: Chain, address: Address | TerraAddres
   if(chain != 'terra' && chains[chain].paraswap && decimals && !priceFound) {
     await queryParaSwapPrice(chain, address as Address, decimals);
     let token = checkTokenPrice(chain, address);
-    if(token && (Date.now() - token.timestamp) < maxPriceAge) {
+    if(token && maxTime < token.timestamp) {
       priceFound = true;
       return token.price;
     }
@@ -213,7 +214,7 @@ export const getTokenPrice = async (chain: Chain, address: Address | TerraAddres
   if(!priceFound) {
     await redirectTokenPriceFeed(chain, address);
     let token = checkTokenPrice(chain, address);
-    if(token && (Date.now() - token.timestamp) < maxPriceAge) {
+    if(token && maxTime < token.timestamp) {
       priceFound = true;
       return token.price;
     }
