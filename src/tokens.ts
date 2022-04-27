@@ -306,7 +306,6 @@ export const poly_data: ChainTokenData = {
     { address: '0xdf7837de1f2fa4631d716cf2502f8b230f1dcc32', symbol: 'TEL', logo: 'https://polygonscan.com/token/images/telcoin_28.png', decimals: 2 },
     { address: '0x41b3966b4ff7b427969ddf5da3627d6aeae9a48e', symbol: 'NEXO', logo: 'https://polygonscan.com/token/images/nexo_32.png', decimals: 18 },
     { address: '0x6f3b3286fd86d8b47ec737ceb3d0d354cc657b3e', symbol: 'PAX', logo: 'https://polygonscan.com/token/images/paxos_28_2.png', decimals: 18 },
-    { address: '0xc9c1c1c20b3658f8787cc2fd702267791f224ce1', symbol: 'FTM', logo: 'https://polygonscan.com/token/images/fantomtoken_32.png', decimals: 18 },
     { address: '0x172370d5cd63279efa6d502dab29171933a610af', symbol: 'CRV', logo: 'https://polygonscan.com/token/images/curvefi-crv_32.png', decimals: 18 },
     { address: '0x9c2c5fd7b07e95ee044ddeba0e97a665f142394f', symbol: '1INCH', logo: 'https://polygonscan.com/token/images/1inch_32.png', decimals: 18 },
     { address: '0x7f426F6Dc648e50464a0392E60E1BB465a67E9cf', symbol: 'pAUTO,', logo: 'https://polygonscan.com/token/images/pauto_32.png', decimals: 18 },
@@ -371,7 +370,9 @@ export const poly_data: ChainTokenData = {
     { symbol: 'APE-LP', logo: 'https://bscscan.com/token/images/apeswap_32.png' },
     { symbol: 'THETA', logo: 'https://polygonscan.com/token/images/theta_28.png' },
     { symbol: 'ENJ', logo: 'https://polygonscan.com/token/images/enjin_28_2.png' },
-    { symbol: 'EURT', logo: 'https://assets.coingecko.com/coins/images/17385/small/Tether_full_logo_dm.png?1627537298' }
+    { symbol: 'EURT', logo: 'https://assets.coingecko.com/coins/images/17385/small/Tether_full_logo_dm.png?1627537298' },
+    { symbol: 'FTM', logo: 'https://polygonscan.com/token/images/fantomtoken_32.png' }
+
   ]
 }
 
@@ -507,7 +508,6 @@ export const avax_data: ChainTokenData = {
     { address: '0x783c08b5f26e3daf8c4681f3bf49844e425b6393', symbol: 'AUSD', logo: 'https://assets.coingecko.com/coins/images/21328/small/ausd.png?1638946188', decimals: 18 },
     { address: '0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e', symbol: 'USDC', logo: 'https://snowtrace.io/token/images/usdc_32.png', decimals: 6 },
     { address: '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7', symbol: 'USDT', logo: 'https://snowtrace.io/token/images/tether_32.png', decimals: 18 },
-    { address: '0x43c812ba28cb061b1be7514145a15c9e18a27342', symbol: 'GTR', logo: 'https://snowtrace.io/token/images/alligatorexchange2_32.png', decimals: 18 },
     { address: '0x22d4002028f537599bE9f666d1c4Fa138522f9c8', symbol: 'PTP', logo: 'https://snowtrace.io/token/images/platypusfinance_32.png', decimals: 18 },
     { address: '0x1C20E891Bab6b1727d14Da358FAe2984Ed9B59EB', symbol: 'TUSD', logo: 'https://snowtrace.io/token/images/trueusd_32.png', decimals: 18 },
     { address: '0x1ECd47FF4d9598f89721A2866BFEb99505a413Ed', symbol: 'AVME', logo: 'https://snowtrace.io/token/images/avmeavax_32.png', decimals: 18 },
@@ -558,7 +558,9 @@ export const avax_data: ChainTokenData = {
     { symbol: 'ETH', logo: 'https://snowtrace.io/token/images/ethereum_32.png' },
     { symbol: 'YRT', logo: 'https://snowtrace.io/token/images/yieldyak_32.png' },
     { symbol: 'aUST', logo: 'https://snowtrace.io/token/images/wormholeust_32.png' },
-    { symbol: 'xSNOB', logo: 'https://snowtrace.io/token/images/snowball_32.png' }
+    { symbol: 'xSNOB', logo: 'https://snowtrace.io/token/images/snowball_32.png' },
+    { symbol: 'GTR', logo: 'https://snowtrace.io/token/images/alligatorexchange2_32.png' }
+
   ]
 }
 
