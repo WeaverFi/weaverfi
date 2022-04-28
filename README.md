@@ -5,6 +5,7 @@ The NPM package to query DeFi.
 
 ![CodeQL](https://github.com/CookieTrack-io/weaverfi/actions/workflows/codeql-analysis.yml/badge.svg)
 ![Version](https://img.shields.io/github/package-json/v/CookieTrack-io/weaverfi)
+![Downloads](https://img.shields.io/npm/dw/weaverfi)
 
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
