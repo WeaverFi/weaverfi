@@ -238,7 +238,15 @@ export const bsc_data: ChainTokenData = {
     { address: '0x7979F6C54ebA05E18Ded44C4F986F49a5De551c2', symbol: 'KEBAB', logo: 'https://bscscan.com/token/images/kebabfinance_32.png', decimals: 18 },
     { address: '0xB0B924C4a31b7d4581a7F78F57ceE1E65736Be1D', symbol: 'HAPPY', logo: 'https://bscscan.com/token/images/happycoin_32.png', decimals: 9 },
     { address: '0x009cF7bC57584b7998236eff51b98A168DceA9B0', symbol: 'SYRUP', logo: 'https://bscscan.com/token/images/syrup_32.png?=v1', decimals: 18 },
-    { address: '0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5', symbol: 'PSP', logo: 'https://bscscan.com/token/images/paraswaptoken_32.png', decimals: 18 }
+    { address: '0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5', symbol: 'PSP', logo: 'https://bscscan.com/token/images/paraswaptoken_32.png', decimals: 18 },
+    { address: '0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5', symbol: 'PSP', logo: 'https://bscscan.com/token/images/paraswaptoken_32.png', decimals: 18 },
+    { address: '0x4e3cABD3AD77420FF9031d19899594041C420aeE', symbol: 'TITANO', logo: 'https://bscscan.com/token/images/titanofinance_32.png', decimals: 18 },
+    { address: '0x84952dd90cdC57170b13D2291A8afCEdC8F97c71', symbol: 'SAFTI', logo: 'https://assets.coingecko.com/coins/images/24535/small/vHQ6BpuO_400x400.jpg?1648050874', decimals: 5 },
+    { address: '0x26d3163b165BE95137CEe97241E716b2791a7572', symbol: 'DSHARE', logo: 'https://bscscan.com/token/images/dibsmoney_32.png', decimals: 18 },
+    { address: '0xfd81ef21ea7cf1dc00e9c6dd261b4f3be0341d5c', symbol: 'DIBS', logo: 'https://assets.coingecko.com/coins/images/22184/small/Group_764_4.png?1641182000', decimals: 18 },
+    { address: '0x1c6bc8e962427deb4106ae06a7fa2d715687395c', symbol: 'CHARGE', logo: 'https://assets.coingecko.com/coins/images/21405/small/afuIh6o9_400x400.jpg?1639087246', decimals: 18 },
+    { address: '0x7deb9906bd1d77b410a56e5c23c36340bd60c983', symbol: 'STATIC', logo: 'https://assets.coingecko.com/coins/images/21404/small/1_Ve6PPOEmEu1LRjg5loJkkQ.png?1639087027', decimals: 18 },
+    { address: '0xBf37f781473f3b50E82C668352984865eac9853f', symbol: 'MILK', logo: 'https://bscscan.com/token/images/thecryptoyou-milk_32.png', decimals: 18 }
   ],
   logos: [
     { symbol: 'BNB', logo: 'https://etherscan.io/token/images/bnb_28_2.png' },
