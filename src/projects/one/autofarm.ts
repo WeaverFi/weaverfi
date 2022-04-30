@@ -1,7 +1,8 @@
 
 // Imports:
 import { autofarm } from '../../ABIs';
-import { query, addLPToken } from '../../functions';
+import { ContractCallContext } from 'ethereum-multicall';
+import { query, multicallQuery, addLPToken, parseBN } from '../../functions';
 import type { Chain, Address, LPToken } from '../../types';
 
 // Initializations:
@@ -30,9 +31,28 @@ export const getVaultBalances = async (wallet: Address) => {
   let balances: LPToken[] = [];
   let poolLength = parseInt(await query(chain, registry, autofarm.oneRegistryABI, 'poolLength', []));
   let vaults = [...Array(poolLength).keys()];
-  let promises = vaults.map(vaultID => (async () => {
+
+  // Multicall Query Setup:
+  let queries: ContractCallContext[] = [];
+  let balanceQuery: ContractCallContext = {
+    reference: 'userInfo',
+    contractAddress: registry,
+    abi: autofarm.oneRegistryABI,
+    calls: []
+  }
+  vaults.forEach(vaultID => {
     if(!ignoredVaults.includes(vaultID)) {
-      let balance = parseInt(await query(chain, registry, autofarm.oneRegistryABI, 'userInfo', [vaultID, wallet]));
+      balanceQuery.calls.push({ reference: vaultID.toString(), methodName: 'userInfo', methodParameters: [vaultID, wallet] });
+    }
+  });
+  queries.push(balanceQuery);
+
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
+  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
+    if(result.success) {
+      let vaultID = parseInt(result.reference);
+      let balance = parseBN(result.returnValues[0]);
       if(balance > 99) {
         let lpToken = await query(chain, registry, autofarm.oneRegistryABI, 'lpToken', [vaultID]);
         let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);

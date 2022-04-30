@@ -6,7 +6,7 @@ import { minABI } from './ABIs';
 import type { Address, TerraAddress } from './types';
 
 // Initializations:
-const wallet: Address | TerraAddress = '0xd537c1e6EA50C257A0aF2cCc0c366D54a0DbFBD3';
+const wallet: Address | TerraAddress = '0x74c1de161d6bf16672c90da43d8e1208895f25f5';
 const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
@@ -15,7 +15,7 @@ const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 const tests = async () => {
 
   // Project Balance Tests:
-  let projectBalance = await weaver.AVAX.getProjectBalance(wallet, 'alligator');
+  let projectBalance = await weaver.POLY.getProjectBalance(wallet, 'autofarm');
   console.log('🕷️ ~ projectBalance', projectBalance);
 
   /* ================================================== */

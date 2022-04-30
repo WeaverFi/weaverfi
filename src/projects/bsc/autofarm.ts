@@ -1,7 +1,8 @@
 
 // Imports:
 import { minABI, autofarm } from '../../ABIs';
-import { query, addToken, addLPToken, add4BeltToken, addBeltToken, addAlpacaToken } from '../../functions';
+import { ContractCallContext } from 'ethereum-multicall';
+import { query, multicallQuery, addToken, addLPToken, add4BeltToken, addBeltToken, addAlpacaToken, parseBN } from '../../functions';
 import type { Chain, Address, Token, LPToken, XToken } from '../../types';
 
 // Initializations:
@@ -19,6 +20,7 @@ export const get = async (wallet: Address) => {
   let balance: (Token | LPToken | XToken)[] = [];
   try {
     balance.push(...(await getVaultBalances(wallet)));
+    balance.push(...(await getAutoVaultBalance(wallet)));
   } catch {
     console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
   }
@@ -30,22 +32,31 @@ export const get = async (wallet: Address) => {
 // Function to get all vault balances:
 export const getVaultBalances = async (wallet: Address) => {
   let balances: (Token | LPToken | XToken)[] = [];
-  let autoRewards = 0;
   let poolLength = parseInt(await query(chain, registry, autofarm.registryABI, 'poolLength', []));
   let vaults = [...Array(poolLength).keys()];
-  let promises = vaults.map(vaultID => (async () => {
+  let autoRewards = 0;
 
-    // AUTO Vault:
-    if(vaultID === 0) {
-      let balance = parseInt(await query(chain, autoVault, autofarm.registryABI, 'stakedWantTokens', [0, wallet]));
-      if(balance > 300000000000) {
-        let newToken = await addToken(chain, project, 'staked', auto, balance, wallet);
-        balances.push(newToken);
-      }
-    
-    // All Other Vaults:
-    } else if(!ignoredVaults.includes(vaultID)) {
-      let balance = parseInt(await query(chain, registry, autofarm.registryABI, 'stakedWantTokens', [vaultID, wallet]));
+  // Multicall Query Setup:
+  let queries: ContractCallContext[] = [];
+  let balanceQuery: ContractCallContext = {
+    reference: 'stakedWantTokens',
+    contractAddress: registry,
+    abi: autofarm.registryABI,
+    calls: []
+  }
+  vaults.forEach(vaultID => {
+    if(vaultID != 0 && !ignoredVaults.includes(vaultID)) {
+      balanceQuery.calls.push({ reference: vaultID.toString(), methodName: 'stakedWantTokens', methodParameters: [vaultID, wallet] });
+    }
+  });
+  queries.push(balanceQuery);
+
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
+  let promises = multicallResults['stakedWantTokens'].callsReturnContext.map(result => (async () => {
+    if(result.success) {
+      let vaultID = parseInt(result.reference);
+      let balance = parseBN(result.returnValues[0]);
       if(balance > 99) {
         let token = (await query(chain, registry, autofarm.registryABI, 'poolInfo', [vaultID]))[0];
         let symbol = await query(chain, token, minABI, 'symbol', []);
@@ -90,4 +101,15 @@ export const getVaultBalances = async (wallet: Address) => {
     balances.push(newToken);
   }
   return balances;
+}
+
+// Function to get AUTO vault balance:
+export const getAutoVaultBalance = async (wallet: Address) => {
+  let balance = parseInt(await query(chain, autoVault, autofarm.registryABI, 'stakedWantTokens', [0, wallet]));
+  if(balance > 300000000000) {
+    let newToken = await addToken(chain, project, 'staked', auto, balance, wallet);
+    return [newToken];
+  } else {
+    return [];
+  }
 }

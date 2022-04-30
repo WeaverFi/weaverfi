@@ -106,9 +106,9 @@ export const getFarmBalances = async (wallet: Address) => {
   let multicallResults = (await multicallQuery(chain, queries)).results;
   let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
     if(result.success) {
+      let farmID = parseInt(result.reference);
       let balance = parseBN(result.returnValues[0]);
       if(balance > 0) {
-        let farmID = result.reference;
         let token = (await query(chain, masterChef, alligator.masterChefABI, 'poolInfo', [farmID])).lpToken;
         let symbol = await query(chain, token, minABI, 'symbol', []);
 
