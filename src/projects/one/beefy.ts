@@ -2,7 +2,8 @@
 // Imports:
 import axios from 'axios';
 import { minABI, beefy } from '../../ABIs';
-import { query, addToken, addLPToken, addCurveToken } from '../../functions';
+import { ContractCallContext } from 'ethereum-multicall';
+import { query, multicallQuery, addToken, addLPToken, addCurveToken, parseBN } from '../../functions';
 import type { Chain, Address, URL, Token, LPToken, BeefyAPIResponse } from '../../types';
 
 // Initializations:
@@ -35,61 +36,78 @@ export const get = async (wallet: Address) => {
 // Function to get vault balances:
 export const getVaultBalances = async (wallet: Address, vaults: BeefyAPIResponse[], apys: Record<string, number | null>) => {
   let balances: (Token | LPToken)[] = [];
+
+  // Multicall Query Setup:
+  let queries: ContractCallContext[] = [];
+  vaults.forEach(vault => {
+    queries.push({
+      reference: vault.id,
+      contractAddress: vault.earnedTokenAddress,
+      abi: minABI,
+      calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
+    });
+  });
+
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
   let promises = vaults.map(vault => (async () => {
-    let balance = parseInt(await query(chain, vault.earnedTokenAddress, minABI, 'balanceOf', [wallet]));
-    if(balance > 0) {
-      let decimals = parseInt(await query(chain, vault.earnedTokenAddress, minABI, 'decimals', []));
-      let exchangeRate = parseInt(await query(chain, vault.earnedTokenAddress, beefy.vaultABI, 'getPricePerFullShare', []));
-      let underlyingBalance = balance * (exchangeRate / (10 ** decimals));
-
-      // Native Token Vaults:
-      if(!vault.tokenAddress) {
-        if(vault.token === 'ONE') {
-          let newToken = await addToken(chain, project, 'staked', wone, underlyingBalance, wallet);
-          let vaultAPY = apys[vault.id];
-          if(vaultAPY) {
-            newToken.info = {
-              apy: vaultAPY
-            }
-          }
-          balances.push(newToken);
-        }
-
-      // All Other Vaults:
-      } else {
-
-        // Curve Vaults:
-        if(vault.platform === 'Curve') {
-          let newToken = await addCurveToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
-          let vaultAPY = apys[vault.id];
-          if(vaultAPY) {
-            newToken.info = {
-              apy: vaultAPY
-            }
-          }
-          balances.push(newToken);
+    let balanceResults = multicallResults[vault.id].callsReturnContext[0];
+    if(balanceResults.success) {
+      let balance = parseBN(balanceResults.returnValues[0]);
+      if(balance > 0) {
+        let decimals = parseInt(await query(chain, vault.earnedTokenAddress, minABI, 'decimals', []));
+        let exchangeRate = parseInt(await query(chain, vault.earnedTokenAddress, beefy.vaultABI, 'getPricePerFullShare', []));
+        let underlyingBalance = balance * (exchangeRate / (10 ** decimals));
   
-        // LP Token Vaults:
-        } else if(vault.assets.length === 2) {
-          let newToken = await addLPToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
-          let vaultAPY = apys[vault.id];
-          if(vaultAPY) {
-            newToken.info = {
-              apy: vaultAPY
+        // Native Token Vaults:
+        if(!vault.tokenAddress) {
+          if(vault.token === 'ONE') {
+            let newToken = await addToken(chain, project, 'staked', wone, underlyingBalance, wallet);
+            let vaultAPY = apys[vault.id];
+            if(vaultAPY) {
+              newToken.info = {
+                apy: vaultAPY
+              }
             }
+            balances.push(newToken);
           }
-          balances.push(newToken);
   
-        // Single-Asset Vaults:
-        } else if(vault.assets.length === 1) {
-          let newToken = await addToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
-          let vaultAPY = apys[vault.id];
-          if(vaultAPY) {
-            newToken.info = {
-              apy: vaultAPY
+        // All Other Vaults:
+        } else {
+  
+          // Curve Vaults:
+          if(vault.platform === 'Curve') {
+            let newToken = await addCurveToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
+            let vaultAPY = apys[vault.id];
+            if(vaultAPY) {
+              newToken.info = {
+                apy: vaultAPY
+              }
             }
+            balances.push(newToken);
+    
+          // LP Token Vaults:
+          } else if(vault.assets.length === 2) {
+            let newToken = await addLPToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
+            let vaultAPY = apys[vault.id];
+            if(vaultAPY) {
+              newToken.info = {
+                apy: vaultAPY
+              }
+            }
+            balances.push(newToken);
+    
+          // Single-Asset Vaults:
+          } else if(vault.assets.length === 1) {
+            let newToken = await addToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
+            let vaultAPY = apys[vault.id];
+            if(vaultAPY) {
+              newToken.info = {
+                apy: vaultAPY
+              }
+            }
+            balances.push(newToken);
           }
-          balances.push(newToken);
         }
       }
     }

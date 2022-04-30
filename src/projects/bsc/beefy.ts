@@ -2,7 +2,8 @@
 // Imports:
 import axios from 'axios';
 import { minABI, beefy } from '../../ABIs';
-import { query, addToken, addLPToken, add4BeltToken, addBeltToken, addAlpacaToken } from '../../functions';
+import { ContractCallContext } from 'ethereum-multicall';
+import { query, multicallQuery, addToken, addLPToken, add4BeltToken, addBeltToken, addAlpacaToken, parseBN } from '../../functions';
 import type { Chain, Address, URL, Token, LPToken, XToken, BeefyAPIResponse } from '../../types';
 
 // Initializations:
@@ -35,33 +36,33 @@ export const get = async (wallet: Address) => {
 // Function to get vault balances:
 export const getVaultBalances = async (wallet: Address, vaults: BeefyAPIResponse[], apys: Record<string, number | null>) => {
   let balances: (Token | LPToken | XToken)[] = [];
+
+  // Multicall Query Setup:
+  let queries: ContractCallContext[] = [];
+  vaults.forEach(vault => {
+    queries.push({
+      reference: vault.id,
+      contractAddress: vault.earnedTokenAddress,
+      abi: minABI,
+      calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
+    });
+  });
+
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
   let promises = vaults.map(vault => (async () => {
-    let balance = parseInt(await query(chain, vault.earnedTokenAddress, minABI, 'balanceOf', [wallet]));
-    if(balance > 0) {
-      let decimals = parseInt(await query(chain, vault.earnedTokenAddress, minABI, 'decimals', []));
-      let exchangeRate = parseInt(await query(chain, vault.earnedTokenAddress, beefy.vaultABI, 'getPricePerFullShare', []));
-      let underlyingBalance = balance * (exchangeRate / (10 ** decimals));
-
-      // Native Token Vaults:
-      if(!vault.tokenAddress) {
-        if(vault.token === 'BNB') {
-          let newToken = await addToken(chain, project, 'staked', wbnb, underlyingBalance, wallet);
-          let vaultAPY = apys[vault.id];
-          if(vaultAPY) {
-            newToken.info = {
-              apy: vaultAPY
-            }
-          }
-          balances.push(newToken);
-        }
-
-      // All Other Vaults:
-      } else {
-
-        // Unique Vaults (3+ Assets):
-        if(vault.assets.length > 2) {
-          if(vault.id === 'belt-4belt') {
-            let newToken = await add4BeltToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
+    let balanceResults = multicallResults[vault.id].callsReturnContext[0];
+    if(balanceResults.success) {
+      let balance = parseBN(balanceResults.returnValues[0]);
+      if(balance > 0) {
+        let decimals = parseInt(await query(chain, vault.earnedTokenAddress, minABI, 'decimals', []));
+        let exchangeRate = parseInt(await query(chain, vault.earnedTokenAddress, beefy.vaultABI, 'getPricePerFullShare', []));
+        let underlyingBalance = balance * (exchangeRate / (10 ** decimals));
+  
+        // Native Token Vaults:
+        if(!vault.tokenAddress) {
+          if(vault.token === 'BNB') {
+            let newToken = await addToken(chain, project, 'staked', wbnb, underlyingBalance, wallet);
             let vaultAPY = apys[vault.id];
             if(vaultAPY) {
               newToken.info = {
@@ -71,21 +72,25 @@ export const getVaultBalances = async (wallet: Address, vaults: BeefyAPIResponse
             balances.push(newToken);
           }
   
-        // LP Token Vaults:
-        } else if(vault.assets.length === 2 && vault.id != 'omnifarm-usdo-busd-ot' && vault.id != 'ellipsis-renbtc') {
-          let newToken = await addLPToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
-          let vaultAPY = apys[vault.id];
-          if(vaultAPY) {
-            newToken.info = {
-              apy: vaultAPY
-            }
-          }
-          balances.push(newToken);
+        // All Other Vaults:
+        } else {
   
-        // Single-Asset Vaults:
-        } else if(vault.assets.length === 1) {
-          if(vault.platform === 'Belt') {
-            let newToken = await addBeltToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
+          // Unique Vaults (3+ Assets):
+          if(vault.assets.length > 2) {
+            if(vault.id === 'belt-4belt') {
+              let newToken = await add4BeltToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
+              let vaultAPY = apys[vault.id];
+              if(vaultAPY) {
+                newToken.info = {
+                  apy: vaultAPY
+                }
+              }
+              balances.push(newToken);
+            }
+    
+          // LP Token Vaults:
+          } else if(vault.assets.length === 2 && vault.id != 'omnifarm-usdo-busd-ot' && vault.id != 'ellipsis-renbtc') {
+            let newToken = await addLPToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
             let vaultAPY = apys[vault.id];
             if(vaultAPY) {
               newToken.info = {
@@ -93,24 +98,37 @@ export const getVaultBalances = async (wallet: Address, vaults: BeefyAPIResponse
               }
             }
             balances.push(newToken);
-          } else if(vault.platform === 'Alpaca') {
-            let newToken = await addAlpacaToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
-            let vaultAPY = apys[vault.id];
-            if(vaultAPY) {
-              newToken.info = {
-                apy: vaultAPY
+    
+          // Single-Asset Vaults:
+          } else if(vault.assets.length === 1) {
+            if(vault.platform === 'Belt') {
+              let newToken = await addBeltToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
+              let vaultAPY = apys[vault.id];
+              if(vaultAPY) {
+                newToken.info = {
+                  apy: vaultAPY
+                }
               }
-            }
-            balances.push(newToken);
-          } else {
-            let newToken = await addToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
-            let vaultAPY = apys[vault.id];
-            if(vaultAPY) {
-              newToken.info = {
-                apy: vaultAPY
+              balances.push(newToken);
+            } else if(vault.platform === 'Alpaca') {
+              let newToken = await addAlpacaToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
+              let vaultAPY = apys[vault.id];
+              if(vaultAPY) {
+                newToken.info = {
+                  apy: vaultAPY
+                }
               }
+              balances.push(newToken);
+            } else {
+              let newToken = await addToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
+              let vaultAPY = apys[vault.id];
+              if(vaultAPY) {
+                newToken.info = {
+                  apy: vaultAPY
+                }
+              }
+              balances.push(newToken);
             }
-            balances.push(newToken);
           }
         }
       }
