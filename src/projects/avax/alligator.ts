@@ -1,7 +1,8 @@
 
 // Imports:
 import { minABI, alligator } from '../../ABIs';
-import { query, addToken, addLPToken, addXToken } from '../../functions';
+import { ContractCallContext } from 'ethereum-multicall';
+import { query, multicallQuery, addToken, addLPToken, addXToken, parseBN } from '../../functions';
 import type { Chain, Address, Token, LPToken, XToken } from '../../types';
 
 // Initializations:
@@ -34,12 +35,48 @@ export const getPoolBalances = async (wallet: Address) => {
   let balances: LPToken[] = [];
   let poolCount = parseInt(await query(chain, factory, alligator.factoryABI, 'allPairsLength', []));
   let pools = [...Array(poolCount).keys()];
-  let promises = pools.map(poolID => (async () => {
-    let lpToken = await query(chain, factory, alligator.factoryABI, 'allPairs', [poolID]);
-    let balance = parseInt(await query(chain, lpToken, minABI, 'balanceOf', [wallet]));
-    if(balance > 0) {
-      let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);
-      balances.push(newToken);
+
+  // LP Token Multicall Query Setup:
+  let lpTokenQueries: ContractCallContext[] = [];
+  let lpTokenQuery: ContractCallContext = {
+    reference: 'allPairs',
+    contractAddress: factory,
+    abi: alligator.factoryABI,
+    calls: []
+  }
+  pools.forEach(poolID => {
+    lpTokenQuery.calls.push({ reference: poolID.toString(), methodName: 'allPairs', methodParameters: [poolID] });
+  });
+  lpTokenQueries.push(lpTokenQuery);
+
+  // LP Token Multicall Query Results:
+  let lpTokenMulticallResults = (await multicallQuery(chain, lpTokenQueries)).results;
+
+  // Balance Multicall Query Setup:
+  let balanceQueries: ContractCallContext[] = [];
+  lpTokenMulticallResults['allPairs'].callsReturnContext.forEach(result => {
+    if(result.success) {
+      let lpToken = result.returnValues[0] as Address;
+      balanceQueries.push({
+        reference: result.reference,
+        contractAddress: lpToken,
+        abi: minABI,
+        calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
+      });
+    }
+  });
+
+  // Balance Multicall Query Results:
+  let balanceMulticallResults = (await multicallQuery(chain, balanceQueries)).results;
+  let promises = Object.keys(balanceMulticallResults).map(result => (async () => {
+    let balanceResult = balanceMulticallResults[result].callsReturnContext[0];
+    if(balanceResult.success) {
+      let lpToken = balanceMulticallResults[result].originalContractCallContext.contractAddress as Address;
+      let balance = parseBN(balanceResult.returnValues[0]);
+      if(balance > 0) {
+        let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);
+        balances.push(newToken);
+      }
     }
   })());
   await Promise.all(promises);
@@ -51,30 +88,49 @@ export const getFarmBalances = async (wallet: Address) => {
   let balances: (Token | LPToken | XToken)[] = [];
   let farmCount = parseInt(await query(chain, masterChef, alligator.masterChefABI, 'poolLength', []));
   let farms = [...Array(farmCount).keys()];
-  let promises = farms.map(farmID => (async () => {
-    let balance = parseInt((await query(chain, masterChef, alligator.masterChefABI, 'userInfo', [farmID, wallet])).amount);
-    if(balance > 0) {
-      let token = (await query(chain, masterChef, alligator.masterChefABI, 'poolInfo', [farmID])).lpToken;
-      let symbol = await query(chain, token, minABI, 'symbol', []);
 
-      // Standard LPs:
-      if(symbol === 'ALP') {
-        let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
-        balances.push(newToken);
+  // Multicall Query Setup:
+  let queries: ContractCallContext[] = [];
+  let userInfoQuery: ContractCallContext = {
+    reference: 'userInfo',
+    contractAddress: masterChef,
+    abi: alligator.masterChefABI,
+    calls: []
+  }
+  farms.forEach(farmID => {
+    userInfoQuery.calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
+  });
+  queries.push(userInfoQuery);
 
-      // xGTR Farm:
-      } else if(symbol === 'xGTR') {
-        let gtrStaked = parseInt(await query(chain, gtr, minABI, 'balanceOf', [xgtr]));
-        let xgtrSupply = parseInt(await query(chain, xgtr, minABI, 'totalSupply', []));
-        let newToken = await addXToken(chain, project, 'staked', xgtr, balance, wallet, gtr, balance * (gtrStaked / xgtrSupply));
-        balances.push(newToken);
-      }
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
+  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
+    if(result.success) {
+      let balance = parseBN(result.returnValues[0]);
+      if(balance > 0) {
+        let farmID = result.reference;
+        let token = (await query(chain, masterChef, alligator.masterChefABI, 'poolInfo', [farmID])).lpToken;
+        let symbol = await query(chain, token, minABI, 'symbol', []);
 
-      // Pending Rewards:
-      let rewards = parseInt((await query(chain, masterChef, alligator.masterChefABI, 'pendingTokens', [farmID, wallet])).pendingGtr);
-      if(rewards > 0) {
-        let newToken = await addToken(chain, project, 'unclaimed', gtr, rewards, wallet);
-        balances.push(newToken);
+        // Standard LPs:
+        if(symbol === 'ALP') {
+          let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
+          balances.push(newToken);
+
+        // xGTR Farm:
+        } else if(symbol === 'xGTR') {
+          let gtrStaked = parseInt(await query(chain, gtr, minABI, 'balanceOf', [xgtr]));
+          let xgtrSupply = parseInt(await query(chain, xgtr, minABI, 'totalSupply', []));
+          let newToken = await addXToken(chain, project, 'staked', xgtr, balance, wallet, gtr, balance * (gtrStaked / xgtrSupply));
+          balances.push(newToken);
+        }
+
+        // Pending Rewards:
+        let rewards = parseInt((await query(chain, masterChef, alligator.masterChefABI, 'pendingTokens', [farmID, wallet])).pendingGtr);
+        if(rewards > 0) {
+          let newToken = await addToken(chain, project, 'unclaimed', gtr, rewards, wallet);
+          balances.push(newToken);
+        }
       }
     }
   })());
