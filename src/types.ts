@@ -21,7 +21,7 @@ export type TokenStatus = 'none' | 'staked' | 'liquidity' | 'lent' | 'borrowed' 
 export type TXType = 'transfer' | 'approve' | 'revoke';
 
 // Price Source Types:
-export type PriceSource = 'chain' | 'coingecko' | '1inch' | 'paraswap' | 'proxy';
+export type PriceSource = 'chain' | 'coingecko' | '1inch' | 'paraswap';
 
 // Terra Native Token Denoms:
 export type TerraDenom = 'uluna' | 'uaud' | 'ucad' | 'uchf' | 'ucny' | 'udkk' | 'ueur' | 'ugbp' | 'uhkd' | 'uidr' | 'uinr' | 'ujpy' | 'ukrw' | 'umnt' | 'uphp' | 'usdr' | 'usek' | 'usgd' | 'uthb' | 'uusd' | 'umyr' | 'utwd';
@@ -228,7 +228,7 @@ export interface LogoData {
 
 /* ========================================================================================================================================================================= */
 
-// Token Price Data Interface:
+// Token Price Data Interfaces:
 export interface TokenPriceData {
     symbol: string | null
     address: Address | TerraAddress
