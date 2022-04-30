@@ -1,7 +1,8 @@
 
 // Imports:
 import { minABI, penguin } from '../../ABIs';
-import { query, addToken, addLPToken, addXToken } from '../../functions';
+import { ContractCallContext } from 'ethereum-multicall';
+import { query, multicallQuery, addToken, addLPToken, addXToken, parseBN } from '../../functions';
 import type { Chain, Address, Token, LPToken, XToken } from '../../types';
 
 // Initializations:
@@ -35,21 +36,40 @@ export const getIglooBalances = async (wallet: Address) => {
   let iglooCount = parseInt(await query(chain, iglooMaster, penguin.masterABI, 'poolLength', []));
   let igloos = [...Array(iglooCount).keys()];
   let pefiRewards = 0;
-  let promises = igloos.map(iglooID => (async () => {
-    let balance = parseInt((await query(chain, iglooMaster, penguin.masterABI, 'userInfo', [iglooID, wallet])).amount);
-    if(balance > 0) {
-      let token = (await query(chain, iglooMaster, penguin.masterABI, 'poolInfo', [iglooID])).poolToken;
-      let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
-      balances.push(newToken);
-      let pendingPEFI = parseInt(await query(chain, iglooMaster, penguin.masterABI, 'totalPendingPEFI', [iglooID, wallet]));
-      if(pendingPEFI > 0) {
-        pefiRewards += pendingPEFI;
-      }
-      let pendingBonus = await query(chain, iglooMaster, penguin.masterABI, 'pendingTokens', [iglooID, wallet]);
-      if(pendingBonus[0].length > 2) {
-        if(parseInt(pendingBonus[1][2]) > 0) {
-          let newToken = await addToken(chain, project, 'unclaimed', pendingBonus[0][2], parseInt(pendingBonus[1][2]), wallet);
-          balances.push(newToken);
+  
+  // Multicall Query Setup:
+  let queries: ContractCallContext[] = [];
+  let balanceQuery: ContractCallContext = {
+    reference: 'userInfo',
+    contractAddress: iglooMaster,
+    abi: penguin.masterABI,
+    calls: []
+  }
+  igloos.forEach(iglooID => {
+    balanceQuery.calls.push({ reference: iglooID.toString(), methodName: 'userInfo', methodParameters: [iglooID, wallet] });
+  });
+  queries.push(balanceQuery);
+
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
+  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
+    if(result.success) {
+      let iglooID = parseInt(result.reference);
+      let balance = parseBN(result.returnValues[0]);
+      if(balance > 0) {
+        let token = (await query(chain, iglooMaster, penguin.masterABI, 'poolInfo', [iglooID])).poolToken;
+        let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
+        balances.push(newToken);
+        let pendingPEFI = parseInt(await query(chain, iglooMaster, penguin.masterABI, 'totalPendingPEFI', [iglooID, wallet]));
+        if(pendingPEFI > 0) {
+          pefiRewards += pendingPEFI;
+        }
+        let pendingBonus = await query(chain, iglooMaster, penguin.masterABI, 'pendingTokens', [iglooID, wallet]);
+        if(pendingBonus[0].length > 2) {
+          if(parseInt(pendingBonus[1][2]) > 0) {
+            let newToken = await addToken(chain, project, 'unclaimed', pendingBonus[0][2], parseInt(pendingBonus[1][2]), wallet);
+            balances.push(newToken);
+          }
         }
       }
     }
