@@ -402,33 +402,31 @@ const getWalletNativeTokenBalance = async (chain: EVMChain, wallet: Address) => 
 // Function to get a wallet's token balance:
 const getWalletTokenBalance = async (chain: EVMChain, wallet: Address) => {
   let tokens: Token[] = [];
-  if(chains[chain].multicall != '0x') {
-    let data = getChainTokenData(chain);
-    if(data) {
-      let queries: ContractCallContext[] = [];
-      data.tokens.forEach(token => {
-        queries.push({
-          reference: token.symbol,
-          contractAddress: token.address,
-          abi: minABI,
-          calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
-        });
+  let data = getChainTokenData(chain);
+  if(data) {
+    let queries: ContractCallContext[] = [];
+    data.tokens.forEach(token => {
+      queries.push({
+        reference: token.symbol,
+        contractAddress: token.address,
+        abi: minABI,
+        calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
       });
-      let multicallResults = (await multicallQuery(chain, queries)).results;
-      let promises = data.tokens.map(token => (async () => {
-        let tokenResults = multicallResults[token.symbol].callsReturnContext[0];
-        if(tokenResults.success) {
-          let rawBalance = parseInt(ethers.BigNumber.from(tokenResults.returnValues[0]).toString());
-          if(rawBalance > 0) {
-            let newToken = await addTrackedToken(chain, 'wallet', 'none', token, rawBalance, wallet);
-            tokens.push(newToken);
-          }
-        } else {
-          console.error(`Couldn't fetch ${tokenResults.reference} token balance for ${wallet} (Chain: ${chain.toUpperCase()})`);
+    });
+    let multicallResults = (await multicallQuery(chain, queries)).results;
+    let promises = data.tokens.map(token => (async () => {
+      let tokenResults = multicallResults[token.symbol].callsReturnContext[0];
+      if(tokenResults.success) {
+        let rawBalance = parseInt(ethers.BigNumber.from(tokenResults.returnValues[0]).toString());
+        if(rawBalance > 0) {
+          let newToken = await addTrackedToken(chain, 'wallet', 'none', token, rawBalance, wallet);
+          tokens.push(newToken);
         }
-      })());
-      await Promise.all(promises);
-    }
+      } else {
+        console.error(`Couldn't fetch ${tokenResults.reference} token balance for ${wallet} (Chain: ${chain.toUpperCase()})`);
+      }
+    })());
+    await Promise.all(promises);
   }
   return tokens;
 }
