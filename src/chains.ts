@@ -19,7 +19,8 @@ export const chains: Chains = {
     coingeckoIDs: {
       chainID: 'ethereum',
       nativeTokenID: 'ethereum',
-    }
+    },
+    multicall: '0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696'
   },
   bsc: {
     id: 56,
@@ -36,7 +37,8 @@ export const chains: Chains = {
     coingeckoIDs: {
       chainID: 'binance-smart-chain',
       nativeTokenID: 'binancecoin',
-    }
+    },
+    multicall: '0xC50F4c1E81c873B2204D7eFf7069Ffec6Fbe136D'
   },
   poly: {
     id: 137,
@@ -53,7 +55,8 @@ export const chains: Chains = {
     coingeckoIDs: {
       chainID: 'polygon-pos',
       nativeTokenID: 'matic-network',
-    }
+    },
+    multicall: '0x275617327c958bD06b5D6b871E7f491D76113dd8'
   },
   ftm: {
     id: 250,
@@ -70,7 +73,8 @@ export const chains: Chains = {
     coingeckoIDs: {
       chainID: 'fantom',
       nativeTokenID: 'fantom',
-    }
+    },
+    multicall: '0xD98e3dBE5950Ca8Ce5a4b59630a5652110403E5c'
   },
   avax: {
     id: 43114,
@@ -87,7 +91,8 @@ export const chains: Chains = {
     coingeckoIDs: {
       chainID: 'avalanche',
       nativeTokenID: 'avalanche-2',
-    }
+    },
+    multicall: '0xed386Fe855C1EFf2f843B910923Dd8846E45C5A4'
   },
   one: {
     id: 1666600000,
@@ -104,7 +109,8 @@ export const chains: Chains = {
     coingeckoIDs: {
       chainID: 'harmony-shard-0',
       nativeTokenID: 'harmony',
-    }
+    },
+    multicall: '0x' // <TODO> add multicall2 address
   },
   cronos: {
     id: 25,
@@ -120,7 +126,8 @@ export const chains: Chains = {
     coingeckoIDs: {
       chainID: 'cronos',
       nativeTokenID: 'crypto-com-chain',
-    }
+    },
+    multicall: '0x5e954f5972EC6BFc7dECd75779F10d848230345F'
   },
   terra: {
     token: 'LUNA',

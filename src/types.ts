@@ -185,6 +185,7 @@ export interface ChainData {
     paraswap: boolean,
     rpcs: URL[]
     coingeckoIDs: CoinGeckoIDs
+    multicall: Address
 }
 export interface TerraChainData {
     token: string

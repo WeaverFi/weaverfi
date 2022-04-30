@@ -4,6 +4,7 @@ import { ethers } from 'ethers';
 import { chains } from './chains';
 import { projects } from './projects';
 import { getTokenPrice } from './prices';
+import { Multicall, ContractCallResults, ContractCallContext } from 'ethereum-multicall';
 import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data, cronos_data } from './tokens';
 import { minABI, lpABI, aave, balancer, belt, alpaca, curve, bzx, iron, axial, mstable } from './ABIs';
 import type { EVMChain, Address, URL, ABI, ENSDomain, TokenData, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken } from './types';
@@ -45,6 +46,16 @@ export const query = async (chain: EVMChain, address: Address, abi: ABI[], metho
     }
   }
   return result;
+}
+
+/* ========================================================================================================================================================================= */
+
+// Function to make multicall blockchain queries:
+export const multicallQuery = async (chain: EVMChain, queries: ContractCallContext[]) => {
+  let ethers_provider = new ethers.providers.JsonRpcProvider(chains[chain].rpcs[0]);
+  let multicall = new Multicall({ ethersProvider: ethers_provider, tryAggregate: true, multicallCustomContractAddress: chains[chain].multicall });
+  let results: ContractCallResults = await multicall.call(queries);
+  return results;
 }
 
 /* ========================================================================================================================================================================= */
@@ -391,16 +402,33 @@ const getWalletNativeTokenBalance = async (chain: EVMChain, wallet: Address) => 
 // Function to get a wallet's token balance:
 const getWalletTokenBalance = async (chain: EVMChain, wallet: Address) => {
   let tokens: Token[] = [];
-  let data = getChainTokenData(chain);
-  if(data) {
-    let promises = data.tokens.map(token => (async () => {
-      let balance = parseInt(await query(chain, token.address, minABI, 'balanceOf', [wallet]));
-      if(balance > 0) {
-        let newToken = await addTrackedToken(chain, 'wallet', 'none', token, balance, wallet);
-        tokens.push(newToken);
-      }
-    })());
-    await Promise.all(promises);
+  if(chains[chain].multicall != '0x') {
+    let data = getChainTokenData(chain);
+    if(data) {
+      let queries: ContractCallContext[] = [];
+      data.tokens.forEach(token => {
+        queries.push({
+          reference: token.symbol,
+          contractAddress: token.address,
+          abi: minABI,
+          calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
+        });
+      });
+      let multicallResults = (await multicallQuery(chain, queries)).results;
+      let promises = data.tokens.map(token => (async () => {
+        let tokenResults = multicallResults[token.symbol].callsReturnContext[0];
+        if(tokenResults.success) {
+          let rawBalance = parseInt(ethers.BigNumber.from(tokenResults.returnValues[0]).toString());
+          if(rawBalance > 0) {
+            let newToken = await addTrackedToken(chain, 'wallet', 'none', token, rawBalance, wallet);
+            tokens.push(newToken);
+          }
+        } else {
+          console.error(`Couldn't fetch ${tokenResults.reference} token balance for ${wallet} (Chain: ${chain.toUpperCase()})`);
+        }
+      })());
+      await Promise.all(promises);
+    }
   }
   return tokens;
 }
