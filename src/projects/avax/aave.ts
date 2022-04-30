@@ -53,7 +53,7 @@ export const getMarketBalances = async (markets: AaveAPIResponse[], wallet: Addr
     });
     if(market.borrowingEnabled) {
       queries.push({
-        reference: 'b' + market.symbol,
+        reference: 'vb' + market.symbol,
         contractAddress: market.variableDebtTokenAddress,
         abi: minABI,
         calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
@@ -81,9 +81,9 @@ export const getMarketBalances = async (markets: AaveAPIResponse[], wallet: Addr
 
     // Variable Borrowing Balances:
     if(market.borrowingEnabled) {
-      let marketBorrowingResults = multicallResults['b' + market.symbol].callsReturnContext[0];
-      if(marketBorrowingResults.success) {
-        let balance = parseBN(marketBorrowingResults.returnValues[0]);
+      let marketVariableBorrowingResults = multicallResults['vb' + market.symbol].callsReturnContext[0];
+      if(marketVariableBorrowingResults.success) {
+        let balance = parseBN(marketVariableBorrowingResults.returnValues[0]);
         if(balance > 0) {
           let newToken = await addDebtToken(chain, project, market.underlyingAsset, balance, wallet);
           newToken.info = {

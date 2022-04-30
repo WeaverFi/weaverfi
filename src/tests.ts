@@ -15,8 +15,8 @@ const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 const tests = async () => {
 
   // Project Balance Tests:
-  // let projectBalance = await weaver.AVAX.getProjectBalance(wallet, 'aave');
-  // console.log('🕷️ ~ projectBalance', projectBalance);
+  let projectBalance = await weaver.POLY.getProjectBalance(wallet, 'aave');
+  console.log('🕷️ ~ projectBalance', projectBalance);
 
   /* ================================================== */
   

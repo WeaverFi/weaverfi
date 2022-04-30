@@ -2,7 +2,8 @@
 // Imports:
 import axios from 'axios';
 import { minABI, aave } from '../../ABIs';
-import { query, addToken, addDebtToken, addXToken, addAaveBLPToken } from '../../functions';
+import { ContractCallContext } from 'ethereum-multicall';
+import { query, multicallQuery, addToken, addDebtToken, addXToken, addAaveBLPToken, parseBN } from '../../functions';
 import type { Chain, Address, URL, Token, LPToken, DebtToken, XToken, AaveAPIResponse } from '../../types';
 
 // Initializations:
@@ -36,44 +37,84 @@ export const get = async (wallet: Address) => {
 
 // Function to get lending market balances:
 export const getMarketBalances = async (markets: AaveAPIResponse[], wallet: Address) => {
+
+  // Initializations:
   let balances: (Token | DebtToken)[] = [];
+  let queries: ContractCallContext[] = [];
+
+  // Multicall Query Setup:
+  markets.forEach(market => {
+    queries.push({
+      reference: 'a' + market.symbol,
+      contractAddress: market.aTokenAddress,
+      abi: minABI,
+      calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
+    });
+    if(market.borrowingEnabled) {
+      queries.push({
+        reference: 'vb' + market.symbol,
+        contractAddress: market.variableDebtTokenAddress,
+        abi: minABI,
+        calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
+      });
+    }
+    if(market.stableBorrowRateEnabled) {
+      queries.push({
+        reference: 'sb' + market.symbol,
+        contractAddress: market.stableDebtTokenAddress,
+        abi: minABI,
+        calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
+      });
+    }
+  });
+
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
   let promises = markets.map(market => (async () => {
 
     // Lending Balances:
-    let balance = parseInt(await query(chain, market.aTokenAddress, minABI, 'balanceOf', [wallet]));
-    if(balance > 0) {
-      let newToken = await addToken(chain, project, 'lent', market.underlyingAsset, balance, wallet);
-      newToken.info = {
-        apy: market.avg7DaysLiquidityRate * 100,
-        deprecated: !market.isActive
+    let marketLendingResults = multicallResults['a' + market.symbol].callsReturnContext[0];
+    if(marketLendingResults.success) {
+      let balance = parseBN(marketLendingResults.returnValues[0]);
+      if(balance > 0) {
+        let newToken = await addToken(chain, project, 'lent', market.underlyingAsset, balance, wallet);
+        newToken.info = {
+          apy: market.avg7DaysLiquidityRate * 100,
+          deprecated: !market.isActive
+        }
+        balances.push(newToken);
       }
-      balances.push(newToken);
     }
 
     // Variable Borrowing Balances:
     if(market.borrowingEnabled) {
-      let variableDebt = parseInt(await query(chain, market.variableDebtTokenAddress, minABI, 'balanceOf', [wallet]));
-      if(variableDebt > 0) {
-        let newToken = await addDebtToken(chain, project, market.underlyingAsset, variableDebt, wallet);
-        newToken.info = {
-          apy: market.avg7DaysVariableBorrowRate * 100,
+      let marketVariableBorrowingResults = multicallResults['vb' + market.symbol].callsReturnContext[0];
+      if(marketVariableBorrowingResults.success) {
+        let balance = parseBN(marketVariableBorrowingResults.returnValues[0]);
+        if(balance > 0) {
+          let newToken = await addDebtToken(chain, project, market.underlyingAsset, balance, wallet);
+          newToken.info = {
+            apy: market.avg7DaysVariableBorrowRate * 100,
+          }
+          balances.push(newToken);
         }
-        balances.push(newToken);
       }
     }
 
     // Stable Borrowing Balances:
     if(market.stableBorrowRateEnabled) {
-      let stableDebt = parseInt(await query(chain, market.stableDebtTokenAddress, minABI, 'balanceOf', [wallet]));
-      if(stableDebt > 0) {
-        let newToken = await addDebtToken(chain, project, market.underlyingAsset, stableDebt, wallet);
-        newToken.info = {
-          apy: market.stableBorrowRate * 100,
+      let marketStableBorrowingResults = multicallResults['sb' + market.symbol].callsReturnContext[0];
+      if(marketStableBorrowingResults.success) {
+        let balance = parseBN(marketStableBorrowingResults.returnValues[0]);
+        if(balance > 0) {
+          let newToken = await addDebtToken(chain, project, market.underlyingAsset, balance, wallet);
+          newToken.info = {
+            apy: market.stableBorrowRate * 100,
+          }
+          balances.push(newToken);
         }
-        balances.push(newToken);
       }
     }
-
   })());
   await Promise.all(promises);
   return balances;
