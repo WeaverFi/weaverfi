@@ -1,7 +1,8 @@
 
 // Imports:
 import { minABI, lydia } from '../../ABIs';
-import { query, addToken, addLPToken } from '../../functions';
+import { ContractCallContext } from 'ethereum-multicall';
+import { query, multicallQuery, addToken, addLPToken, parseBN } from '../../functions';
 import type { Chain, Address, Token, LPToken } from '../../types';
 
 // Initializations:
@@ -42,21 +43,40 @@ export const getFarmBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let farmCount = parseInt(await query(chain, registry, lydia.registryABI, 'poolLength', []));
   let farms = [...Array(farmCount).keys()];
-  let promises = farms.map(farmID => (async () => {
-    let balance = parseInt((await query(chain, registry, lydia.registryABI, 'userInfo', [farmID, wallet])).amount);
-    if(balance > 0) {
-      let poolInfo = await query(chain, registry, lydia.registryABI, 'poolInfo', [farmID]);
-      if(poolInfo.lpToken.toLowerCase() === lyd.toLowerCase()) {
-        let newToken = await addToken(chain, project, 'staked', poolInfo.lpToken, balance, wallet);
-        balances.push(newToken);
-      } else {
-        let newToken = await addLPToken(chain, project, 'staked', poolInfo.lpToken, balance, wallet);
-        balances.push(newToken);
-      }
-      let rewards = await (query(chain, registry, lydia.registryABI, 'pendingLyd', [farmID, wallet]));
-      if(rewards > 0) {
-        let newToken = await addToken(chain, project, 'unclaimed', lyd, rewards, wallet);
-        balances.push(newToken);
+
+  // Multicall Query Setup:
+  let queries: ContractCallContext[] = [];
+  let balanceQuery: ContractCallContext = {
+    reference: 'userInfo',
+    contractAddress: registry,
+    abi: lydia.registryABI,
+    calls: []
+  }
+  farms.forEach(farmID => {
+    balanceQuery.calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
+  });
+  queries.push(balanceQuery);
+
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
+  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
+    if(result.success) {
+      let farmID = parseInt(result.reference);
+      let balance = parseBN(result.returnValues[0]);
+      if(balance > 0) {
+        let poolInfo = await query(chain, registry, lydia.registryABI, 'poolInfo', [farmID]);
+        if(poolInfo.lpToken.toLowerCase() === lyd.toLowerCase()) {
+          let newToken = await addToken(chain, project, 'staked', poolInfo.lpToken, balance, wallet);
+          balances.push(newToken);
+        } else {
+          let newToken = await addLPToken(chain, project, 'staked', poolInfo.lpToken, balance, wallet);
+          balances.push(newToken);
+        }
+        let rewards = await (query(chain, registry, lydia.registryABI, 'pendingLyd', [farmID, wallet]));
+        if(rewards > 0) {
+          let newToken = await addToken(chain, project, 'unclaimed', lyd, rewards, wallet);
+          balances.push(newToken);
+        }
       }
     }
   })());
@@ -80,16 +100,33 @@ export const getAutoLYDFarmBalance = async (wallet: Address) => {
 // Function to get Maximus farm balances:
 export const getMaximusFarmBalances = async (wallet: Address): Promise<(Token | LPToken)[]> => {
   let balances: (Token | LPToken)[] = [];
+  
+  // Multicall Query Setup:
+  let queries: ContractCallContext[] = [];
+  maximusFarms.forEach(farm => {
+    queries.push({
+      reference: farm,
+      contractAddress: farm,
+      abi: minABI,
+      calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
+    });
+  });
+
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
   let promises = maximusFarms.map(farm => (async () => {
-    let balance = parseInt(await query(chain, farm, minABI, 'balanceOf', [wallet]));
-    if(balance > 0) {
-      let lpToken = await query(chain, farm, lydia.maximusFarmABI, 'stakingToken', []);
-      let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);
-      balances.push(newToken);
-      let rewards = parseInt(await query(chain, farm, lydia.maximusFarmABI, 'earned', [wallet]));
-      if(rewards > 0) {
-        let newToken = await addToken(chain, project, 'unclaimed', lyd, rewards, wallet);
+    let balanceResults = multicallResults[farm].callsReturnContext[0];
+    if(balanceResults.success) {
+      let balance = parseBN(balanceResults.returnValues[0]);
+      if(balance > 0) {
+        let lpToken = await query(chain, farm, lydia.maximusFarmABI, 'stakingToken', []);
+        let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);
         balances.push(newToken);
+        let rewards = parseInt(await query(chain, farm, lydia.maximusFarmABI, 'earned', [wallet]));
+        if(rewards > 0) {
+          let newToken = await addToken(chain, project, 'unclaimed', lyd, rewards, wallet);
+          balances.push(newToken);
+        }
       }
     }
   })());
