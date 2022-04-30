@@ -253,6 +253,7 @@ export interface SnowballAPIResponse {
     }
 }
 export interface AaveAPIResponse {
+    symbol: string
     isActive: boolean
     underlyingAsset: Address
     aTokenAddress: Address

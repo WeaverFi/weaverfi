@@ -374,6 +374,13 @@ export const lookupENS = async (address: Address) => {
 
 /* ========================================================================================================================================================================= */
 
+// Function to parse BigNumber from multicall response:
+export const parseBN = (bn: any) => {
+  return parseInt(ethers.BigNumber.from(bn).toString());
+}
+
+/* ========================================================================================================================================================================= */
+
 // Function to get a wallet's native token balance:
 const getWalletNativeTokenBalance = async (chain: EVMChain, wallet: Address) => {
   let balance;
@@ -417,7 +424,7 @@ const getWalletTokenBalance = async (chain: EVMChain, wallet: Address) => {
     let promises = data.tokens.map(token => (async () => {
       let tokenResults = multicallResults[token.symbol].callsReturnContext[0];
       if(tokenResults.success) {
-        let rawBalance = parseInt(ethers.BigNumber.from(tokenResults.returnValues[0]).toString());
+        let rawBalance = parseBN(tokenResults.returnValues[0]);
         if(rawBalance > 0) {
           let newToken = await addTrackedToken(chain, 'wallet', 'none', token, rawBalance, wallet);
           tokens.push(newToken);
