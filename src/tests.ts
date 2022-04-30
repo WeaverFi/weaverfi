@@ -6,7 +6,7 @@ import { minABI } from './ABIs';
 import type { Address, TerraAddress } from './types';
 
 // Initializations:
-const wallet: Address | TerraAddress = '0x72CB40A11781Ff0149abB55a1AdEbE2407575030';
+const wallet: Address | TerraAddress = '0x0129ba41a907ac27f7683d291576f2e74362c421';
 const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
@@ -31,8 +31,8 @@ const tests = async () => {
   // console.log('🕷️ ~ ftmWalletBalance', ftmWalletBalance);
   // let avaxWalletBalance = await weaver.AVAX.getWalletBalance(wallet);
   // console.log('🕷️ ~ avaxWalletBalance', avaxWalletBalance);
-  let oneWalletBalance = await weaver.ONE.getWalletBalance(wallet);
-  console.log('🕷️ ~ oneWalletBalance', oneWalletBalance);
+  // let oneWalletBalance = await weaver.ONE.getWalletBalance(wallet);
+  // console.log('🕷️ ~ oneWalletBalance', oneWalletBalance);
   // let cronosWalletBalance = await weaver.CRONOS.getWalletBalance(wallet);
   // console.log('🕷️ ~ cronosWalletBalance', cronosWalletBalance);
   // let terraWalletBalance = await weaver.TERRA.getWalletBalance(wallet);

@@ -110,7 +110,7 @@ export const chains: Chains = {
       chainID: 'harmony-shard-0',
       nativeTokenID: 'harmony',
     },
-    multicall: '0x' // <TODO> add multicall2 address
+    multicall: '0x5c41f6817feeb65d7b2178b0b9cebfc8fad97969'
   },
   cronos: {
     id: 25,
