@@ -1,7 +1,8 @@
 
 // Imports:
 import { minABI, cycle } from '../../ABIs';
-import { query, addToken, addLPToken } from '../../functions';
+import { ContractCallContext } from 'ethereum-multicall';
+import { query, multicallQuery, addToken, addLPToken, parseBN } from '../../functions';
 import type { Chain, Address, Token, LPToken } from '../../types';
 
 // Initializations:
@@ -38,20 +39,56 @@ export const getVaultBalances = async (wallet: Address) => {
   let vaultCount = parseInt(await query(chain, distributor, cycle.distributorABI, 'getVaultRewardsCount', []));
   let vaults = [...Array(vaultCount).keys()];
   let cycleRewards = 0;
-  let promises = vaults.map(vault => (async () => {
-    let vaultAddress = (await query(chain, distributor, cycle.distributorABI, 'rewards', [vault])).StakingRewards;
-    let balance = parseInt(await query(chain, vaultAddress, minABI, 'balanceOf', [wallet]));
-    if(balance > 0) {
-      let intermediary = await query(chain, vaultAddress, cycle.vaultABI, 'stakingToken', []);
-      let lpToken = await query(chain, intermediary, cycle.intermediaryABI, 'LPtoken', []);
-      let actualBalance = parseInt(await query(chain, intermediary, cycle.intermediaryABI, 'getAccountLP', [wallet]));
-      let newToken = await addLPToken(chain, project, 'staked', lpToken, actualBalance, wallet);
-      balances.push(newToken);
 
-      // Pending CYCLE Rewards:
-      let rewards = parseInt(await query(chain, vaultAddress, cycle.vaultABI, 'earned', [wallet]));
-      if(rewards > 0) {
-        cycleRewards += rewards;
+  // Vault Multicall Query Setup:
+  let vaultQueries: ContractCallContext[] = [];
+  let vaultQuery: ContractCallContext = {
+    reference: 'vaultAddresses',
+    contractAddress: distributor,
+    abi: cycle.distributorABI,
+    calls: []
+  }
+  vaults.forEach(vaultID => {
+    vaultQuery.calls.push({ reference: vaultID.toString(), methodName: 'rewards', methodParameters: [vaultID] });
+  });
+  vaultQueries.push(vaultQuery);
+
+  // Vault Multicall Query Results:
+  let vaultMulticallResults = (await multicallQuery(chain, vaultQueries)).results;
+
+  // Balance Multicall Query Setup:
+  let balanceQueries: ContractCallContext[] = [];
+  vaultMulticallResults['vaultAddresses'].callsReturnContext.forEach(result => {
+    if(result.success) {
+      let vaultAddress = result.returnValues[0] as Address;
+      balanceQueries.push({
+        reference: result.reference,
+        contractAddress: vaultAddress,
+        abi: minABI,
+        calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
+      });
+    }
+  });
+
+  // Balance Multicall Query Results:
+  let balanceMulticallResults = (await multicallQuery(chain, balanceQueries)).results;
+  let promises = Object.keys(balanceMulticallResults).map(result => (async () => {
+    let balanceResult = balanceMulticallResults[result].callsReturnContext[0];
+    if(balanceResult.success) {
+      let vaultAddress = balanceMulticallResults[result].originalContractCallContext.contractAddress as Address;
+      let balance = parseBN(balanceResult.returnValues[0]);
+      if(balance > 0) {
+        let intermediary = await query(chain, vaultAddress, cycle.vaultABI, 'stakingToken', []);
+        let lpToken = await query(chain, intermediary, cycle.intermediaryABI, 'LPtoken', []);
+        let actualBalance = parseInt(await query(chain, intermediary, cycle.intermediaryABI, 'getAccountLP', [wallet]));
+        let newToken = await addLPToken(chain, project, 'staked', lpToken, actualBalance, wallet);
+        balances.push(newToken);
+  
+        // Pending CYCLE Rewards:
+        let rewards = parseInt(await query(chain, vaultAddress, cycle.vaultABI, 'earned', [wallet]));
+        if(rewards > 0) {
+          cycleRewards += rewards;
+        }
       }
     }
   })());
