@@ -1,7 +1,8 @@
 
 // Imports:
 import { minABI, bouje } from '../../ABIs';
-import { query, addToken, addLPToken } from '../../functions';
+import { ContractCallContext } from 'ethereum-multicall';
+import { query, multicallQuery, addToken, addLPToken, parseBN } from '../../functions';
 import type { Chain, Address, Token, LPToken } from '../../types';
 
 // Initializations:
@@ -30,22 +31,41 @@ export const getPoolBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let poolCount = parseInt(await query(chain, masterChef, bouje.masterChefABI, 'poolLength', []));
   let poolList = [...Array(poolCount).keys()];
-  let promises = poolList.map(poolID => (async () => {
-    let balance = parseInt((await query(chain, masterChef, bouje.masterChefABI, 'userInfo', [poolID, wallet])).amount);
-    if(balance > 0) {
-      let token = (await query(chain, masterChef, bouje.masterChefABI, 'poolInfo', [poolID])).lpToken;
-      let symbol = await query(chain, token, minABI, 'symbol', []);
-      if(symbol === 'spLP') {
-        let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
-        balances.push(newToken);
-      } else {
-        let newToken = await addToken(chain, project, 'staked', token, balance, wallet);
-        balances.push(newToken);
-      }
-      let rewards = parseInt(await query(chain, masterChef, bouje.masterChefABI, 'pendingBastille', [poolID, wallet]));
-      if(rewards > 0) {
-        let newToken = await addToken(chain, project, 'unclaimed', bastille, rewards, wallet);
-        balances.push(newToken);
+  
+  // Multicall Query Setup:
+  let queries: ContractCallContext[] = [];
+  let balanceQuery: ContractCallContext = {
+    reference: 'userInfo',
+    contractAddress: masterChef,
+    abi: bouje.masterChefABI,
+    calls: []
+  }
+  poolList.forEach(poolID => {
+    balanceQuery.calls.push({ reference: poolID.toString(), methodName: 'userInfo', methodParameters: [poolID, wallet] });
+  });
+  queries.push(balanceQuery);
+
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
+  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
+    if(result.success) {
+      let poolID = parseInt(result.reference);
+      let balance = parseBN(result.returnValues[0]);
+      if(balance > 0) {
+        let token = (await query(chain, masterChef, bouje.masterChefABI, 'poolInfo', [poolID])).lpToken;
+        let symbol = await query(chain, token, minABI, 'symbol', []);
+        if(symbol === 'spLP') {
+          let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
+          balances.push(newToken);
+        } else {
+          let newToken = await addToken(chain, project, 'staked', token, balance, wallet);
+          balances.push(newToken);
+        }
+        let rewards = parseInt(await query(chain, masterChef, bouje.masterChefABI, 'pendingBastille', [poolID, wallet]));
+        if(rewards > 0) {
+          let newToken = await addToken(chain, project, 'unclaimed', bastille, rewards, wallet);
+          balances.push(newToken);
+        }
       }
     }
   })());
