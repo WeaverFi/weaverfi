@@ -2,7 +2,8 @@
 // Imports:
 import axios from 'axios';
 import { minABI, yieldyak } from '../../ABIs';
-import { query, addToken, addLPToken, addAxialToken } from '../../functions';
+import { ContractCallContext } from 'ethereum-multicall';
+import { query, multicallQuery, addToken, addLPToken, addAxialToken, parseBN } from '../../functions';
 import type { Chain, Address, URL, Token, LPToken, YieldYakAPIResponse } from '../../types';
 
 // Initializations:
@@ -37,32 +38,33 @@ export const get = async (wallet: Address) => {
 export const getFarmBalances = async (wallet: Address, farms: Record<Address, YieldYakAPIResponse>) => {
   let balances: (Token | LPToken)[] = [];
   let farmAddresses = Object.keys(farms) as Address[];
+  
+  // Multicall Query Setup:
+  let queries: ContractCallContext[] = [];
+  farmAddresses.forEach(farm => {
+    queries.push({
+      reference: farm,
+      contractAddress: farm,
+      abi: minABI,
+      calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
+    });
+  });
+
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
   let promises = farmAddresses.map(farm => (async () => {
-    let balance = parseInt(await query(chain, farm, minABI, 'balanceOf', [wallet]));
-    if(balance > 1) {
-      let token = await query(chain, farm, yieldyak.farmABI, 'depositToken', []);
-      let totalDeposits = parseInt(await query(chain, farm, yieldyak.farmABI, 'totalDeposits', []));
-      let totalSupply = parseInt(await query(chain, farm, minABI, 'totalSupply', []));
-      let underlyingBalance = balance * (totalDeposits / totalSupply);
-
-      // AVAX Farm:
-      if(token === zero) {
-        let newToken = await addToken(chain, project, 'staked', wavax, underlyingBalance, wallet);
-        let farmAPY = farms[farm].apy;
-        if(farmAPY) {
-          newToken.info = {
-            apy: farmAPY
-          }
-        }
-        balances.push(newToken);
-
-      // Other Farms:
-      } else {
-        let symbol = await query(chain, token, minABI, 'symbol', []);
-
-        // LP Farms:
-        if(lpSymbols.includes(symbol)) {
-          let newToken = await addLPToken(chain, project, 'staked', token, underlyingBalance, wallet);
+    let balanceResult = multicallResults[farm].callsReturnContext[0];
+    if(balanceResult.success) {
+      let balance = parseBN(balanceResult.returnValues[0]);
+      if(balance > 1) {
+        let token = await query(chain, farm, yieldyak.farmABI, 'depositToken', []);
+        let totalDeposits = parseInt(await query(chain, farm, yieldyak.farmABI, 'totalDeposits', []));
+        let totalSupply = parseInt(await query(chain, farm, minABI, 'totalSupply', []));
+        let underlyingBalance = balance * (totalDeposits / totalSupply);
+  
+        // AVAX Farm:
+        if(token === zero) {
+          let newToken = await addToken(chain, project, 'staked', wavax, underlyingBalance, wallet);
           let farmAPY = farms[farm].apy;
           if(farmAPY) {
             newToken.info = {
@@ -70,32 +72,48 @@ export const getFarmBalances = async (wallet: Address, farms: Record<Address, Yi
             }
           }
           balances.push(newToken);
-
-        // Axial Farms:
-        } else if(lpAxialSymbols.includes(symbol)) {
-          let newToken = await addAxialToken(chain, project, 'staked', token, underlyingBalance, wallet);
-          let farmAPY = farms[farm].apy;
-          if(farmAPY) {
-            newToken.info = {
-              apy: farmAPY
-            }
-          }
-          balances.push(newToken);
-
-        // Curve Farms:
-        } else if(symbol === '3poolV2-f') {
-          // Not supported yet.
-
-        // Single-Asset Farms:
+  
+        // Other Farms:
         } else {
-          let newToken = await addToken(chain, project, 'staked', token, underlyingBalance, wallet);
-          let farmAPY = farms[farm].apy;
-          if(farmAPY) {
-            newToken.info = {
-              apy: farmAPY
+          let symbol = await query(chain, token, minABI, 'symbol', []);
+  
+          // LP Farms:
+          if(lpSymbols.includes(symbol)) {
+            let newToken = await addLPToken(chain, project, 'staked', token, underlyingBalance, wallet);
+            let farmAPY = farms[farm].apy;
+            if(farmAPY) {
+              newToken.info = {
+                apy: farmAPY
+              }
             }
+            balances.push(newToken);
+  
+          // Axial Farms:
+          } else if(lpAxialSymbols.includes(symbol)) {
+            let newToken = await addAxialToken(chain, project, 'staked', token, underlyingBalance, wallet);
+            let farmAPY = farms[farm].apy;
+            if(farmAPY) {
+              newToken.info = {
+                apy: farmAPY
+              }
+            }
+            balances.push(newToken);
+  
+          // Curve Farms:
+          } else if(symbol === '3poolV2-f') {
+            // Not supported yet.
+  
+          // Single-Asset Farms:
+          } else {
+            let newToken = await addToken(chain, project, 'staked', token, underlyingBalance, wallet);
+            let farmAPY = farms[farm].apy;
+            if(farmAPY) {
+              newToken.info = {
+                apy: farmAPY
+              }
+            }
+            balances.push(newToken);
           }
-          balances.push(newToken);
         }
       }
     }
