@@ -191,20 +191,21 @@ export const getMarketBalances = async (wallet: Address) => {
       let balance = parseBN(marketBalanceResults.returnValues[0]);
       let debt = parseBN(accountSnapshotResults.returnValues[2]);
       let exchangeRate = parseBN(accountSnapshotResults.returnValues[3]);
-
-      // Lending Balances:
-      if(balance > 0) {
+      if(balance > 0 || debt > 0) {
         let token = await query(chain, market, traderjoe.marketABI, 'underlying', []);
-        let underlyingBalance = balance * (exchangeRate / (10 ** 18));
-        let newToken = await addToken(chain, project, 'lent', token, underlyingBalance, wallet);
-        balances.push(newToken);
-      }
-
-      // Borrowing Balances:
-      if(debt > 0) {
-        let token = await query(chain, market, traderjoe.marketABI, 'underlying', []);
-        let newToken = await addDebtToken(chain, project, token, debt, wallet);
-        balances.push(newToken);
+        
+        // Lending Balances:
+        if(balance > 0) {
+          let underlyingBalance = balance * (exchangeRate / (10 ** 18));
+          let newToken = await addToken(chain, project, 'lent', token, underlyingBalance, wallet);
+          balances.push(newToken);
+        }
+  
+        // Borrowing Balances:
+        if(debt > 0) {
+          let newToken = await addDebtToken(chain, project, token, debt, wallet);
+          balances.push(newToken);
+        }
       }
     }
   })());
