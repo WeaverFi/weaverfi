@@ -2,7 +2,8 @@
 // Imports:
 import axios from 'axios';
 import { minABI, snowball } from '../../ABIs';
-import { query, addToken, addLPToken, addXToken, addAxialToken } from '../../functions';
+import { ContractCallContext } from 'ethereum-multicall';
+import { query, multicallQuery, addToken, addLPToken, addXToken, addAxialToken, parseBN } from '../../functions';
 import type { Chain, Address, URL, Token, LPToken, XToken, SnowballAPIResponse } from '../../types';
 
 // Initializations:
@@ -39,40 +40,57 @@ export const get = async (wallet: Address) => {
 export const getFarmBalances = async (farms: SnowballAPIResponse[], wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let snobRewards = 0;
+  
+  // Multicall Query Setup:
+  let queries: ContractCallContext[] = [];
+  farms.forEach(farm => {
+    queries.push({
+      reference: farm.address,
+      contractAddress: farm.gaugeInfo.address,
+      abi: minABI,
+      calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
+    });
+  });
+
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
   let promises = farms.map(farm => (async () => {
-    let balance = parseInt(await query(chain, farm.gaugeInfo.address, minABI, 'balanceOf', [wallet]));
-    if(balance > 0) {
-      let newToken: Token | LPToken;
-      let exchangeRatio = parseInt(await query(chain, farm.address, snowball.farmABI, 'getRatio', [])) / (10 ** 18);
-
-      // Standard Liquidity Pools:
-      if(farm.symbol === 'PGL' || farm.symbol === 'JLP') {
-        newToken = await addLPToken(chain, project, 'staked', farm.lpAddress, balance * exchangeRatio, wallet);
-
-      // Axial Pools:
-      } else if(farm.symbol === 'AXLP') {
-        if(farm.lpAddress.toLowerCase() === '0x5305a6c4da88391f4a9045bf2ed57f4bf0cf4f62') { // AVAX-AXIAL Pool
+    let balanceResult = multicallResults[farm.address].callsReturnContext[0];
+    if(balanceResult.success) {
+      let balance = parseBN(balanceResult.returnValues[0]);
+      if(balance > 0) {
+        let newToken: Token | LPToken;
+        let exchangeRatio = parseInt(await query(chain, farm.address, snowball.farmABI, 'getRatio', [])) / (10 ** 18);
+  
+        // Standard Liquidity Pools:
+        if(farm.symbol === 'PGL' || farm.symbol === 'JLP') {
           newToken = await addLPToken(chain, project, 'staked', farm.lpAddress, balance * exchangeRatio, wallet);
+  
+        // Axial Pools:
+        } else if(farm.symbol === 'AXLP') {
+          if(farm.lpAddress.toLowerCase() === '0x5305a6c4da88391f4a9045bf2ed57f4bf0cf4f62') { // AVAX-AXIAL Pool
+            newToken = await addLPToken(chain, project, 'staked', farm.lpAddress, balance * exchangeRatio, wallet);
+          } else {
+            newToken = await addAxialToken(chain, project, 'staked', farm.lpAddress, balance * exchangeRatio, wallet);
+          }
+  
+        // Other Single-Asset Pools:
         } else {
-          newToken = await addAxialToken(chain, project, 'staked', farm.lpAddress, balance * exchangeRatio, wallet);
+          newToken = await addToken(chain, project, 'staked', farm.lpAddress, balance * exchangeRatio, wallet);
         }
-
-      // Other Single-Asset Pools:
-      } else {
-        newToken = await addToken(chain, project, 'staked', farm.lpAddress, balance * exchangeRatio, wallet);
-      }
-
-      // Adding Extra Token Info:
-      newToken.info = {
-        apy: farm.yearlySwapFees + farm.yearlyAPY + farm.gaugeInfo.snobYearlyAPR,
-        deprecated: farm.deprecated
-      }
-      balances.push(newToken);
-
-      // Pending SNOB Rewards:
-      let rewards = parseInt(await query(chain, farm.gaugeInfo.address, snowball.gaugeABI, 'earned', [wallet]));
-      if(rewards > 0) {
-        snobRewards += rewards;
+  
+        // Adding Extra Token Info:
+        newToken.info = {
+          apy: farm.yearlySwapFees + farm.yearlyAPY + farm.gaugeInfo.snobYearlyAPR,
+          deprecated: farm.deprecated
+        }
+        balances.push(newToken);
+  
+        // Pending SNOB Rewards:
+        let rewards = parseInt(await query(chain, farm.gaugeInfo.address, snowball.gaugeABI, 'earned', [wallet]));
+        if(rewards > 0) {
+          snobRewards += rewards;
+        }
       }
     }
   })());
