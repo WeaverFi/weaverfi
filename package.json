@@ -1,6 +1,6 @@
 {
   "name": "weaverfi",
-  "version": "1.8.22",
+  "version": "1.8.23",
   "description": "The NPM package to query DeFi.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

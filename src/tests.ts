@@ -6,7 +6,7 @@ import { minABI } from './ABIs';
 import type { Address, TerraAddress } from './types';
 
 // Initializations:
-const wallet: Address | TerraAddress = '0x5b1CE9c166D8D7597E6C44e409BA6C40B55dd761';
+const wallet: Address | TerraAddress = '0x57E15754dfd25fa5B59E41D7A2d16176bF8B06F0';
 const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
@@ -15,7 +15,7 @@ const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 const tests = async () => {
 
   // Project Balance Tests:
-  let projectBalance = await weaver.FTM.getProjectBalance(wallet, 'spookyswap');
+  let projectBalance = await weaver.FTM.getProjectBalance(wallet, 'scream');
   console.log('🕷️ ~ projectBalance', projectBalance);
 
   /* ================================================== */

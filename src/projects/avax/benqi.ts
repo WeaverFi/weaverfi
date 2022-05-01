@@ -54,30 +54,26 @@ export const getMarketBalances = async (wallet: Address) => {
       let balance = parseBN(marketBalanceResults.returnValues[0]);
       let debt = parseBN(accountSnapshotResults.returnValues[2]);
       let exchangeRate = parseBN(accountSnapshotResults.returnValues[3]);
-
-      // Lending Balances:
-      if(balance > 0) {
+      if(balance > 0 || debt > 0) {
         let tokenAddress: Address;
         if(market.toLowerCase() === '0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c'.toLowerCase()) {
           tokenAddress = defaultAddress;
         } else {
           tokenAddress = await query(chain, market, benqi.marketABI, 'underlying', []);
         }
-        let underlyingBalance = balance * (exchangeRate / (10 ** 18));
-        let newToken = await addToken(chain, project, 'lent', tokenAddress, underlyingBalance, wallet);
-        balances.push(newToken);
-      }
 
-      // Borrowing Balances:
-      if(debt > 0) {
-        let tokenAddress: Address;
-        if(market.toLowerCase() === '0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c'.toLowerCase()) {
-          tokenAddress = defaultAddress;
-        } else {
-          tokenAddress = await query(chain, market, benqi.marketABI, 'underlying', []);
+        // Lending Balances:
+        if(balance > 0) {
+          let underlyingBalance = balance * (exchangeRate / (10 ** 18));
+          let newToken = await addToken(chain, project, 'lent', tokenAddress, underlyingBalance, wallet);
+          balances.push(newToken);
         }
-        let newToken = await addDebtToken(chain, project, tokenAddress, debt, wallet);
-        balances.push(newToken);
+  
+        // Borrowing Balances:
+        if(debt > 0) {
+          let newToken = await addDebtToken(chain, project, tokenAddress, debt, wallet);
+          balances.push(newToken);
+        }
       }
     }
   })());
