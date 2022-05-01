@@ -1,7 +1,8 @@
 
 // Imports:
 import { sushiswap } from '../../ABIs';
-import { query, addToken, addLPToken } from '../../functions';
+import { ContractCallContext } from 'ethereum-multicall';
+import { query, multicallQuery, addToken, addLPToken, parseBN } from '../../functions';
 import type { Chain, Address, Token, LPToken } from '../../types';
 
 // Initializations:
@@ -33,15 +34,36 @@ export const getFarmBalances = async (wallet: Address) => {
   let sushiRewards = 0;
   let farmCount = parseInt(await query(chain, masterChef, sushiswap.masterChefABI, 'poolLength', []));
   let farms = [...Array(farmCount).keys()];
-  let promises = farms.map(farmID => (async () => {
-    let balance = parseInt((await query(chain, masterChef, sushiswap.masterChefABI, 'userInfo', [farmID, wallet])).amount);
-    if(balance > 0) {
-      let lpToken = await query(chain, masterChef, sushiswap.masterChefABI, 'poolInfo', [farmID]);
-      let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);
-      balances.push(newToken);
-      let rewards = parseInt(await query(chain, masterChef, sushiswap.masterChefABI, 'pendingSushi', [farmID, wallet]));
-      if(rewards > 0) {
-        sushiRewards += rewards;
+  
+  // Multicall Query Setup:
+  let queries: ContractCallContext[] = [];
+  let balanceQuery: ContractCallContext = {
+    reference: 'userInfo',
+    contractAddress: masterChef,
+    abi: sushiswap.masterChefABI,
+    calls: []
+  }
+  farms.forEach(farmID => {
+    balanceQuery.calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
+  });
+  queries.push(balanceQuery);
+
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
+  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
+    if(result.success) {
+      let farmID = parseInt(result.reference);
+      let balance = parseBN(result.returnValues[0]);
+      if(balance > 0) {
+        let lpToken = await query(chain, masterChef, sushiswap.masterChefABI, 'lpToken', [farmID]);
+        let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);
+        balances.push(newToken);
+  
+        // Pending SUSHI Rewards:
+        let rewards = parseInt(await query(chain, masterChef, sushiswap.masterChefABI, 'pendingSushi', [farmID, wallet]));
+        if(rewards > 0) {
+          sushiRewards += rewards;
+        }
       }
     }
   })());
@@ -59,15 +81,36 @@ export const getFarmV2Balances = async (wallet: Address) => {
   let sushiRewards = 0;
   let farmCount = parseInt(await query(chain, masterChefV2, sushiswap.masterChefABI, 'poolLength', []));
   let farms = [...Array(farmCount).keys()];
-  let promises = farms.map(farmID => (async () => {
-    let balance = parseInt((await query(chain, masterChefV2, sushiswap.masterChefABI, 'userInfo', [farmID, wallet])).amount);
-    if(balance > 0) {
-      let lpToken = await query(chain, masterChefV2, sushiswap.masterChefABI, 'lpToken', [farmID]);
-      let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);
-      balances.push(newToken);
-      let rewards = parseInt(await query(chain, masterChefV2, sushiswap.masterChefABI, 'pendingSushi', [farmID, wallet]));
-      if(rewards > 0) {
-        sushiRewards += rewards;
+  
+  // Multicall Query Setup:
+  let queries: ContractCallContext[] = [];
+  let balanceQuery: ContractCallContext = {
+    reference: 'userInfo',
+    contractAddress: masterChefV2,
+    abi: sushiswap.masterChefABI,
+    calls: []
+  }
+  farms.forEach(farmID => {
+    balanceQuery.calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
+  });
+  queries.push(balanceQuery);
+
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
+  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
+    if(result.success) {
+      let farmID = parseInt(result.reference);
+      let balance = parseBN(result.returnValues[0]);
+      if(balance > 0) {
+        let lpToken = await query(chain, masterChefV2, sushiswap.masterChefABI, 'lpToken', [farmID]);
+        let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);
+        balances.push(newToken);
+  
+        // Pending SUSHI Rewards:
+        let rewards = parseInt(await query(chain, masterChefV2, sushiswap.masterChefABI, 'pendingSushi', [farmID, wallet]));
+        if(rewards > 0) {
+          sushiRewards += rewards;
+        }
       }
     }
   })());
