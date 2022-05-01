@@ -1,7 +1,8 @@
 
 // Imports:
 import { minABI, beethovenx } from '../../ABIs';
-import { query, addBalancerLikeToken, addToken } from '../../functions';
+import { ContractCallContext } from 'ethereum-multicall';
+import { query, multicallQuery, addBalancerLikeToken, addToken, parseBN } from '../../functions';
 import { Chain, Address, Hash, Token, LPToken } from '../../types';
 
 // Initializations:
@@ -168,12 +169,49 @@ export const get = async (wallet: Address) => {
 // Function to get all pool balances:
 export const getPoolBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
-  let promises = poolIDs.map(id => (async () => {
-    let address = (await query(chain, vault, beethovenx.vaultABI, 'getPool', [id]))[0];
-    let balance = parseInt(await query(chain, address, minABI, 'balanceOf', [wallet]));
-    if(balance > 0) {
-      let newToken = await addBalancerLikeToken(chain, project, 'liquidity', address, balance, wallet, id, vault);
-      balances.push(newToken);
+
+  // Pool Address Multicall Query Setup:
+  let poolQueries: ContractCallContext[] = [];
+  let poolQuery: ContractCallContext = {
+    reference: 'poolAddresses',
+    contractAddress: vault,
+    abi: beethovenx.vaultABI,
+    calls: []
+  }
+  poolIDs.forEach(id => {
+    poolQuery.calls.push({ reference: id, methodName: 'getPool', methodParameters: [id] });
+  });
+  poolQueries.push(poolQuery);
+  
+  // Pool Address Multicall Query Results:
+  let poolMulticallResults = (await multicallQuery(chain, poolQueries)).results;
+  
+  // Balance Multicall Query Setup:
+  let balanceQueries: ContractCallContext[] = [];
+  poolMulticallResults['poolAddresses'].callsReturnContext.forEach(result => {
+    if(result.success) {
+      let poolAddress = result.returnValues[0] as Address;
+      balanceQueries.push({
+        reference: result.reference,
+        contractAddress: poolAddress,
+        abi: minABI,
+        calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
+      });
+    }
+  });
+
+  // Balance Multicall Query Results:
+  let balanceMulticallResults = (await multicallQuery(chain, balanceQueries)).results;
+  let promises = Object.keys(balanceMulticallResults).map(result => (async () => {
+    let balanceResult = balanceMulticallResults[result].callsReturnContext[0];
+    if(balanceResult.success) {
+      let poolID = balanceMulticallResults[result].originalContractCallContext.reference as Address;
+      let poolAddress = balanceMulticallResults[result].originalContractCallContext.contractAddress as Address;
+      let balance = parseBN(balanceResult.returnValues[0]);
+      if(balance > 0) {
+        let newToken = await addBalancerLikeToken(chain, project, 'liquidity', poolAddress, balance, wallet, poolID, vault);
+        balances.push(newToken);
+      }
     }
   })());
   await Promise.all(promises);
@@ -184,25 +222,42 @@ export const getPoolBalances = async (wallet: Address) => {
 export const getStakedBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let numRewardPools = parseInt(await query(chain, masterChef, beethovenx.masterChefABI, 'poolLength', []));
+  let pools = [...Array(numRewardPools).keys()];
   let pendingBeets = 0;
-  let promises: Promise<void>[] = [];
-  for(let poolNum = 0; poolNum < numRewardPools; poolNum++) {
-    promises.push((async () => {
-      let balance = parseInt((await query(chain, masterChef, beethovenx.masterChefABI, 'userInfo', [poolNum, wallet])).amount);
+  
+  // Multicall Query Setup:
+  let queries: ContractCallContext[] = [];
+  let balanceQuery: ContractCallContext = {
+    reference: 'userInfo',
+    contractAddress: masterChef,
+    abi: beethovenx.masterChefABI,
+    calls: []
+  }
+  pools.forEach(poolNum => {
+    balanceQuery.calls.push({ reference: poolNum.toString(), methodName: 'userInfo', methodParameters: [poolNum, wallet] });
+  });
+  queries.push(balanceQuery);
+
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
+  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
+    if(result.success) {
+      let poolNum = parseInt(result.reference);
+      let balance = parseBN(result.returnValues[0]);
       if(balance > 0) {
         let poolAddress: Address = await query(chain, masterChef, beethovenx.masterChefABI, 'lpTokens', [poolNum]);
-        if(poolAddress !== fBeetAddress) {
-          let poolId: Address = await query(chain, poolAddress, beethovenx.poolABI, 'getPoolId', []);
-          let newToken = await addBalancerLikeToken(chain, project, 'staked', poolAddress, balance, wallet, poolId, vault);
+        if(poolAddress != fBeetAddress) {
+          let poolID: Address = await query(chain, poolAddress, beethovenx.poolABI, 'getPoolId', []);
+          let newToken = await addBalancerLikeToken(chain, project, 'staked', poolAddress, balance, wallet, poolID, vault);
           balances.push(newToken);
         }
+        let poolBeets = parseInt(await query(chain, masterChef, beethovenx.masterChefABI, 'pendingBeets', [poolNum, wallet]));
+        if(poolBeets > 0) {
+          pendingBeets += poolBeets;
+        }
       }
-      let poolBeets = parseInt(await query(chain, masterChef, beethovenx.masterChefABI, 'pendingBeets', [poolNum, wallet]));
-      if(poolBeets > 0) {
-        pendingBeets += poolBeets;
-      }
-    })());
-  }
+    }
+  })());
   await Promise.all(promises);
   if(pendingBeets > 0) {
     let beets = await addToken(chain, project, 'unclaimed', beetsToken, pendingBeets, wallet);
