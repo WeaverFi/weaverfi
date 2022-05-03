@@ -1,7 +1,8 @@
 
 // Imports:
 import { minABI, belt } from '../../ABIs';
-import { query, addToken, addLPToken, addXToken, add4BeltToken, addBeltToken } from '../../functions';
+import { query, multicallQuery, addToken, addLPToken, addXToken, add4BeltToken, addBeltToken, parseBN } from '../../functions';
+import type { ContractCallContext } from 'ethereum-multicall';
 import type { Chain, Address, Token, LPToken, XToken } from '../../types';
 
 // Initializations:
@@ -58,24 +59,41 @@ export const getStakedBELT = async (wallet: Address) => {
 // Function to get pool balances:
 export const getPoolBalances = async (wallet: Address) => {
   let balances: (Token | LPToken | XToken)[] = [];
+  
+  // Multicall Query Setup:
+  let queries: ContractCallContext[] = [];
+  Object.keys(pools).forEach(pool => {
+    queries.push({
+      reference: pool,
+      contractAddress: pools[pool].token,
+      abi: minABI,
+      calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
+    });
+  });
+
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
   let promises = Object.keys(pools).map(pool => (async () => {
-    let balance = parseInt(await query(chain, pools[pool].token, minABI, 'balanceOf', [wallet]));
-    if(balance > 0) {
+    let balanceResult = multicallResults[pool].callsReturnContext[0];
+    if(balanceResult.success) {
+      let balance = parseBN(balanceResult.returnValues[0]);
+      if(balance > 0) {
 
-      // 4Belt Pool:
-      if(pool === '4Belt') {
-        let newToken = await add4BeltToken(chain, project, 'liquidity', pools[pool].token, balance, wallet);
-        balances.push(newToken);
+        // 4Belt Pool:
+        if(pool === '4Belt') {
+          let newToken = await add4BeltToken(chain, project, 'liquidity', pools[pool].token, balance, wallet);
+          balances.push(newToken);
 
-      // PancakeSwap LP:
-      } else if(pool === 'Cake-LP') {
-        let newToken = await addLPToken(chain, project, 'liquidity', pools[pool].token, balance, wallet);
-        balances.push(newToken);
+        // PancakeSwap LP:
+        } else if(pool === 'Cake-LP') {
+          let newToken = await addLPToken(chain, project, 'liquidity', pools[pool].token, balance, wallet);
+          balances.push(newToken);
 
-      // Belt Tokens:
-      } else {
-        let newToken = await addBeltToken(chain, project, 'staked', pools[pool].token, balance, wallet);
-        balances.push(newToken);
+        // Belt Tokens:
+        } else {
+          let newToken = await addBeltToken(chain, project, 'staked', pools[pool].token, balance, wallet);
+          balances.push(newToken);
+        }
       }
     }
   })());
@@ -87,11 +105,31 @@ export const getPoolBalances = async (wallet: Address) => {
 export const getVaultBalances = async (wallet: Address) => {
   let balances: (Token | LPToken | XToken)[] = [];
   let beltRewards = 0;
-  let promises = Object.keys(pools).map(pool => (async () => {
-    if(pools[pool].vaultID) {
-      let balance = parseInt(await query(chain, masterBelt, belt.masterBeltABI, 'stakedWantTokens', [pools[pool].vaultID, wallet]));
-      if(balance > 0) {
   
+  // Multicall Query Setup:
+  let queries: ContractCallContext[] = [];
+  let balanceQuery: ContractCallContext = {
+    reference: 'stakedWantTokens',
+    contractAddress: masterBelt,
+    abi: belt.masterBeltABI,
+    calls: []
+  }
+  Object.keys(pools).forEach(pool => {
+    let vaultID = pools[pool].vaultID;
+    if(vaultID) {
+      balanceQuery.calls.push({ reference: pool, methodName: 'stakedWantTokens', methodParameters: [vaultID, wallet] });
+    }
+  });
+  queries.push(balanceQuery);
+
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
+  let promises = multicallResults['stakedWantTokens'].callsReturnContext.map(result => (async () => {
+    if(result.success) {
+      let pool = result.reference;
+      let balance = parseBN(result.returnValues[0]);
+      if(balance > 0) {
+          
         // 4Belt Pool:
         if(pool === '4Belt') {
           let newToken = await add4BeltToken(chain, project, 'staked', pools[pool].token, balance, wallet);
