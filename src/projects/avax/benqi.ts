@@ -1,8 +1,8 @@
 
 // Imports:
 import { minABI, benqi } from '../../ABIs';
-import { ContractCallContext } from 'ethereum-multicall';
 import { query, multicallQuery, addToken, addDebtToken, parseBN } from '../../functions';
+import type { ContractCallContext } from 'ethereum-multicall';
 import type { Chain, Address, Token, DebtToken } from '../../types';
 
 // Initializations:

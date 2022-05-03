@@ -2,8 +2,8 @@
 // Imports:
 import axios from 'axios';
 import { minABI, aave } from '../../ABIs';
-import { ContractCallContext } from 'ethereum-multicall';
 import { query, multicallQuery, addToken, addDebtToken, parseBN } from '../../functions';
+import type { ContractCallContext } from 'ethereum-multicall';
 import type { Chain, Address, URL, Token, DebtToken, AaveAPIResponse } from '../../types';
 
 // Initializations:

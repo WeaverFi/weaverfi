@@ -2,8 +2,8 @@
 // Imports:
 import axios from 'axios';
 import { minABI, beefy, beethovenx } from '../../ABIs';
-import { ContractCallContext } from 'ethereum-multicall';
 import { query, multicallQuery, addToken, addLPToken, addCurveToken, addBalancerLikeToken, parseBN } from '../../functions';
+import type { ContractCallContext } from 'ethereum-multicall';
 import type { Chain, Address, URL, Token, LPToken, BeefyAPIResponse } from '../../types';
 
 // Initializations:

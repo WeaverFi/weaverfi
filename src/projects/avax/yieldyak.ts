@@ -2,8 +2,8 @@
 // Imports:
 import axios from 'axios';
 import { minABI, yieldyak } from '../../ABIs';
-import { ContractCallContext } from 'ethereum-multicall';
 import { query, multicallQuery, addToken, addLPToken, addAxialToken, parseBN } from '../../functions';
+import type { ContractCallContext } from 'ethereum-multicall';
 import type { Chain, Address, URL, Token, LPToken, YieldYakAPIResponse } from '../../types';
 
 // Initializations:

@@ -1,8 +1,8 @@
 
 // Imports:
 import { minABI, alligator } from '../../ABIs';
-import { ContractCallContext } from 'ethereum-multicall';
 import { query, multicallQuery, addToken, addLPToken, addXToken, parseBN } from '../../functions';
+import type { ContractCallContext } from 'ethereum-multicall';
 import type { Chain, Address, Token, LPToken, XToken } from '../../types';
 
 // Initializations:

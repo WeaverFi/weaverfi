@@ -1,8 +1,8 @@
 
 // Imports:
 import { autofarm } from '../../ABIs';
-import { ContractCallContext } from 'ethereum-multicall';
 import { query, multicallQuery, addLPToken, parseBN } from '../../functions';
+import type { ContractCallContext } from 'ethereum-multicall';
 import type { Chain, Address, LPToken } from '../../types';
 
 // Initializations:

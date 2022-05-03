@@ -1,8 +1,8 @@
 
 // Imports:
 import { minABI, spookyswap } from '../../ABIs';
-import { ContractCallContext } from 'ethereum-multicall';
 import { query, multicallQuery, addToken, addLPToken, addSpookyToken, parseBN } from '../../functions';
+import type { ContractCallContext } from 'ethereum-multicall';
 import type { Chain, Address, Token, LPToken, XToken } from '../../types';
 
 // Initializations:

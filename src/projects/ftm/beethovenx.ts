@@ -1,9 +1,9 @@
 
 // Imports:
 import { minABI, beethovenx } from '../../ABIs';
-import { ContractCallContext } from 'ethereum-multicall';
 import { query, multicallQuery, addBalancerLikeToken, addToken, parseBN } from '../../functions';
-import { Chain, Address, Hash, Token, LPToken } from '../../types';
+import type { ContractCallContext } from 'ethereum-multicall';
+import type { Chain, Address, Hash, Token, LPToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'ftm';
