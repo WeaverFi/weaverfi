@@ -1,7 +1,8 @@
 
 // Imports:
 import { minABI, apeswap } from '../../ABIs';
-import { query, addToken, addLPToken } from '../../functions';
+import { query, multicallQuery, addToken, addLPToken, parseBN } from '../../functions';
+import type { ContractCallContext } from 'ethereum-multicall';
 import type { Chain, Address, Token, LPToken } from '../../types';
 
 // Initializations:
@@ -33,26 +34,45 @@ export const getFarmBalances = async (wallet: Address) => {
   let bananaRewards = 0;
   let farmCount = parseInt(await query(chain, masterApe, apeswap.masterApeABI, 'poolLength', []));
   let farms = [...Array(farmCount).keys()];
-  let promises = farms.map(farmID => (async () => {
-    let balance = parseInt((await query(chain, masterApe, apeswap.masterApeABI, 'userInfo', [farmID, wallet])).amount);
-    if(balance > 0) {
+  
+  // Multicall Query Setup:
+  let queries: ContractCallContext[] = [];
+  let balanceQuery: ContractCallContext = {
+    reference: 'userInfo',
+    contractAddress: masterApe,
+    abi: apeswap.masterApeABI,
+    calls: []
+  }
+  farms.forEach(farmID => {
+    balanceQuery.calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
+  });
+  queries.push(balanceQuery);
 
-      // BANANA Farm:
-      if(farmID === 0) {
-        let newToken = await addToken(chain, project, 'staked', banana, balance, wallet);
-        balances.push(newToken);
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
+  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
+    if(result.success) {
+      let farmID = parseInt(result.reference);
+      let balance = parseBN(result.returnValues[0]);
+      if(balance > 0) {
 
-      // LP Farms:
-      } else {
-        let lpToken = (await query(chain, masterApe, apeswap.masterApeABI, 'poolInfo', [farmID])).lpToken;
-        let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);
-        balances.push(newToken);
-      }
+        // BANANA Farm:
+        if(farmID === 0) {
+          let newToken = await addToken(chain, project, 'staked', banana, balance, wallet);
+          balances.push(newToken);
 
-      // Pending BANANA Rewards:
-      let rewards = parseInt(await query(chain, masterApe, apeswap.masterApeABI, 'pendingCake', [farmID, wallet]));
-      if(rewards > 0) {
-        bananaRewards += rewards;
+        // LP Farms:
+        } else {
+          let lpToken = (await query(chain, masterApe, apeswap.masterApeABI, 'poolInfo', [farmID])).lpToken;
+          let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);
+          balances.push(newToken);
+        }
+
+        // Pending BANANA Rewards:
+        let rewards = parseInt(await query(chain, masterApe, apeswap.masterApeABI, 'pendingCake', [farmID, wallet]));
+        if(rewards > 0) {
+          bananaRewards += rewards;
+        }
       }
     }
   })());
@@ -69,21 +89,40 @@ export const getVaultBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let vaultCount = parseInt(await query(chain, vaultMaster, apeswap.vaultMasterABI, 'poolLength', []));
   let vaults = [...Array(vaultCount).keys()];
-  let promises = vaults.map(vaultID => (async () => {
-    let balance = parseInt(await query(chain, vaultMaster, apeswap.vaultMasterABI, 'stakedWantTokens', [vaultID, wallet]));
-    if(balance > 0) {
-      let token = (await query(chain, vaultMaster, apeswap.vaultMasterABI, 'poolInfo', [vaultID])).want;
-      let symbol = await query(chain, token, minABI, 'symbol', []);
+  
+  // Multicall Query Setup:
+  let queries: ContractCallContext[] = [];
+  let balanceQuery: ContractCallContext = {
+    reference: 'stakedWantTokens',
+    contractAddress: vaultMaster,
+    abi: apeswap.vaultMasterABI,
+    calls: []
+  }
+  vaults.forEach(vaultID => {
+    balanceQuery.calls.push({ reference: vaultID.toString(), methodName: 'stakedWantTokens', methodParameters: [vaultID, wallet] });
+  });
+  queries.push(balanceQuery);
 
-      // LP Vaults:
-      if(symbol.endsWith('LP')) {
-        let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
-        balances.push(newToken);
+  // Multicall Query Results:
+  let multicallResults = (await multicallQuery(chain, queries)).results;
+  let promises = multicallResults['stakedWantTokens'].callsReturnContext.map(result => (async () => {
+    if(result.success) {
+      let vaultID = parseInt(result.reference);
+      let balance = parseBN(result.returnValues[0]);
+      if(balance > 0) {
+        let token = (await query(chain, vaultMaster, apeswap.vaultMasterABI, 'poolInfo', [vaultID])).want;
+        let symbol = await query(chain, token, minABI, 'symbol', []);
+        
+        // LP Vaults:
+        if(symbol.endsWith('LP')) {
+          let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
+          balances.push(newToken);
 
-      // Other Vaults:
-      } else {
-        let newToken = await addToken(chain, project, 'staked', token, balance, wallet);
-        balances.push(newToken);
+        // Other Vaults:
+        } else {
+          let newToken = await addToken(chain, project, 'staked', token, balance, wallet);
+          balances.push(newToken);
+        }
       }
     }
   })());
