@@ -100,6 +100,7 @@ export interface SimpleTX {
     wallet: Address
     chain: Chain
     hash: Hash
+    block: number
     time: number
     direction: 'in' | 'out'
     fee: number
