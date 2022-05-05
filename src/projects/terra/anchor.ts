@@ -48,7 +48,7 @@ export const get = async (wallet: TerraAddress) => {
 // Function to get Earn aUST balance:
 export const getEarnBalance = async (wallet: TerraAddress) => {
   let balance = parseInt((await query(aust, { balance: { address: wallet } })).balance);
-  if(balance > 0) {
+  if(balance > 10) {
     let exchangeRate = (await query(market, {state: {}})).prev_exchange_rate;
     let newToken = await addNativeToken(project, 'staked', balance * exchangeRate, wallet, 'uusd');
     return [newToken];
