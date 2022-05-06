@@ -1,14 +1,15 @@
 
 // Imports:
 import { minABI, balancer } from '../../ABIs';
-import { query, addBalancerToken } from '../../functions';
-import type { Chain, Address, Token, LPToken } from '../../types';
+import { query, multicallQuery, addBalancerToken, parseBN } from '../../functions';
+import type { ContractCallContext } from 'ethereum-multicall';
+import type { Chain, Address, Hash, Token, LPToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'eth';
 const project = 'balancer';
 const vault: Address = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
-const poolIDs: Address[] = [
+const poolIDs: Hash[] = [
   '0x01abc00e86c7e258823b9a055fd62ca6cf61a16300010000000000000000003b',
   '0x021c343c6180f03ce9e48fae3ff432309b9af19900020000000000000000000b',
   '0x0297e37f1873d2dab4487aa67cd56b58e2f27875000200000000000000000003',
@@ -129,12 +130,49 @@ export const get = async (wallet: Address) => {
 // Function to get all pool balances:
 export const getPoolBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
-  let promises = poolIDs.map(id => (async () => {
-    let address = (await query(chain, vault, balancer.vaultABI, 'getPool', [id]))[0];
-    let balance = parseInt(await query(chain, address, minABI, 'balanceOf', [wallet]));
-    if(balance > 0) {
-      let newToken = await addBalancerToken(chain, project, 'staked', address, balance, wallet, id);
-      balances.push(newToken);
+
+  // Pool Multicall Query Setup:
+  let poolQueries: ContractCallContext[] = [];
+  let poolQuery: ContractCallContext = {
+    reference: 'pool',
+    contractAddress: vault,
+    abi: balancer.vaultABI,
+    calls: []
+  }
+  poolIDs.forEach(poolID => {
+    poolQuery.calls.push({ reference: poolID.toString(), methodName: 'getPool', methodParameters: [poolID] });
+  });
+  poolQueries.push(poolQuery);
+
+  // Pool Multicall Query Results:
+  let poolMulticallResults = (await multicallQuery(chain, poolQueries)).results;
+
+  // Balance Multicall Query Setup:
+  let balanceQueries: ContractCallContext[] = [];
+  poolMulticallResults['pool'].callsReturnContext.forEach(result => {
+    if(result.success) {
+      let pool = result.returnValues[0] as Address;
+      balanceQueries.push({
+        reference: result.reference,
+        contractAddress: pool,
+        abi: minABI,
+        calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
+      });
+    }
+  });
+
+  // Balance Multicall Query Results:
+  let balanceMulticallResults = (await multicallQuery(chain, balanceQueries)).results;
+  let promises = Object.keys(balanceMulticallResults).map(result => (async () => {
+    let balanceResult = balanceMulticallResults[result].callsReturnContext[0];
+    if(balanceResult.success) {
+      let poolID = balanceMulticallResults[result].originalContractCallContext.reference as Hash;
+      let pool = balanceMulticallResults[result].originalContractCallContext.contractAddress as Address;
+      let balance = parseBN(balanceResult.returnValues[0]);
+      if(balance > 0) {
+        let newToken = await addBalancerToken(chain, project, 'staked', pool, balance, wallet, poolID);
+        balances.push(newToken);
+      }
     }
   })());
   await Promise.all(promises);
