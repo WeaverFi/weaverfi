@@ -515,7 +515,7 @@ export const avax_data: ChainTokenData = {
     { address: '0x321e7092a180bb43555132ec53aaa65a5bf84251', symbol: 'gOHM', logo: 'https://snowtrace.io/token/images/governanceohm_32.png', decimals: 18 },
     { address: '0x783c08b5f26e3daf8c4681f3bf49844e425b6393', symbol: 'AUSD', logo: 'https://assets.coingecko.com/coins/images/21328/small/ausd.png?1638946188', decimals: 18 },
     { address: '0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e', symbol: 'USDC', logo: 'https://snowtrace.io/token/images/usdc_32.png', decimals: 6 },
-    { address: '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7', symbol: 'USDT', logo: 'https://snowtrace.io/token/images/tether_32.png', decimals: 18 },
+    { address: '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7', symbol: 'USDt', logo: 'https://snowtrace.io/token/images/tether_32.png', decimals: 18 },
     { address: '0x22d4002028f537599bE9f666d1c4Fa138522f9c8', symbol: 'PTP', logo: 'https://snowtrace.io/token/images/platypusfinance_32.png', decimals: 18 },
     { address: '0x1C20E891Bab6b1727d14Da358FAe2984Ed9B59EB', symbol: 'TUSD', logo: 'https://snowtrace.io/token/images/trueusd_32.png', decimals: 18 },
     { address: '0x1ECd47FF4d9598f89721A2866BFEb99505a413Ed', symbol: 'AVME', logo: 'https://snowtrace.io/token/images/avmeavax_32.png', decimals: 18 },
