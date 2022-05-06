@@ -620,11 +620,11 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
 
     // Function to redirect synthetic asset price fetching:
     const getPrice = async (chain: EVMChain, address: Address, decimals: number): Promise<number> => {
-      if(address.toLowerCase() === '0xbBC455cb4F1B9e4bFC4B73970d360c8f032EfEE6'.toLowerCase()) { // sLINK
+      if(address.toLowerCase() === '0xbbc455cb4f1b9e4bfc4b73970d360c8f032efee6') { // sLINK
         return await getTokenPrice(chain, '0x514910771af9ca656af840dff83e8264ecf986ca', decimals);
-      } else if(address.toLowerCase() === '0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6'.toLowerCase()) { // sBTC
+      } else if(address.toLowerCase() === '0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6') { // sBTC
         return await getTokenPrice(chain, '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', decimals);
-      } else if(address.toLowerCase() === '0xd71ecff9342a5ced620049e616c5035f1db98620'.toLowerCase()) { // sEUR
+      } else if(address.toLowerCase() === '0xd71ecff9342a5ced620049e616c5035f1db98620') { // sEUR
         return await getTokenPrice(chain, '0xdb25f211ab05b1c97d595516f45794528a807ad8', decimals);
       } else {
         return await getTokenPrice(chain, address, decimals);
@@ -706,7 +706,7 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
     let balance = rawBalance / (10 ** decimals);
     
     // crvUSDBTCETH (Atricrypto V3):
-    if(address.toLowerCase() === '0xdAD97F7713Ae9437fa9249920eC8507e5FbB23d3'.toLowerCase()) {
+    if(address.toLowerCase() === '0xdad97f7713ae9437fa9249920ec8507e5fbb23d3') {
 
       // Initializing Token Values:
       let type: TokenType = 'token';
@@ -736,7 +736,7 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
       return { type, chain, location, status, owner, symbol, address, balance, price, logo };
 
     // am3CRV (Aave):
-    } else if(address.toLowerCase() === '0xE7a24EF0C5e95Ffb0f6684b813A78F2a3AD7D171'.toLowerCase()) {
+    } else if(address.toLowerCase() === '0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171') {
 
       // Initializing Token Values:
       let type: TokenType = 'token';
@@ -749,7 +749,7 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
       return { type, chain, location, status, owner, symbol, address, balance, price, logo };
 
     // btcCRV (Ren):
-    } else if(address.toLowerCase() === '0xf8a57c1d3b9629b77b6726a042ca48990A84Fb49'.toLowerCase()) {
+    } else if(address.toLowerCase() === '0xf8a57c1d3b9629b77b6726a042ca48990a84fb49') {
 
       // Initializing Token Values:
       let type: TokenType = 'lpToken';
@@ -787,7 +787,7 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
       return { type, chain, location, status, owner, symbol, address, balance, token0, token1 };
 
     // crvEURTUSD (EURtUSD):
-    } else if(address.toLowerCase() === '0x600743B1d8A96438bD46836fD34977a00293f6Aa'.toLowerCase()) {
+    } else if(address.toLowerCase() === '0x600743b1d8a96438bd46836fd34977a00293f6aa') {
 
       // Initializing Token Values:
       let type: TokenType = 'token';
@@ -820,7 +820,7 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
     let balance = rawBalance / (10 ** decimals);
     
     // DAI+USDC (2pool):
-    if(address.toLowerCase() === '0x27E611FD27b276ACbd5Ffd632E5eAEBEC9761E40'.toLowerCase()) {
+    if(address.toLowerCase() === '0x27e611fd27b276acbd5ffd632e5eaebec9761e40') {
 
       // Initializing Token Values:
       let type: TokenType = 'lpToken';
@@ -857,7 +857,7 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
       return { type, chain, location, status, owner, symbol, address, balance, token0, token1 };
 
     // fUSDT+DAI+USDC (fUSDT):
-    } else if(address.toLowerCase() === '0x92D5ebF3593a92888C25C0AbEF126583d4b5312E'.toLowerCase()) {
+    } else if(address.toLowerCase() === '0x92d5ebf3593a92888c25c0abef126583d4b5312e') {
 
       // Initializing Token Values:
       let type: TokenType = 'token';
@@ -870,7 +870,7 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
       return { type, chain, location, status, owner, symbol, address, balance, price, logo };
 
     // btcCRV (Ren):
-    } else if(address.toLowerCase() === '0x5B5CFE992AdAC0C9D48E05854B2d91C73a003858'.toLowerCase()) {
+    } else if(address.toLowerCase() === '0x5b5cfe992adac0c9d48e05854b2d91c73a003858') {
 
       // Initializing Token Values:
       let type: TokenType = 'lpToken';
@@ -908,7 +908,7 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
       return { type, chain, location, status, owner, symbol, address, balance, token0, token1 };
 
     // crv3crypto (Tricrypto):
-    } else if(address.toLowerCase() === '0x58e57cA18B7A47112b877E31929798Cd3D703b0f'.toLowerCase()) {
+    } else if(address.toLowerCase() === '0x58e57ca18b7a47112b877e31929798cd3d703b0f') {
 
       // Initializing Token Values:
       let type: TokenType = 'token';
@@ -935,7 +935,7 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
       return { type, chain, location, status, owner, symbol, address, balance, price, logo };
 
     // g3CRV (Geist):
-    } else if(address.toLowerCase() === '0xD02a30d33153877BC20e5721ee53DeDEE0422B2F'.toLowerCase()) {
+    } else if(address.toLowerCase() === '0xd02a30d33153877bc20e5721ee53dedee0422b2f') {
 
       // Initializing Token Values:
       let type: TokenType = 'token';
@@ -957,7 +957,7 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
     let balance = rawBalance / (10 ** decimals);
     
     // crvUSDBTCETH (Atricrypto V2):
-    if(address.toLowerCase() === '0x1daB6560494B04473A0BE3E7D83CF3Fdf3a51828'.toLowerCase()) {
+    if(address.toLowerCase() === '0x1dab6560494b04473a0be3e7d83cf3fdf3a51828') {
 
       // Initializing Token Values:
       let type: TokenType = 'token';
@@ -987,7 +987,7 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
       return { type, chain, location, status, owner, symbol, address, balance, price, logo };
 
     // am3CRV (Aave):
-    } else if(address.toLowerCase() === '0x1337BedC9D22ecbe766dF105c9623922A27963EC'.toLowerCase()) {
+    } else if(address.toLowerCase() === '0x1337bedc9d22ecbe766df105c9623922a27963ec') {
 
       // Initializing Token Values:
       let type: TokenType = 'token';
@@ -1000,7 +1000,7 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
       return { type, chain, location, status, owner, symbol, address, balance, price, logo };
 
     // btcCRV (Ren):
-    } else if(address.toLowerCase() === '0xC2b1DF84112619D190193E48148000e3990Bf627'.toLowerCase()) {
+    } else if(address.toLowerCase() === '0xc2b1df84112619d190193e48148000e3990bf627') {
 
       // Initializing Token Values:
       let type: TokenType = 'lpToken';

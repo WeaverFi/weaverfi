@@ -56,7 +56,7 @@ export const getMarketBalances = async (wallet: Address) => {
       let exchangeRate = parseBN(accountSnapshotResults.returnValues[3]);
       if(balance > 0 || debt > 0) {
         let tokenAddress: Address;
-        if(market.toLowerCase() === '0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c'.toLowerCase()) {
+        if(market.toLowerCase() === '0x5c0401e81bc07ca70fad469b451682c0d747ef1c') {
           tokenAddress = defaultAddress;
         } else {
           tokenAddress = await query(chain, market, benqi.marketABI, 'underlying', []);

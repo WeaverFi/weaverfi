@@ -59,7 +59,7 @@ export const getMarketBalances = async (wallet: Address) => {
         let decimals = parseInt(await query(chain, market, minABI, 'decimals', []));
         let symbol = await query(chain, market, minABI, 'symbol', []);
         let tokenAddress: Address;
-        if(market.toLowerCase() === '0x1Ffe17B99b439bE0aFC831239dDECda2A790fF3A'.toLowerCase()) {
+        if(market.toLowerCase() === '0x1ffe17b99b439be0afc831239ddecda2a790ff3a') {
           tokenAddress = defaultAddress;
         } else {
           tokenAddress = await query(chain, market, cream.tokenABI, 'underlying', []);
@@ -81,7 +81,7 @@ export const getMarketBalances = async (wallet: Address) => {
       if(debt > 0) {
         let symbol = await query(chain, market, minABI, 'symbol', []);
         let tokenAddress: Address;
-        if(market.toLowerCase() === '0x1Ffe17B99b439bE0aFC831239dDECda2A790fF3A'.toLowerCase()) {
+        if(market.toLowerCase() === '0x1ffe17b99b439be0afc831239ddecda2a790ff3a') {
           tokenAddress = defaultAddress;
         } else {
           tokenAddress = await query(chain, market, cream.tokenABI, 'underlying', []);

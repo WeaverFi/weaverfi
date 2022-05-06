@@ -42,7 +42,7 @@ export const getPoolBalances = async (wallet: Address) => {
   let faucet_promises = poolList.map(address => (async () => {
     let strategy = await query(chain, address, pooltogether.poolABI, 'prizeStrategy', []);
     let listener = await query(chain, strategy, pooltogether.strategyABI, 'tokenListener', []);
-    if(address === lpPool || address.toLowerCase() === '0xc2a7Dfb76E93d12a1bB1Fa151b9900158090395d'.toLowerCase()) {
+    if(address === lpPool || address.toLowerCase() === '0xc2a7dfb76e93d12a1bb1fa151b9900158090395d') {
       pools.push({ address, faucets: [listener] });
     } else {
       let faucetList = (await query(chain, listener, pooltogether.listenerABI, 'getAddresses', [])).slice(0, -1);
@@ -59,7 +59,7 @@ export const getPoolBalances = async (wallet: Address) => {
       let token = await query(chain, pool.address, pooltogether.poolABI, 'token', []);
 
       // LP Pool:
-      if(token.toLowerCase() === '0x85Cb0baB616Fe88a89A35080516a8928F38B518b'.toLowerCase()) {
+      if(token.toLowerCase() === '0x85cb0bab616fe88a89a35080516a8928f38b518b') {
         let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
         balances.push(newToken);
 
@@ -74,7 +74,7 @@ export const getPoolBalances = async (wallet: Address) => {
         let balance = parseInt((await query(chain, faucet, pooltogether.faucetABI, 'userStates', [wallet])).balance);
         if(balance > 0) {
           let token = await query(chain, faucet, pooltogether.faucetABI, 'asset', []);
-          if(token.toLowerCase() === '0x27D22A7648e955E510a40bDb058333E9190d12D4'.toLowerCase()) {
+          if(token.toLowerCase() === '0x27d22a7648e955e510a40bdb058333e9190d12d4') {
             token = poolToken;
           }
           let newToken = await addToken(chain, project, 'unclaimed', token, balance, wallet);

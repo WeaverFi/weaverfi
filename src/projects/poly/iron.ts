@@ -77,7 +77,7 @@ export const getMarketBalances = async (wallet: Address) => {
     // Lending Balances:
     if(balance > 0) {
       let tokenAddress: Address;
-      if(market.toLowerCase() === '0xCa0F37f73174a28a64552D426590d3eD601ecCa1'.toLowerCase()) {
+      if(market.toLowerCase() === '0xca0f37f73174a28a64552d426590d3ed601ecca1') {
         tokenAddress = defaultAddress;
       } else {
         tokenAddress = await query(chain, market, iron.marketABI, 'underlying', []);
@@ -90,7 +90,7 @@ export const getMarketBalances = async (wallet: Address) => {
     // Borrowing Balances:
     if(debt > 0) {
       let tokenAddress: Address;
-      if(market.toLowerCase() === '0xCa0F37f73174a28a64552D426590d3eD601ecCa1'.toLowerCase()) {
+      if(market.toLowerCase() === '0xca0f37f73174a28a64552d426590d3ed601ecca1') {
         tokenAddress = defaultAddress;
       } else {
         tokenAddress = await query(chain, market, iron.marketABI, 'underlying', []);
