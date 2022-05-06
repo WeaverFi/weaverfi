@@ -84,7 +84,7 @@ export const getFutureBalances = async (wallet: Address) => {
 
   // Balance Multicall Query Setup:
   let balanceQueries: ContractCallContext[] = [];
-  let pt_promises = Object.keys(ptMulticallResults).map(result => (async () => {
+  Object.keys(ptMulticallResults).forEach(result => {
     let ptResult = ptMulticallResults[result].callsReturnContext[0];
     if(ptResult.success) {
       let future = ptMulticallResults[result].originalContractCallContext.reference as Address;
@@ -96,8 +96,7 @@ export const getFutureBalances = async (wallet: Address) => {
         calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
       });
     }
-  })());
-  await Promise.all(pt_promises);
+  });
 
   // Balance Multicall Query Results:
   let balanceMulticallResults = (await multicallQuery(chain, balanceQueries)).results;
