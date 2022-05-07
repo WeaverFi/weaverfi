@@ -210,7 +210,7 @@ export const addLPToken = async (chain: EVMChain, location: string, status: Toke
 
   // Initializing Token Values:
   let type: TokenType = 'lpToken';
-  let symbol = await query(chain, address, minABI, 'symbol', []);
+  let symbol: string = await query(chain, address, minABI, 'symbol', []);
   let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
   let balance = rawBalance / (10 ** decimals);
   let symbol0 = '';
@@ -219,10 +219,10 @@ export const addLPToken = async (chain: EVMChain, location: string, status: Toke
   let decimals1 = 18;
 
   // Finding LP Token Info:
-  let lpTokenReserves = await query(chain, address, lpABI, 'getReserves', []);
+  let lpTokenReserves: string[] = await query(chain, address, lpABI, 'getReserves', []);
   let lpTokenSupply = await query(chain, address, lpABI, 'totalSupply', []) / (10 ** decimals);
-  let address0 = await query(chain, address, lpABI, 'token0', []);
-  let address1 = await query(chain, address, lpABI, 'token1', []);
+  let address0: Address = await query(chain, address, lpABI, 'token0', []);
+  let address1: Address = await query(chain, address, lpABI, 'token1', []);
   let trackedToken0 = getTrackedTokenInfo(chain, address0);
   let trackedToken1 = getTrackedTokenInfo(chain, address1);
   if(trackedToken0) {
@@ -239,8 +239,8 @@ export const addLPToken = async (chain: EVMChain, location: string, status: Toke
     symbol1 = await query(chain, address1, minABI, 'symbol', []);
     decimals1 = parseInt(await query(chain, address1, minABI, 'decimals', []));
   }
-  let supply0 = lpTokenReserves[0] / (10 ** decimals0);
-  let supply1 = lpTokenReserves[1] / (10 ** decimals1);
+  let supply0 = parseInt(lpTokenReserves[0]) / (10 ** decimals0);
+  let supply1 = parseInt(lpTokenReserves[1]) / (10 ** decimals1);
 
   // First Paired Token:
   let token0: PricedToken = {
@@ -306,7 +306,7 @@ export const addXToken = async (chain: EVMChain, location: string, status: Token
 
   // Initializing Token Values:
   let type: TokenType = 'xToken';
-  let symbol = await query(chain, address, minABI, 'symbol', []);
+  let symbol: string = await query(chain, address, minABI, 'symbol', []);
   let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
   let balance = rawBalance / (10 ** decimals);
   let underlyingSymbol = '';
@@ -546,7 +546,7 @@ export const addTraderJoeToken = async (chain: EVMChain, location: string, statu
 // Function to get Belt token info (beltBTC, beltETH, etc.):
 export const addBeltToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address) => {
   let exchangeRate = parseInt(await query(chain, address, belt.tokenABI, 'getPricePerFullShare', [])) / (10 ** 18);
-  let underlyingToken = await query(chain, address, belt.tokenABI, 'token', []);
+  let underlyingToken: Address = await query(chain, address, belt.tokenABI, 'token', []);
   let newToken = await addXToken(chain, location, status, address, rawBalance, owner, underlyingToken, rawBalance * exchangeRate);
   return newToken;
 }
@@ -570,22 +570,22 @@ export const addAaveBLPToken = async (chain: EVMChain, location: string, status:
 
   // Initializing Token Values:
   let type: TokenType = 'lpToken';
-  let symbol = await query(chain, address, minABI, 'symbol', []);
+  let symbol: string = await query(chain, address, minABI, 'symbol', []);
   let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
   let balance = rawBalance / (10 ** decimals);
   address = await query(chain, address, aave.lpABI, 'bPool', []);
 
   // Finding LP Token Info:
   let lpTokenSupply = await query(chain, address, minABI, 'totalSupply', []) / (10 ** decimals);
-  let lpTokenAddresses = await query(chain, address, balancer.tokenABI, 'getCurrentTokens', []);
+  let lpTokenAddresses: Address[] = await query(chain, address, balancer.tokenABI, 'getCurrentTokens', []);
   let address0 = lpTokenAddresses[0];
   let address1 = lpTokenAddresses[1];
   let supply0 = await query(chain, address, balancer.tokenABI, 'getBalance', [address0]) / (10 ** decimals);
   let supply1 = await query(chain, address, balancer.tokenABI, 'getBalance', [address1]) / (10 ** decimals);
   let decimals0 = parseInt(await query(chain, address0, minABI, 'decimals', []));
   let decimals1 = parseInt(await query(chain, address1, minABI, 'decimals', []));
-  let symbol0 = await query(chain, address0, minABI, 'symbol', []);
-  let symbol1 = await query(chain, address1, minABI, 'symbol', []);
+  let symbol0: string = await query(chain, address0, minABI, 'symbol', []);
+  let symbol1: string = await query(chain, address1, minABI, 'symbol', []);
 
   // First Paired Token:
   let token0: PricedToken = {
@@ -631,7 +631,7 @@ export const addAlpacaToken = async (chain: EVMChain, location: string, status: 
 
   // Initializing Token Values:
   let type: TokenType = 'token';
-  let symbol = await query(chain, address, minABI, 'symbol', []);
+  let symbol: string = await query(chain, address, minABI, 'symbol', []);
   let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
   let balance = rawBalance / (10 ** decimals);
   let logo = getTokenLogo(chain, symbol);
@@ -640,7 +640,7 @@ export const addAlpacaToken = async (chain: EVMChain, location: string, status: 
   let totalToken = parseInt(await query(chain, address, alpaca.tokenABI, 'totalToken', []));
   let totalSupply = parseInt(await query(chain, address, minABI, 'totalSupply', []));
   let multiplier = totalToken / totalSupply;
-  let underlyingToken = await query(chain, address, alpaca.tokenABI, 'token', []);
+  let underlyingToken: Address = await query(chain, address, alpaca.tokenABI, 'token', []);
   let price = multiplier * (await getTokenPrice(chain, underlyingToken, decimals));
 
   return { type, chain, location, status, owner, symbol, address, balance, price, logo };
@@ -658,11 +658,11 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
     let registry: Address = '0x90E00ACe148ca3b23Ac1bC8C240C2a7Dd9c2d7f5';
     let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
     let balance = rawBalance / (10 ** decimals);
-    let symbol = await query(chain, address, minABI, 'symbol', []);
+    let symbol: string = await query(chain, address, minABI, 'symbol', []);
     let lpTokenSupply = await query(chain, address, minABI, 'totalSupply', []) / (10 ** decimals);
-    let poolAddress = await query(chain, registry, curve.registryABI, 'get_pool_from_lp_token', [address]);
-    let tokens = (await query(chain, registry, curve.registryABI, 'get_underlying_coins', [poolAddress])).filter((token: Address) => token != zero);
-    let reserves = (await query(chain, registry, curve.registryABI, 'get_underlying_balances', [poolAddress])).filter((balance: number) => balance != 0);
+    let poolAddress: Address = await query(chain, registry, curve.registryABI, 'get_pool_from_lp_token', [address]);
+    let tokens: Address[] = (await query(chain, registry, curve.registryABI, 'get_underlying_coins', [poolAddress])).filter((token: Address) => token != zero);
+    let reserves: string[] = (await query(chain, registry, curve.registryABI, 'get_underlying_balances', [poolAddress])).filter((balance: number) => balance != 0);
     let multiplier = parseInt(await query(chain, registry, curve.registryABI, 'get_virtual_price_from_lp_token', [address])) / (10 ** decimals);
 
     // Function to redirect synthetic asset price fetching:
@@ -748,7 +748,7 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
   } else if(chain === 'poly') {
 
     // Generic Token Values:
-    let symbol = await query(chain, address, minABI, 'symbol', []);
+    let symbol: string = await query(chain, address, minABI, 'symbol', []);
     let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
     let balance = rawBalance / (10 ** decimals);
     
@@ -790,7 +790,7 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
       let logo = getTokenLogo(chain, symbol);
 
       // Finding Token Price:
-      let minter = await query(chain, address, curve.polyTokenABI, 'minter', []);
+      let minter: Address = await query(chain, address, curve.polyTokenABI, 'minter', []);
       let price = parseInt(await query(chain, minter, curve.minterABI, 'get_virtual_price', [])) / (10 ** decimals);
 
       return { type, chain, location, status, owner, symbol, address, balance, price, logo };
@@ -803,11 +803,11 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
 
       // Finding LP Token Info:
       let lpTokenSupply = await query(chain, address, lpABI, 'totalSupply', []) / (10 ** decimals);
-      let minter = await query(chain, address, curve.polyTokenABI, 'minter', []);
-      let address0 = await query(chain, minter, curve.minterABI, 'underlying_coins', [0]);
-      let address1 = await query(chain, minter, curve.minterABI, 'underlying_coins', [1]);
-      let symbol0 = await query(chain, address0, minABI, 'symbol', []);
-      let symbol1 = await query(chain, address1, minABI, 'symbol', []);
+      let minter: Address = await query(chain, address, curve.polyTokenABI, 'minter', []);
+      let address0: Address = await query(chain, minter, curve.minterABI, 'underlying_coins', [0]);
+      let address1: Address = await query(chain, minter, curve.minterABI, 'underlying_coins', [1]);
+      let symbol0: string = await query(chain, address0, minABI, 'symbol', []);
+      let symbol1: string = await query(chain, address1, minABI, 'symbol', []);
       let decimals0 = parseInt(await query(chain, address0, minABI, 'decimals', []));
       let decimals1 = parseInt(await query(chain, address1, minABI, 'decimals', []));
       let supply0 = await query(chain, minter, curve.minterABI, 'balances', [0]) / (10 ** decimals);
@@ -842,11 +842,11 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
 
       // Finding Token Price:
       let lpTokenSupply = await query(chain, address, minABI, 'totalSupply', []) / (10 ** decimals);
-      let minter = await query(chain, address, curve.polyTokenABI, 'minter', []);
+      let minter: Address = await query(chain, address, curve.polyTokenABI, 'minter', []);
       let multiplier = parseInt(await query(chain, minter, curve.minterABI, 'get_virtual_price', [])) / (10 ** decimals);
-      let token0 = await query(chain, minter, curve.minterABI, 'coins', [0]);
-      let address1 = await query(chain, minter, curve.minterABI, 'coins', [1]);
-      let token1 = await query(chain, address1, curve.polyTokenABI, 'minter', []);
+      let token0: Address = await query(chain, minter, curve.minterABI, 'coins', [0]);
+      let address1: Address = await query(chain, minter, curve.minterABI, 'coins', [1]);
+      let token1: Address = await query(chain, address1, curve.polyTokenABI, 'minter', []);
       let decimals0 = parseInt(await query(chain, token0, minABI, 'decimals', []));
       let decimals1 = 18;
       let supply0 = parseInt(await query(chain, minter, curve.minterABI, 'balances', [0])) / (10 ** decimals0);
@@ -862,7 +862,7 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
   } else if(chain === 'ftm') {
 
     // Generic Token Values:
-    let symbol = await query(chain, address, minABI, 'symbol', []);
+    let symbol: string = await query(chain, address, minABI, 'symbol', []);
     let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
     let balance = rawBalance / (10 ** decimals);
     
@@ -874,10 +874,10 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
 
       // Finding LP Token Info:
       let lpTokenSupply = await query(chain, address, lpABI, 'totalSupply', []) / (10 ** decimals);
-      let address0 = await query(chain, address, curve.ftmTokenABI, 'coins', [0]);
-      let address1 = await query(chain, address, curve.ftmTokenABI, 'coins', [1]);
-      let symbol0 = await query(chain, address0, minABI, 'symbol', []);
-      let symbol1 = await query(chain, address1, minABI, 'symbol', []);
+      let address0: Address = await query(chain, address, curve.ftmTokenABI, 'coins', [0]);
+      let address1: Address = await query(chain, address, curve.ftmTokenABI, 'coins', [1]);
+      let symbol0: string = await query(chain, address0, minABI, 'symbol', []);
+      let symbol1: string = await query(chain, address1, minABI, 'symbol', []);
       let decimals0 = parseInt(await query(chain, address0, minABI, 'decimals', []));
       let decimals1 = parseInt(await query(chain, address1, minABI, 'decimals', []));
       let supply0 = await query(chain, address, curve.ftmTokenABI, 'balances', [0]) / (10 ** decimals);
@@ -924,11 +924,11 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
 
       // Finding LP Token Info:
       let lpTokenSupply = await query(chain, address, lpABI, 'totalSupply', []) / (10 ** decimals);
-      let minter = await query(chain, address, curve.ftmTokenABI, 'minter', []);
-      let address0 = await query(chain, minter, curve.minterABI, 'coins', [0]);
-      let address1 = await query(chain, minter, curve.minterABI, 'coins', [1]);
-      let symbol0 = await query(chain, address0, minABI, 'symbol', []);
-      let symbol1 = await query(chain, address1, minABI, 'symbol', []);
+      let minter: Address = await query(chain, address, curve.ftmTokenABI, 'minter', []);
+      let address0: Address = await query(chain, minter, curve.minterABI, 'coins', [0]);
+      let address1: Address = await query(chain, minter, curve.minterABI, 'coins', [1]);
+      let symbol0: string = await query(chain, address0, minABI, 'symbol', []);
+      let symbol1: string = await query(chain, address1, minABI, 'symbol', []);
       let decimals0 = parseInt(await query(chain, address0, minABI, 'decimals', []));
       let decimals1 = parseInt(await query(chain, address1, minABI, 'decimals', []));
       let supply0 = await query(chain, minter, curve.minterABI, 'balances', [0]) / (10 ** decimals);
@@ -963,11 +963,11 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
 
       // Finding Token Price:
       let lpTokenSupply = await query(chain, address, minABI, 'totalSupply', []) / (10 ** decimals);
-      let minter = await query(chain, address, curve.ftmTokenABI, 'minter', []);
+      let minter: Address = await query(chain, address, curve.ftmTokenABI, 'minter', []);
       let multiplier = parseInt(await query(chain, minter, curve.minterABI, 'get_virtual_price', [])) / (10 ** decimals);
-      let token0 = await query(chain, minter, curve.minterABI, 'coins', [0]);
-      let token1 = await query(chain, minter, curve.minterABI, 'coins', [1]);
-      let token2 = await query(chain, minter, curve.minterABI, 'coins', [2]);
+      let token0: Address = await query(chain, minter, curve.minterABI, 'coins', [0]);
+      let token1: Address = await query(chain, minter, curve.minterABI, 'coins', [1]);
+      let token2: Address = await query(chain, minter, curve.minterABI, 'coins', [2]);
       let decimals0 = parseInt(await query(chain, token0, minABI, 'decimals', []));
       let decimals1 = parseInt(await query(chain, token1, minABI, 'decimals', []));
       let decimals2 = parseInt(await query(chain, token2, minABI, 'decimals', []));
@@ -989,7 +989,7 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
       let logo = getTokenLogo(chain, symbol);
 
       // Finding Token Price:
-      let minter = await query(chain, address, curve.ftmTokenABI, 'minter', []);
+      let minter: Address = await query(chain, address, curve.ftmTokenABI, 'minter', []);
       let price = parseInt(await query(chain, minter, curve.minterABI, 'get_virtual_price', [])) / (10 ** decimals);
 
       return { type, chain, location, status, owner, symbol, address, balance, price, logo };
@@ -999,7 +999,7 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
   } else if(chain === 'avax') {
 
     // Generic Token Values:
-    let symbol = await query(chain, address, minABI, 'symbol', []);
+    let symbol: string = await query(chain, address, minABI, 'symbol', []);
     let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
     let balance = rawBalance / (10 ** decimals);
     
@@ -1012,14 +1012,14 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
 
       // Finding Token Price:
       let lpTokenSupply = await query(chain, address, minABI, 'totalSupply', []) / (10 ** decimals);
-      let minter = await query(chain, address, curve.avaxTokenABI, 'minter', []);
+      let minter: Address = await query(chain, address, curve.avaxTokenABI, 'minter', []);
       let multiplier = parseInt(await query(chain, minter, curve.minterABI, 'get_virtual_price', [])) / (10 ** decimals);
-      let address0 = await query(chain, minter, curve.minterABI, 'coins', [0]);
-      let address1 = await query(chain, minter, curve.minterABI, 'coins', [1]);
-      let address2 = await query(chain, minter, curve.minterABI, 'coins', [2]);
-      let token0 = await query(chain, address0, curve.avaxTokenABI, 'minter', []);
-      let token1 = await query(chain, address1, curve.intermediaryABI, 'UNDERLYING_ASSET_ADDRESS', []);
-      let token2 = await query(chain, address2, curve.intermediaryABI, 'UNDERLYING_ASSET_ADDRESS', []);
+      let address0: Address = await query(chain, minter, curve.minterABI, 'coins', [0]);
+      let address1: Address = await query(chain, minter, curve.minterABI, 'coins', [1]);
+      let address2: Address = await query(chain, minter, curve.minterABI, 'coins', [2]);
+      let token0: Address = await query(chain, address0, curve.avaxTokenABI, 'minter', []);
+      let token1: Address = await query(chain, address1, curve.intermediaryABI, 'UNDERLYING_ASSET_ADDRESS', []);
+      let token2: Address = await query(chain, address2, curve.intermediaryABI, 'UNDERLYING_ASSET_ADDRESS', []);
       let decimals0 = 18;
       let decimals1 = parseInt(await query(chain, token1, minABI, 'decimals', []));
       let decimals2 = parseInt(await query(chain, token2, minABI, 'decimals', []));
@@ -1041,7 +1041,7 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
       let logo = getTokenLogo(chain, symbol);
 
       // Finding Token Price:
-      let minter = await query(chain, address, curve.avaxTokenABI, 'minter', []);
+      let minter: Address = await query(chain, address, curve.avaxTokenABI, 'minter', []);
       let price = parseInt(await query(chain, minter, curve.minterABI, 'get_virtual_price', [])) / (10 ** decimals);
 
       return { type, chain, location, status, owner, symbol, address, balance, price, logo };
@@ -1054,11 +1054,11 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
 
       // Finding LP Token Info:
       let lpTokenSupply = await query(chain, address, lpABI, 'totalSupply', []) / (10 ** decimals);
-      let minter = await query(chain, address, curve.avaxTokenABI, 'minter', []);
-      let address0 = await query(chain, minter, curve.minterABI, 'underlying_coins', [0]);
-      let address1 = await query(chain, minter, curve.minterABI, 'underlying_coins', [1]);
-      let symbol0 = await query(chain, address0, minABI, 'symbol', []);
-      let symbol1 = await query(chain, address1, minABI, 'symbol', []);
+      let minter: Address = await query(chain, address, curve.avaxTokenABI, 'minter', []);
+      let address0: Address = await query(chain, minter, curve.minterABI, 'underlying_coins', [0]);
+      let address1: Address = await query(chain, minter, curve.minterABI, 'underlying_coins', [1]);
+      let symbol0: string = await query(chain, address0, minABI, 'symbol', []);
+      let symbol1: string = await query(chain, address1, minABI, 'symbol', []);
       let decimals0 = parseInt(await query(chain, address0, minABI, 'decimals', []));
       let decimals1 = parseInt(await query(chain, address1, minABI, 'decimals', []));
       let supply0 = await query(chain, minter, curve.minterABI, 'balances', [0]) / (10 ** decimals);
@@ -1109,14 +1109,14 @@ export const addBZXToken = async (chain: EVMChain, location: string, status: Tok
 
   // Initializing Token Values:
   let type: TokenType = 'token';
-  let symbol = await query(chain, address, minABI, 'symbol', []);
+  let symbol: string = await query(chain, address, minABI, 'symbol', []);
   let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
   let balance = rawBalance / (10 ** decimals);
   let logo = getTokenLogo(chain, symbol);
 
   // Finding Token Price:
   let multiplier = parseInt(await query(chain, address, bzx.tokenABI, 'tokenPrice', [])) / (10 ** decimals);
-  let underlyingToken = await query(chain, address, bzx.tokenABI, 'loanTokenAddress', []);
+  let underlyingToken: Address = await query(chain, address, bzx.tokenABI, 'loanTokenAddress', []);
   let price = multiplier * (await getTokenPrice(chain, underlyingToken, decimals));
 
   return { type, chain, location, status, owner, symbol, address, balance, price, logo };
@@ -1134,7 +1134,7 @@ export const addBalancerLikeToken = async (chain: EVMChain, location: string, st
 
   // Generic Token Values:
   let poolID: Hash = await query(chain, address, balancer.poolABI, 'getPoolId', []);
-  let poolInfo = await query(chain, vault, balancer.vaultABI, 'getPoolTokens', [poolID]);
+  let poolInfo: { tokens: Address[], balances: string[] } = await query(chain, vault, balancer.vaultABI, 'getPoolTokens', [poolID]);
   let symbol: string = await query(chain, address, minABI, 'symbol', []);
   let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
   let balance = rawBalance / (10 ** decimals);
@@ -1167,8 +1167,8 @@ export const addBalancerLikeToken = async (chain: EVMChain, location: string, st
     // Finding LP Token Info:
     let address0 = poolInfo.tokens[0];
     let address1 = poolInfo.tokens[1];
-    let symbol0 = await query(chain, address0, minABI, 'symbol', []);
-    let symbol1 = await query(chain, address1, minABI, 'symbol', []);
+    let symbol0: string = await query(chain, address0, minABI, 'symbol', []);
+    let symbol1: string = await query(chain, address1, minABI, 'symbol', []);
     let decimals0 = parseInt(await query(chain, address0, minABI, 'decimals', []));
     let decimals1 = parseInt(await query(chain, address1, minABI, 'decimals', []));
 
@@ -1215,13 +1215,13 @@ export const addIronToken = async (chain: EVMChain, location: string, status: To
 
   // Initializing Token Values:
   let type: TokenType = 'token';
-  let symbol = await query(chain, address, minABI, 'symbol', []);
+  let symbol: string = await query(chain, address, minABI, 'symbol', []);
   let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
   let balance = rawBalance / (10 ** decimals);
   let logo = getTokenLogo(chain, symbol);
 
   // Finding Token Price:
-  let swapAddress = await query(chain, address, iron.tokenABI, 'swap', []);
+  let swapAddress: Address = await query(chain, address, iron.tokenABI, 'swap', []);
   let price = parseInt(await query(chain, swapAddress, iron.swapABI, 'getVirtualPrice', [])) / (10 ** decimals);
 
   return { type, chain, location, status, owner, symbol, address, balance, price, logo };
@@ -1234,13 +1234,13 @@ export const addAxialToken = async (chain: EVMChain, location: string, status: T
 
   // Initializing Token Values:
   let type: TokenType = 'token';
-  let symbol = await query(chain, address, minABI, 'symbol', []);
+  let symbol: string = await query(chain, address, minABI, 'symbol', []);
   let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
   let balance = rawBalance / (10 ** decimals);
   let logo = getTokenLogo(chain, symbol);
 
   // Finding Token Price:
-  let swapAddress = await query(chain, address, axial.tokenABI, 'owner', []);
+  let swapAddress: Address = await query(chain, address, axial.tokenABI, 'owner', []);
   let price = parseInt(await query(chain, swapAddress, axial.swapABI, 'getVirtualPrice', [])) / (10 ** decimals);
 
   return { type, chain, location, status, owner, symbol, address, balance, price, logo };
@@ -1253,7 +1253,7 @@ export const addStableToken = async (chain: EVMChain, location: string, status: 
 
   // Initializing Token Values:
   let type: TokenType = 'token';
-  let symbol = await query(chain, address, minABI, 'symbol', []);
+  let symbol: string = await query(chain, address, minABI, 'symbol', []);
   let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
   let balance = rawBalance / (10 ** decimals);
   let logo = defaultTokenLogo;
