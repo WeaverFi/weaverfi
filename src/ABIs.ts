@@ -64,13 +64,6 @@ export const balancer: Record<string, ABI[]> = {
 
 // Beethovenx ABIs:
 export const beethovenx: Record<string, ABI[]> = {
-  poolABI: [
-    { constant: true, inputs: [], name: "getPoolId", outputs: [{ name: "", type: "bytes32" }], type: "function" },
-  ],
-  vaultABI: [
-    { constant: true, inputs: [{ name: "poolId", type: "bytes32" }], name: "getPool", outputs: [{ name: "", type: "address" }, { name: "", type: "uint8" }], type: "function" },
-    { constant: true, inputs: [{ name: "poolId", type: "bytes32" }], name: "getPoolTokens", outputs: [{ name: "tokens", type: "address[]" }, { name: "balances", type: "uint256[]" }, { name: "lastChangeBlock", type: "uint256" }], type: "function" }
-  ],
   masterChefABI: [
     { constant: true, name: "lpTokens", inputs: [{ name: "", type: "uint256" }], outputs: [{ name: "", type: "address" }], type: "function" },
     { constant: true, name: "pendingBeets", inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], outputs: [{ name: "pending", type: "uint256" }], type: "function" },

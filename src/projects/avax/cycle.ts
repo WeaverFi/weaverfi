@@ -1,9 +1,8 @@
 
 // Imports:
 import { minABI, cycle } from '../../ABIs';
-import { query, multicallQuery, addToken, addLPToken, parseBN } from '../../functions';
-import type { ContractCallContext } from 'ethereum-multicall';
-import type { Chain, Address, Token, LPToken } from '../../types';
+import { query, multicallOneContractQuery, multicallOneMethodQuery, addToken, addLPToken, parseBN } from '../../functions';
+import type { Chain, Address, Token, LPToken, CallContext } from '../../types';
 
 // Initializations:
 const chain: Chain = 'avax';
@@ -40,43 +39,20 @@ export const getVaultBalances = async (wallet: Address) => {
   let vaults = [...Array(vaultCount).keys()];
   let cycleRewards = 0;
 
-  // Vault Multicall Query Setup:
-  let vaultQueries: ContractCallContext[] = [];
-  let vaultQuery: ContractCallContext = {
-    reference: 'vaultAddresses',
-    contractAddress: distributor,
-    abi: cycle.distributorABI,
-    calls: []
-  }
+  // Vault Address Multicall Query:
+  let calls: CallContext[] = [];
   vaults.forEach(vaultID => {
-    vaultQuery.calls.push({ reference: vaultID.toString(), methodName: 'rewards', methodParameters: [vaultID] });
+    calls.push({ reference: vaultID.toString(), methodName: 'rewards', methodParameters: [vaultID] });
   });
-  vaultQueries.push(vaultQuery);
+  let vaultMulticallResults = await multicallOneContractQuery(chain, distributor, cycle.distributorABI, calls);
 
-  // Vault Multicall Query Results:
-  let vaultMulticallResults = (await multicallQuery(chain, vaultQueries)).results;
-
-  // Balance Multicall Query Setup:
-  let balanceQueries: ContractCallContext[] = [];
-  vaultMulticallResults['vaultAddresses'].callsReturnContext.forEach(result => {
-    if(result.success) {
-      let vaultAddress = result.returnValues[0] as Address;
-      balanceQueries.push({
-        reference: result.reference,
-        contractAddress: vaultAddress,
-        abi: minABI,
-        calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
-      });
-    }
-  });
-
-  // Balance Multicall Query Results:
-  let balanceMulticallResults = (await multicallQuery(chain, balanceQueries)).results;
-  let promises = Object.keys(balanceMulticallResults).map(result => (async () => {
-    let balanceResult = balanceMulticallResults[result].callsReturnContext[0];
-    if(balanceResult.success) {
-      let vaultAddress = balanceMulticallResults[result].originalContractCallContext.contractAddress as Address;
-      let balance = parseBN(balanceResult.returnValues[0]);
+  // Balance Multicall Query:
+  let vaultAddresses = Object.keys(vaultMulticallResults).map(id => vaultMulticallResults[id][0]) as Address[];
+  let balanceMulticallResults = await multicallOneMethodQuery(chain, vaultAddresses, minABI, 'balanceOf', [wallet]);
+  let promises = vaultAddresses.map(vaultAddress => (async () => {
+    let balanceResults = balanceMulticallResults[vaultAddress];
+    if(balanceResults) {
+      let balance = parseBN(balanceResults[0]);
       if(balance > 0) {
         let intermediary = await query(chain, vaultAddress, cycle.vaultABI, 'stakingToken', []);
         let lpToken = await query(chain, intermediary, cycle.intermediaryABI, 'LPtoken', []);

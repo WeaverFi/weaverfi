@@ -2,9 +2,9 @@
 // Imports:
 import axios from 'axios';
 import { minABI, aave } from '../../ABIs';
-import { query, multicallQuery, addToken, addDebtToken, parseBN } from '../../functions';
+import { query, multicallQuery, multicallOneContractQuery, addToken, addDebtToken, parseBN } from '../../functions';
 import type { ContractCallContext } from 'ethereum-multicall';
-import type { Chain, Address, URL, Token, DebtToken, AaveAPIResponse } from '../../types';
+import type { Chain, Address, URL, Token, DebtToken, AaveAPIResponse, CallContext } from '../../types';
 
 // Initializations:
 const chain: Chain = 'poly';
@@ -114,35 +114,26 @@ export const getMarketBalancesV3 = async (wallet: Address) => {
 
   // Initializations:
   let balances: (Token | DebtToken)[] = [];
-  let queries: ContractCallContext[] = [];
   let assetsWithBalance: Address[] = [];
 
   // Fetching Assets:
   let assets: Address[] = await query(chain, uiDataProviderV3, aave.uiDataProviderABI, 'getReservesList', [addressProviderV3]);
 
-  // Multicall Query Setup:
-  let reserveDataQuery: ContractCallContext = {
-    reference: 'userReserveData',
-    contractAddress: dataProviderV3,
-    abi: aave.dataProviderABI,
-    calls: []
-  }
+  // Market Balance Multicall Query:
+  let calls: CallContext[] = [];
   assets.forEach(asset => {
-    reserveDataQuery.calls.push({ reference: asset, methodName: 'getUserReserveData', methodParameters: [asset, wallet] });
+    calls.push({ reference: asset, methodName: 'getUserReserveData', methodParameters: [asset, wallet] });
   });
-  queries.push(reserveDataQuery);
-
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
-  let promises = multicallResults['userReserveData'].callsReturnContext.map(result => (async () => {
-    if(result.success) {
-      let asset = result.reference as Address;
-      let currentATokenBalance = parseBN(result.returnValues[0]);
-      let currentStableDebt = parseBN(result.returnValues[1]);
-      let currentVariableDebt = parseBN(result.returnValues[2]);
-      let stableBorrowRate = parseBN(result.returnValues[5]);
-      let liquidityRate = parseBN(result.returnValues[6]);
-
+  let multicallResults = await multicallOneContractQuery(chain, dataProviderV3, aave.dataProviderABI, calls);
+  let promises = assets.map(asset => (async () => {
+    let balanceResults = multicallResults[asset];
+    if(balanceResults) {
+      let currentATokenBalance = parseBN(balanceResults[0]);
+      let currentStableDebt = parseBN(balanceResults[1]);
+      let currentVariableDebt = parseBN(balanceResults[2]);
+      let stableBorrowRate = parseBN(balanceResults[5]);
+      let liquidityRate = parseBN(balanceResults[6]);
+  
       // Lending Balances:
       if(currentATokenBalance > 0) {
         let newToken = await addToken(chain, project, 'lent', asset, currentATokenBalance, wallet);
@@ -151,7 +142,7 @@ export const getMarketBalancesV3 = async (wallet: Address) => {
         }
         balances.push(newToken);
       }
-
+  
       // Stable Borrowing Balances:
       if(currentStableDebt > 0) {
         let newToken = await addDebtToken(chain, project, asset, currentStableDebt, wallet);
@@ -170,7 +161,7 @@ export const getMarketBalancesV3 = async (wallet: Address) => {
         }
         balances.push(newToken);
       }
-
+  
       // Tracking Assets To Query Incentives For:
       if(currentATokenBalance > 0 || currentStableDebt > 0 || currentVariableDebt > 0) {
         assetsWithBalance.push(asset);

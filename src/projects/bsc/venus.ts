@@ -1,9 +1,8 @@
 
 // Imports:
 import { minABI, venus } from '../../ABIs';
-import { query, multicallQuery, addToken, addDebtToken, parseBN } from '../../functions';
-import type { ContractCallContext } from 'ethereum-multicall';
-import type { Chain, Address, Token, DebtToken } from '../../types';
+import { query, multicallComplexQuery, addToken, addDebtToken, parseBN } from '../../functions';
+import type { Chain, Address, Token, DebtToken, CallContext } from '../../types';
 
 // Initializations:
 const chain: Chain = 'bsc';
@@ -38,56 +37,40 @@ export const getMarketBalances = async (wallet: Address) => {
   let balances: (Token | DebtToken)[] = [];
   let markets: Address[] = await query(chain, controller, venus.controllerABI, 'getAllMarkets', []);
   
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  markets.forEach(market => {
-    queries.push({
-      reference: market,
-      contractAddress: market,
-      abi: minABI.concat(venus.marketABI),
-      calls: [
-        { reference: 'marketBalance', methodName: 'balanceOf', methodParameters: [wallet] },
-        { reference: 'borrowBalance', methodName: 'borrowBalanceStored', methodParameters: [wallet] }
-      ]
-    });
-  });
-
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
+  // Market Balance Multicall Query:
+  let abi = minABI.concat(venus.marketABI);
+  let calls: CallContext[] = [
+    { reference: 'marketBalance', methodName: 'balanceOf', methodParameters: [wallet] },
+    { reference: 'borrowBalance', methodName: 'borrowBalanceStored', methodParameters: [wallet] }
+  ];
+  let multicallResults = await multicallComplexQuery(chain, markets, abi, calls);
   let promises = markets.map(market => (async () => {
-    let marketBalanceResults = multicallResults[market].callsReturnContext.find(i => i.reference === 'marketBalance');
-    let borrowBalanceResults = multicallResults[market].callsReturnContext.find(i => i.reference === 'borrowBalance');
-
-    // Lending Balances:
-    if(marketBalanceResults && marketBalanceResults.success) {
-      let balance = parseBN(marketBalanceResults.returnValues[0]);
-      if(balance > 0) {
-        let exchangeRate = parseInt(await query(chain, market, venus.marketABI, 'exchangeRateStored', []));
-        let decimals = parseInt(await query(chain, market, minABI, 'decimals', []));
-        let underlyingToken: Address;
-        if(market.toLowerCase() === '0xa07c5b74c9b40447a954e1466938b865b6bbea36') {
-          underlyingToken = defaultAddress;
-        } else {
-          underlyingToken = await query(chain, market, venus.marketABI, 'underlying', []);
+    let marketResults = multicallResults[market];
+    if(marketResults) {
+      let marketBalanceResults = marketResults['marketBalance'];
+      let borrowingResults = marketResults['borrowBalance'];
+      
+      // Lending Balances:
+      if(marketBalanceResults) {
+        let balance = parseBN(marketBalanceResults[0]);
+        if(balance > 0) {
+          let exchangeRate = parseInt(await query(chain, market, venus.marketABI, 'exchangeRateStored', []));
+          let decimals = parseInt(await query(chain, market, minABI, 'decimals', []));
+          let underlyingToken: Address = market.toLowerCase() === '0xa07c5b74c9b40447a954e1466938b865b6bbea36' ? defaultAddress : await query(chain, market, venus.marketABI, 'underlying', []);
+          let underlyingBalance = (balance / (10 ** decimals)) * (exchangeRate / (10 ** (decimals + 2)));
+          let newToken = await addToken(chain, project, 'lent', underlyingToken, underlyingBalance, wallet);
+          balances.push(newToken);
         }
-        let underlyingBalance = (balance / (10 ** decimals)) * (exchangeRate / (10 ** (decimals + 2)));
-        let newToken = await addToken(chain, project, 'lent', underlyingToken, underlyingBalance, wallet);
-        balances.push(newToken);
       }
-    }
 
-    // Borrowing Balances:
-    if(borrowBalanceResults && borrowBalanceResults.success) {
-      let debt = parseBN(borrowBalanceResults.returnValues[0]);
-      if(debt > 0) {
-        let underlyingToken: Address;
-        if(market.toLowerCase() === '0xa07c5b74c9b40447a954e1466938b865b6bbea36') {
-          underlyingToken = defaultAddress;
-        } else {
-          underlyingToken = await query(chain, market, venus.marketABI, 'underlying', []);
+      // Borrowing Balances:
+      if(borrowingResults) {
+        let debt = parseBN(borrowingResults[0]);
+        if(debt > 0) {
+          let underlyingToken: Address = market.toLowerCase() === '0xa07c5b74c9b40447a954e1466938b865b6bbea36' ? defaultAddress : await query(chain, market, venus.marketABI, 'underlying', []);
+          let newToken = await addDebtToken(chain, project, underlyingToken, debt, wallet);
+          balances.push(newToken);
         }
-        let newToken = await addDebtToken(chain, project, underlyingToken, debt, wallet);
-        balances.push(newToken);
       }
     }
   })());

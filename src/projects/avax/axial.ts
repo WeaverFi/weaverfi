@@ -1,9 +1,8 @@
 
 // Imports:
 import { minABI, axial } from '../../ABIs';
-import { query, multicallQuery, addToken, addLPToken, addAxialToken, parseBN } from '../../functions';
-import type { ContractCallContext } from 'ethereum-multicall';
-import type { Chain, Address, Token, LPToken } from '../../types';
+import { query, multicallOneContractQuery, addToken, addLPToken, addAxialToken, parseBN } from '../../functions';
+import type { Chain, Address, Token, LPToken, CallContext } from '../../types';
 
 // Initializations:
 const chain: Chain = 'avax';
@@ -32,25 +31,16 @@ export const getPoolBalances = async (wallet: Address) => {
   let poolCount = parseInt(await query(chain, masterChef, axial.masterChefABI, 'poolLength', []));
   let pools = [...Array(poolCount).keys()];
 
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  let balanceQuery: ContractCallContext = {
-    reference: 'userInfo',
-    contractAddress: masterChef,
-    abi: axial.masterChefABI,
-    calls: []
-  }
+  // User Info Multicall Query:
+  let calls: CallContext[] = [];
   pools.forEach(poolID => {
-    balanceQuery.calls.push({ reference: poolID.toString(), methodName: 'userInfo', methodParameters: [poolID, wallet] });
+    calls.push({ reference: poolID.toString(), methodName: 'userInfo', methodParameters: [poolID, wallet] });
   });
-  queries.push(balanceQuery);
-
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
-  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
-    if(result.success) {
-      let poolID = parseInt(result.reference);
-      let balance = parseBN(result.returnValues[0]);
+  let multicallResults = await multicallOneContractQuery(chain, masterChef, axial.masterChefABI, calls);
+  let promises = pools.map(poolID => (async () => {
+    let userInfoResults = multicallResults[poolID];
+    if(userInfoResults) {
+      let balance = parseBN(userInfoResults[0]);
       if(balance > 0) {
         let token = (await query(chain, masterChef, axial.masterChefABI, 'poolInfo', [poolID])).lpToken;
         let symbol = await query(chain, token, minABI, 'symbol', []);

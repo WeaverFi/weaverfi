@@ -2,8 +2,7 @@
 // Imports:
 import axios from 'axios';
 import { minABI, beefy } from '../../ABIs';
-import { query, multicallQuery, addToken, addLPToken, add4BeltToken, addBeltToken, addAlpacaToken, parseBN } from '../../functions';
-import type { ContractCallContext } from 'ethereum-multicall';
+import { query, multicallOneMethodQuery, addToken, addLPToken, add4BeltToken, addBeltToken, addAlpacaToken, parseBN } from '../../functions';
 import type { Chain, Address, URL, Token, LPToken, XToken, BeefyAPIResponse } from '../../types';
 
 // Initializations:
@@ -36,24 +35,14 @@ export const get = async (wallet: Address) => {
 // Function to get vault balances:
 export const getVaultBalances = async (wallet: Address, vaults: BeefyAPIResponse[], apys: Record<string, number | null>) => {
   let balances: (Token | LPToken | XToken)[] = [];
-
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  vaults.forEach(vault => {
-    queries.push({
-      reference: vault.id,
-      contractAddress: vault.earnedTokenAddress,
-      abi: minABI,
-      calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
-    });
-  });
-
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
+  
+  // Balance Multicall Query:
+  let vaultAddresses = vaults.map(vault => vault.earnedTokenAddress);
+  let multicallResults = await multicallOneMethodQuery(chain, vaultAddresses, minABI, 'balanceOf', [wallet]);
   let promises = vaults.map(vault => (async () => {
-    let balanceResults = multicallResults[vault.id].callsReturnContext[0];
-    if(balanceResults.success) {
-      let balance = parseBN(balanceResults.returnValues[0]);
+    let balanceResults = multicallResults[vault.earnedTokenAddress];
+    if(balanceResults) {
+      let balance = parseBN(balanceResults[0]);
       if(balance > 0) {
         let decimals = parseInt(await query(chain, vault.earnedTokenAddress, minABI, 'decimals', []));
         let exchangeRate = parseInt(await query(chain, vault.earnedTokenAddress, beefy.vaultABI, 'getPricePerFullShare', []));
@@ -71,8 +60,6 @@ export const getVaultBalances = async (wallet: Address, vaults: BeefyAPIResponse
             }
             balances.push(newToken);
           }
-  
-        // All Other Vaults:
         } else {
   
           // Unique Vaults (3+ Assets):

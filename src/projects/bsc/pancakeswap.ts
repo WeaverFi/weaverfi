@@ -1,9 +1,8 @@
 
 // Imports:
 import { pancakeswap } from '../../ABIs';
-import { query, multicallQuery, addToken, addLPToken, parseBN } from '../../functions';
-import type { ContractCallContext } from 'ethereum-multicall';
-import type { Chain, Address, Token, LPToken } from '../../types';
+import { query, multicallOneContractQuery, addToken, addLPToken, parseBN } from '../../functions';
+import type { Chain, Address, Token, LPToken, CallContext } from '../../types';
 
 // Initializations:
 const chain: Chain = 'bsc';
@@ -36,26 +35,17 @@ export const getFarmBalances = async (wallet: Address) => {
   let cakeRewards = 0;
   let poolLength = parseInt(await query(chain, registry, pancakeswap.registryABI, 'poolLength', []));
   let farms = [...Array(poolLength).keys()];
-  
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  let balanceQuery: ContractCallContext = {
-    reference: 'userInfo',
-    contractAddress: registry,
-    abi: pancakeswap.registryABI,
-    calls: []
-  }
-  farms.forEach(farmID => {
-    balanceQuery.calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
-  });
-  queries.push(balanceQuery);
 
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
-  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
-    if(result.success) {
-      let farmID = parseInt(result.reference);
-      let balance = parseBN(result.returnValues[0]);
+  // User Info Multicall Query:
+  let calls: CallContext[] = [];
+  farms.forEach(farmID => {
+    calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
+  });
+  let multicallResults = await multicallOneContractQuery(chain, registry, pancakeswap.registryABI, calls);
+  let promises = farms.map(farmID => (async () => {
+    let userInfoResults = multicallResults[farmID];
+    if(userInfoResults) {
+      let balance = parseBN(userInfoResults[0]);
       if(balance > 0) {
         let token = (await query(chain, registry, pancakeswap.registryABI, 'poolInfo', [farmID]))[0];
 
@@ -93,25 +83,16 @@ export const getFarmBalancesV2 = async (wallet: Address) => {
   let poolLength = parseInt(await query(chain, registryV2, pancakeswap.registryABI, 'poolLength', []));
   let farms = [...Array(poolLength).keys()];
   
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  let balanceQuery: ContractCallContext = {
-    reference: 'userInfo',
-    contractAddress: registryV2,
-    abi: pancakeswap.registryABI,
-    calls: []
-  }
+  // User Info Multicall Query:
+  let calls: CallContext[] = [];
   farms.forEach(farmID => {
-    balanceQuery.calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
+    calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
   });
-  queries.push(balanceQuery);
-
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
-  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
-    if(result.success) {
-      let farmID = parseInt(result.reference);
-      let balance = parseBN(result.returnValues[0]);
+  let multicallResults = await multicallOneContractQuery(chain, registryV2, pancakeswap.registryABI, calls);
+  let promises = farms.map(farmID => (async () => {
+    let userInfoResults = multicallResults[farmID];
+    if(userInfoResults) {
+      let balance = parseBN(userInfoResults[0]);
       if(balance > 0) {
         let token = await query(chain, registryV2, pancakeswap.registryABI, 'lpToken', [farmID]);
 

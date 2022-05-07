@@ -1,8 +1,8 @@
 
 // Imports:
 import { minABI, iron } from '../../ABIs';
-import { query, addToken, addLPToken, addDebtToken, addXToken, addIronToken } from '../../functions';
-import type { Chain, Address, Token, LPToken, DebtToken, XToken } from '../../types';
+import { query, multicallOneContractQuery, multicallComplexQuery, addToken, addLPToken, addDebtToken, addXToken, addIronToken, parseBN } from '../../functions';
+import type { Chain, Address, Token, LPToken, DebtToken, XToken, CallContext } from '../../types';
 
 // Initializations:
 const chain: Chain = 'poly';
@@ -36,27 +36,37 @@ export const getFarmBalances = async (wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let poolCount = parseInt(await query(chain, registry, iron.registryABI, 'poolLength', []));
   let farms = [...Array(poolCount).keys()];
+  
+  // User Info Multicall Query:
+  let calls: CallContext[] = [];
+  farms.forEach(farmID => {
+    calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
+  });
+  let multicallResults = await multicallOneContractQuery(chain, registry, iron.registryABI, calls);
   let promises = farms.map(farmID => (async () => {
-    let balance = parseInt((await query(chain, registry, iron.registryABI, 'userInfo', [farmID, wallet])).amount);
-    if(balance > 0) {
-      let lpToken = await query(chain, registry, iron.registryABI, 'lpToken', [farmID]);
+    let userInfoResults = multicallResults[farmID];
+    if(userInfoResults) {
+      let balance = parseBN(userInfoResults[0]);
+      if(balance > 0) {
+        let lpToken = await query(chain, registry, iron.registryABI, 'lpToken', [farmID]);
 
-      // Iron LP Tokens:
-      if(farmID === 0 || farmID === 3) {
-        let newToken = await addIronToken(chain, project, 'staked', lpToken, balance, wallet);
-        balances.push(newToken);
-
-      // Other LP Tokens:
-      } else {
-        let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);
-        balances.push(newToken);
-      }
-
-      // Pending ICE Rewards:
-      let rewards = parseInt(await query(chain, registry, iron.registryABI, 'pendingReward', [farmID, wallet]));
-      if(rewards > 0) {
-        let newToken = await addToken(chain, project, 'unclaimed', ice, rewards, wallet);
-        balances.push(newToken);
+        // Iron LP Tokens:
+        if(farmID === 0 || farmID === 3) {
+          let newToken = await addIronToken(chain, project, 'staked', lpToken, balance, wallet);
+          balances.push(newToken);
+  
+        // Other LP Tokens:
+        } else {
+          let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);
+          balances.push(newToken);
+        }
+  
+        // Pending ICE Rewards:
+        let rewards = parseInt(await query(chain, registry, iron.registryABI, 'pendingReward', [farmID, wallet]));
+        if(rewards > 0) {
+          let newToken = await addToken(chain, project, 'unclaimed', ice, rewards, wallet);
+          balances.push(newToken);
+        }
       }
     }
   })());
@@ -67,36 +77,41 @@ export const getFarmBalances = async (wallet: Address) => {
 // Function to get all market balances and debt:
 export const getMarketBalances = async (wallet: Address) => {
   let balances: (Token | DebtToken)[] = [];
-  let markets: any[] = await query(chain, lending, iron.lendingABI, 'getAllMarkets', []);
+  let markets: Address[] = await query(chain, lending, iron.lendingABI, 'getAllMarkets', []);
+
+  // Market Balance Multicall Query:
+  let abi = minABI.concat(iron.marketABI);
+  let calls: CallContext[] = [
+    { reference: 'marketBalance', methodName: 'balanceOf', methodParameters: [wallet] },
+    { reference: 'accountSnapshot', methodName: 'getAccountSnapshot', methodParameters: [wallet] }
+  ];
+  let multicallResults = await multicallComplexQuery(chain, markets, abi, calls);
   let promises = markets.map(market => (async () => {
-    let balance = parseInt(await query(chain, market, minABI, 'balanceOf', [wallet]));
-    let account = await query(chain, market, iron.marketABI, 'getAccountSnapshot', [wallet]);
-    let debt = parseInt(account[2]);
-    let exchangeRate = parseInt(account[3]);
-
-    // Lending Balances:
-    if(balance > 0) {
-      let tokenAddress: Address;
-      if(market.toLowerCase() === '0xca0f37f73174a28a64552d426590d3ed601ecca1') {
-        tokenAddress = defaultAddress;
-      } else {
-        tokenAddress = await query(chain, market, iron.marketABI, 'underlying', []);
+    let marketResults = multicallResults[market];
+    if(marketResults) {
+      let marketBalanceResults = marketResults['marketBalance'];
+      let accountSnapshotResults = marketResults['accountSnapshot'];
+      if(marketBalanceResults && accountSnapshotResults) {
+        let balance = parseBN(marketBalanceResults[0]);
+        let debt = parseBN(accountSnapshotResults[2]);
+        let exchangeRate = parseBN(accountSnapshotResults[3]);
+        if(balance > 0 || debt > 0) {
+          let tokenAddress: Address = market.toLowerCase() === '0xca0f37f73174a28a64552d426590d3ed601ecca1' ? defaultAddress : await query(chain, market, iron.marketABI, 'underlying', []);
+  
+          // Lending Balances:
+          if(balance > 0) {
+            let underlyingBalance = balance * (exchangeRate / (10 ** 18));
+            let newToken = await addToken(chain, project, 'lent', tokenAddress, underlyingBalance, wallet);
+            balances.push(newToken);
+          }
+    
+          // Borrowing Balances:
+          if(debt > 0) {
+            let newToken = await addDebtToken(chain, project, tokenAddress, debt, wallet);
+            balances.push(newToken);
+          }
+        }
       }
-      let underlyingBalance = balance * (exchangeRate / (10 ** 18));
-      let newToken = await addToken(chain, project, 'lent', tokenAddress, underlyingBalance, wallet);
-      balances.push(newToken);
-    }
-
-    // Borrowing Balances:
-    if(debt > 0) {
-      let tokenAddress: Address;
-      if(market.toLowerCase() === '0xca0f37f73174a28a64552d426590d3ed601ecca1') {
-        tokenAddress = defaultAddress;
-      } else {
-        tokenAddress = await query(chain, market, iron.marketABI, 'underlying', []);
-      }
-      let newToken = await addDebtToken(chain, project, tokenAddress, debt, wallet);
-      balances.push(newToken);
     }
   })());
   await Promise.all(promises);

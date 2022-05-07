@@ -1,9 +1,8 @@
 
 // Imports:
 import { minABI, scream } from '../../ABIs';
-import { query, multicallQuery, addToken, addDebtToken, addXToken, parseBN } from '../../functions';
-import type { ContractCallContext } from 'ethereum-multicall';
-import type { Chain, Address, Token, DebtToken, XToken } from '../../types';
+import { query, multicallComplexQuery, addToken, addDebtToken, addXToken, parseBN } from '../../functions';
+import type { Chain, Address, Token, DebtToken, XToken, CallContext } from '../../types';
 
 // Initializations:
 const chain: Chain = 'ftm';
@@ -32,44 +31,38 @@ export const get = async (wallet: Address) => {
 export const getMarketBalances = async (wallet: Address) => {
   let balances: (Token | DebtToken)[] = [];
   let markets: Address[] = await query(chain, controller, scream.controllerABI, 'getAllMarkets', []);
-  
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  markets.forEach(market => {
-    queries.push({
-      reference: market,
-      contractAddress: market,
-      abi: minABI.concat(scream.marketABI),
-      calls: [
-        { reference: 'marketBalance', methodName: 'balanceOf', methodParameters: [wallet] },
-        { reference: 'accountSnapshot', methodName: 'getAccountSnapshot', methodParameters: [wallet] }
-      ]
-    });
-  });
 
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
+  // Market Balance Multicall Query:
+  let abi = minABI.concat(scream.marketABI);
+  let calls: CallContext[] = [
+    { reference: 'marketBalance', methodName: 'balanceOf', methodParameters: [wallet] },
+    { reference: 'accountSnapshot', methodName: 'getAccountSnapshot', methodParameters: [wallet] }
+  ];
+  let multicallResults = await multicallComplexQuery(chain, markets, abi, calls);
   let promises = markets.map(market => (async () => {
-    let marketBalanceResults = multicallResults[market].callsReturnContext.find(i => i.reference === 'marketBalance');
-    let accountSnapshotResults = multicallResults[market].callsReturnContext.find(i => i.reference === 'accountSnapshot');
-    if(marketBalanceResults && accountSnapshotResults && marketBalanceResults.success && accountSnapshotResults.success) {
-      let balance = parseBN(marketBalanceResults.returnValues[0]);
-      let debt = parseBN(accountSnapshotResults.returnValues[2]);
-      let exchangeRate = parseBN(accountSnapshotResults.returnValues[3]);
-      if(balance > 0 || debt > 0) {
-        let tokenAddress = await query(chain, market, scream.marketABI, 'underlying', []);
-
-        // Lending Balances:
-        if(balance > 0) {
-          let underlyingBalance = balance * (exchangeRate / (10 ** 18));
-          let newToken = await addToken(chain, project, 'lent', tokenAddress, underlyingBalance, wallet);
-          balances.push(newToken);
-        }
+    let marketResults = multicallResults[market];
+    if(marketResults) {
+      let marketBalanceResults = marketResults['marketBalance'];
+      let accountSnapshotResults = marketResults['accountSnapshot'];
+      if(marketBalanceResults && accountSnapshotResults) {
+        let balance = parseBN(marketBalanceResults[0]);
+        let debt = parseBN(accountSnapshotResults[2]);
+        let exchangeRate = parseBN(accountSnapshotResults[3]);
+        if(balance > 0 || debt > 0) {
+          let tokenAddress: Address = await query(chain, market, scream.marketABI, 'underlying', []);
   
-        // Borrowing Balances:
-        if(debt > 0) {
-          let newToken = await addDebtToken(chain, project, tokenAddress, debt, wallet);
-          balances.push(newToken);
+          // Lending Balances:
+          if(balance > 0) {
+            let underlyingBalance = balance * (exchangeRate / (10 ** 18));
+            let newToken = await addToken(chain, project, 'lent', tokenAddress, underlyingBalance, wallet);
+            balances.push(newToken);
+          }
+    
+          // Borrowing Balances:
+          if(debt > 0) {
+            let newToken = await addDebtToken(chain, project, tokenAddress, debt, wallet);
+            balances.push(newToken);
+          }
         }
       }
     }

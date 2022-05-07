@@ -1,9 +1,8 @@
 
 // Imports:
 import { minABI, yearn } from '../../ABIs';
-import { query, multicallQuery, addToken, addCurveToken, parseBN } from '../../functions';
-import type { ContractCallContext } from 'ethereum-multicall';
-import type { Chain, Address, Token, LPToken } from '../../types';
+import { query, multicallOneContractQuery, multicallOneMethodQuery, addToken, addCurveToken, parseBN } from '../../functions';
+import type { Chain, Address, Token, LPToken, CallContext } from '../../types';
 
 // Initializations:
 const chain: Chain = 'eth';
@@ -43,86 +42,40 @@ export const getVaultBalances = async (wallet: Address) => {
   let tokenCount = parseInt(await query(chain, deployer, yearn.deployerABI, 'numTokens', []));
   let tokens = [...Array(tokenCount).keys()];
   
-  // Token Multicall Query Setup:
-  let tokenQueries: ContractCallContext[] = [];
-  let tokenQuery: ContractCallContext = {
-    reference: 'tokens',
-    contractAddress: deployer,
-    abi: yearn.deployerABI,
-    calls: []
-  }
+  // Token Address Multicall Query:
+  let tokenCalls: CallContext[] = [];
   tokens.forEach(tokenID => {
-    tokenQuery.calls.push({ reference: tokenID.toString(), methodName: 'tokens', methodParameters: [tokenID] });
+    tokenCalls.push({ reference: tokenID.toString(), methodName: 'tokens', methodParameters: [tokenID] });
   });
-  tokenQueries.push(tokenQuery);
+  let tokenMulticallResults = await multicallOneContractQuery(chain, deployer, yearn.deployerABI, tokenCalls);
 
-  // Token Multicall Query Results:
-  let tokenMulticallResults = (await multicallQuery(chain, tokenQueries)).results;
-  
-  // Vault Count Multicall Query Setup:
-  let vaultCountQueries: ContractCallContext[] = [];
-  let vaultCountQuery: ContractCallContext = {
-    reference: 'numVaults',
-    contractAddress: deployer,
-    abi: yearn.deployerABI,
-    calls: []
-  }
-  tokenMulticallResults['tokens'].callsReturnContext.forEach(result => {
-    if(result.success) {
-      let token = result.returnValues[0] as Address;
-      vaultCountQuery.calls.push({ reference: token, methodName: 'numVaults', methodParameters: [token] });
-    }
+  // Vault Count Multicall Query:
+  let vaultCountCalls: CallContext[] = [];
+  Object.keys(tokenMulticallResults).forEach(tokenID => {
+    let token: Address = tokenMulticallResults[tokenID][0];
+    vaultCountCalls.push({ reference: token, methodName: 'numVaults', methodParameters: [token] });
   });
-  vaultCountQueries.push(vaultCountQuery);
+  let vaultCountMulticallResults = await multicallOneContractQuery(chain, deployer, yearn.deployerABI, vaultCountCalls);
 
-  // Vault Count Multicall Query Results:
-  let vaultCountMulticallResults = (await multicallQuery(chain, vaultCountQueries)).results;
-
-  // Vault Multicall Query Setup:
-  let vaultQueries: ContractCallContext[] = [];
-  let vaultQuery: ContractCallContext = {
-    reference: 'vaults',
-    contractAddress: deployer,
-    abi: yearn.deployerABI,
-    calls: []
-  }
-  vaultCountMulticallResults['numVaults'].callsReturnContext.forEach(result => {
-    if(result.success) {
-      let token = result.reference as Address;
-      let vaultCount = parseBN(result.returnValues[0]);
-      if(vaultCount > 0) {
-        for(let i = 0; i < vaultCount; i++) {
-          vaultQuery.calls.push({ reference: i.toString(), methodName: 'vaults', methodParameters: [token, i] });
-        }
+  // Vault Address Multicall Query:
+  let vaultCalls: CallContext[] = [];
+  Object.keys(vaultCountMulticallResults).forEach(token => {
+    let vaultCount = parseBN(vaultCountMulticallResults[token][0]);
+    if(vaultCount > 0) {
+      for(let i = 0; i < vaultCount; i++) {
+        vaultCalls.push({ reference: token + i.toString(), methodName: 'vaults', methodParameters: [token, i] });
       }
     }
   });
-  vaultQueries.push(vaultQuery);
+  let vaultMulticallResults = await multicallOneContractQuery(chain, deployer, yearn.deployerABI, vaultCalls);
 
-  // Vault Multicall Query Results:
-  let vaultMulticallResults = (await multicallQuery(chain, vaultQueries)).results;
-
-  // Balance Multicall Query Setup:
-  let balanceQueries: ContractCallContext[] = [];
-  vaultMulticallResults['vaults'].callsReturnContext.forEach(result => {
-    if(result.success) {
-      let vault = result.returnValues[0] as Address;
-      balanceQueries.push({
-        reference: vault,
-        contractAddress: vault,
-        abi: minABI,
-        calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
-      });
-    }
-  });
-
-  // Balance Multicall Query Results:
-  let balanceMulticallResults = (await multicallQuery(chain, balanceQueries)).results;
-  let promises = Object.keys(balanceMulticallResults).map(result => (async () => {
-    let balanceResult = balanceMulticallResults[result].callsReturnContext[0];
-    if(balanceResult.success) {
-      let vault = balanceMulticallResults[result].originalContractCallContext.reference as Address;
-      let balance = parseBN(balanceResult.returnValues[0]);
+  // Balance Multicall Query:
+  let vaultAddresses = Object.keys(vaultMulticallResults).map(key => vaultMulticallResults[key][0]) as Address[];
+  let balanceMulticallResults = await multicallOneMethodQuery(chain, vaultAddresses, minABI, 'balanceOf', [wallet]);
+  let promises = vaultAddresses.map(vault => (async () => {
+    let balanceResults = balanceMulticallResults[vault];
+    if(balanceResults) {
+      let balance = parseBN(balanceResults[0]);
       if(balance > 0) {
         let underlyingToken = await query(chain, vault, yearn.vaultABI, 'token', []);
         let multiplier = await query(chain, vault, yearn.vaultABI, 'pricePerShare', []);
@@ -146,15 +99,21 @@ export const getVaultBalances = async (wallet: Address) => {
 // Function to get all yToken Balances:
 export const getTokenBalances = async (wallet: Address) => {
   let balances: Token[] = [];
-  let promises = yTokenList.map(token => (async () => {
-    let balance = parseInt(await query(chain, token, minABI, 'balanceOf', [wallet]));
-    if(balance > 0) {
-      let underlyingToken = await query(chain, token, yearn.tokenABI, 'token', []);
-      let multiplier = await query(chain, token, yearn.tokenABI, 'getPricePerFullShare', []);
-      let decimals = await query(chain, token, minABI, 'decimals', []);
-      let underlyingBalance = balance * (multiplier / (10 ** decimals));
-      let newToken = await addToken(chain, project, 'staked', underlyingToken, underlyingBalance, wallet);
-      balances.push(newToken);
+  
+  // Balance Multicall Query:
+  let multicallResults = await multicallOneMethodQuery(chain, yTokenList, minABI, 'balanceOf', [wallet]);
+  let promises = yTokenList.map(yToken => (async () => {
+    let balanceResults = multicallResults[yToken];
+    if(balanceResults) {
+      let balance = parseBN(balanceResults[0]);
+      if(balance > 0) {
+        let underlyingToken = await query(chain, yToken, yearn.tokenABI, 'token', []);
+        let multiplier = await query(chain, yToken, yearn.tokenABI, 'getPricePerFullShare', []);
+        let decimals = await query(chain, yToken, minABI, 'decimals', []);
+        let underlyingBalance = balance * (multiplier / (10 ** decimals));
+        let newToken = await addToken(chain, project, 'staked', underlyingToken, underlyingBalance, wallet);
+        balances.push(newToken);
+      }
     }
   })());
   await Promise.all(promises);

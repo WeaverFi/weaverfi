@@ -2,8 +2,7 @@
 // Imports:
 import axios from 'axios';
 import { minABI, snowball } from '../../ABIs';
-import { query, multicallQuery, addToken, addLPToken, addXToken, addAxialToken, parseBN } from '../../functions';
-import type { ContractCallContext } from 'ethereum-multicall';
+import { query, multicallOneMethodQuery, addToken, addLPToken, addXToken, addAxialToken, parseBN } from '../../functions';
 import type { Chain, Address, URL, Token, LPToken, XToken, SnowballAPIResponse } from '../../types';
 
 // Initializations:
@@ -40,24 +39,14 @@ export const get = async (wallet: Address) => {
 export const getFarmBalances = async (farms: SnowballAPIResponse[], wallet: Address) => {
   let balances: (Token | LPToken)[] = [];
   let snobRewards = 0;
-  
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  farms.forEach(farm => {
-    queries.push({
-      reference: farm.address,
-      contractAddress: farm.gaugeInfo.address,
-      abi: minABI,
-      calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
-    });
-  });
 
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
+  // Balance Multicall Query:
+  let farmGaugeAddresses = farms.map(farm => farm.gaugeInfo.address);
+  let multicallResults = await multicallOneMethodQuery(chain, farmGaugeAddresses, minABI, 'balanceOf', [wallet]);
   let promises = farms.map(farm => (async () => {
-    let balanceResult = multicallResults[farm.address].callsReturnContext[0];
-    if(balanceResult.success) {
-      let balance = parseBN(balanceResult.returnValues[0]);
+    let balanceResults = multicallResults[farm.gaugeInfo.address];
+    if(balanceResults) {
+      let balance = parseBN(balanceResults[0]);
       if(balance > 0) {
         let newToken: Token | LPToken;
         let exchangeRatio = parseInt(await query(chain, farm.address, snowball.farmABI, 'getRatio', [])) / (10 ** 18);

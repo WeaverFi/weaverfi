@@ -1,9 +1,8 @@
 
 // Imports:
 import { pangolin } from '../../ABIs';
-import { query, multicallQuery, addToken, addLPToken, parseBN } from '../../functions';
-import type { ContractCallContext } from 'ethereum-multicall';
-import type { Chain, Address, Token, LPToken } from '../../types';
+import { query, multicallOneContractQuery, addToken, addLPToken, parseBN } from '../../functions';
+import type { Chain, Address, Token, LPToken, CallContext } from '../../types';
 
 // Initializations:
 const chain: Chain = 'avax';
@@ -32,26 +31,17 @@ export const getFarmBalances = async (wallet: Address) => {
   let pngRewards = 0;
   let poolCount = parseInt(await query(chain, controller, pangolin.controllerABI, 'poolLength', []));
   let farms = [...Array(poolCount).keys()];
-
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  let balanceQuery: ContractCallContext = {
-    reference: 'userInfo',
-    contractAddress: controller,
-    abi: pangolin.controllerABI,
-    calls: []
-  }
+  
+  // User Info Multicall Query:
+  let calls: CallContext[] = [];
   farms.forEach(farmID => {
-    balanceQuery.calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
+    calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
   });
-  queries.push(balanceQuery);
-
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
-  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
-    if(result.success) {
-      let farmID = parseInt(result.reference);
-      let balance = parseBN(result.returnValues[0]);
+  let multicallResults = await multicallOneContractQuery(chain, controller, pangolin.controllerABI, calls);
+  let promises = farms.map(farmID => (async () => {
+    let userInfoResults = multicallResults[farmID];
+    if(userInfoResults) {
+      let balance = parseBN(userInfoResults[0]);
       if(balance > 0) {
         let lpToken = await query(chain, controller, pangolin.controllerABI, 'lpToken', [farmID]);
         let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);

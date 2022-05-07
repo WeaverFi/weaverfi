@@ -1,8 +1,7 @@
 
 // Imports:
 import { minABI, mstable } from '../../ABIs';
-import { query, multicallQuery, addToken, addXToken, addStableToken, addBalancerToken, parseBN } from '../../functions';
-import type { ContractCallContext } from 'ethereum-multicall';
+import { query, multicallOneMethodQuery, addToken, addXToken, addStableToken, addBalancerToken, parseBN } from '../../functions';
 import type { Chain, Address, Token, LPToken, XToken } from '../../types';
 
 // Initializations:
@@ -112,26 +111,15 @@ export const getAssetBalances = async (wallet: Address) => {
 // Function to get pool balances:
 export const getPoolBalances = async (wallet: Address) => {
   let balances: Token[] = [];
-
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  pools.forEach(lpToken => {
-    queries.push({
-      reference: lpToken,
-      contractAddress: lpToken,
-      abi: minABI,
-      calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
-    });
-  });
-
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
-  let promises = pools.map(lpToken => (async () => {
-    let balanceResults = multicallResults[lpToken].callsReturnContext[0];
-    if(balanceResults.success) {
-      let balance = parseBN(balanceResults.returnValues[0]);
+  
+  // Balance Multicall Query:
+  let multicallResults = await multicallOneMethodQuery(chain, pools, minABI, 'balanceOf', [wallet]);
+  let promises = pools.map(pool => (async () => {
+    let balanceResults = multicallResults[pool];
+    if(balanceResults) {
+      let balance = parseBN(balanceResults[0]);
       if(balance > 0) {
-        let newToken = await addStableToken(chain, project, 'staked', lpToken, balance, wallet);
+        let newToken = await addStableToken(chain, project, 'staked', pool, balance, wallet);
         balances.push(newToken);
       }
     }
@@ -145,23 +133,12 @@ export const getVaultBalances = async (wallet: Address) => {
   let balances: Token[] = [];
   let mtaRewards = 0;
   
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  vaults.forEach(vault => {
-    queries.push({
-      reference: vault,
-      contractAddress: vault,
-      abi: mstable.vaultABI,
-      calls: [{ reference: 'balance', methodName: 'rawBalanceOf', methodParameters: [wallet] }]
-    });
-  });
-
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
+  // Balance Multicall Query:
+  let multicallResults = await multicallOneMethodQuery(chain, vaults, mstable.vaultABI, 'rawBalanceOf', [wallet]);
   let promises = vaults.map(vault => (async () => {
-    let balanceResults = multicallResults[vault].callsReturnContext[0];
-    if(balanceResults.success) {
-      let balance = parseBN(balanceResults.returnValues[0]);
+    let balanceResults = multicallResults[vault];
+    if(balanceResults) {
+      let balance = parseBN(balanceResults[0]);
       if(balance > 0) {
         let lpToken = await query(chain, vault, mstable.vaultABI, 'stakingToken', []);
         let newToken = await addStableToken(chain, project, 'staked', lpToken, balance, wallet);
@@ -201,8 +178,7 @@ export const getStaked = async (wallet: Address) => {
   let balBalance = parseInt((await query(chain, balStaking, mstable.stakingABI, 'rawBalanceOf', [wallet]))[0]);
   if(balBalance > 0) {
     let token = await query(chain, balStaking, mstable.stakingABI, 'STAKED_TOKEN', []);
-    let id = await query(chain, token, mstable.mbptABI, 'getPoolId', []);
-    let newToken = await addBalancerToken(chain, project, 'staked', mta, balBalance, wallet, id);
+    let newToken = await addBalancerToken(chain, project, 'staked', token, balBalance, wallet);
     balances.push(newToken);
     let mtaRewards = parseInt(await query(chain, balStaking, mstable.stakingABI, 'earned', [wallet]));
     if(mtaRewards > 0) {

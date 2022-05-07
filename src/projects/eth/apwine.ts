@@ -1,9 +1,8 @@
 
 // Imports:
 import { minABI, apwine, paladin, aave, harvest, yearn, paraswap, truefi } from '../../ABIs';
-import { query, multicallQuery, addToken, addXToken, addCurveToken, parseBN } from '../../functions';
-import type { ContractCallContext } from 'ethereum-multicall';
-import type { Chain, Address, Token, LPToken, XToken } from '../../types';
+import { query, multicallOneContractQuery, multicallOneMethodQuery, addToken, addXToken, addCurveToken, parseBN } from '../../functions';
+import type { Chain, Address, Token, LPToken, XToken, CallContext } from '../../types';
 
 // Initializations:
 const chain: Chain = 'eth';
@@ -49,62 +48,25 @@ export const getFutureBalances = async (wallet: Address) => {
   let poolLength = parseInt(await query(chain, registry, apwine.registryABI, 'futureVaultCount', []));
   let futures = [...Array(poolLength).keys()];
   
-  // Future Multicall Query Setup:
-  let futureQueries: ContractCallContext[] = [];
-  let futureQuery: ContractCallContext = {
-    reference: 'getFutureVaultAt',
-    contractAddress: registry,
-    abi: apwine.registryABI,
-    calls: []
-  }
+  // Future Multicall Query:
+  let calls: CallContext[] = [];
   futures.forEach(futureID => {
-    futureQuery.calls.push({ reference: futureID.toString(), methodName: 'getFutureVaultAt', methodParameters: [futureID] });
+    calls.push({ reference: futureID.toString(), methodName: 'getFutureVaultAt', methodParameters: [futureID] });
   });
-  futureQueries.push(futureQuery);
-
-  // Future Multicall Query Results:
-  let futureMulticallResults = (await multicallQuery(chain, futureQueries)).results;
-
-  // PT Multicall Query Setup:
-  let ptQueries: ContractCallContext[] = [];
-  futureMulticallResults['getFutureVaultAt'].callsReturnContext.forEach(result => {
-    if(result.success) {
-      let future = result.returnValues[0] as Address;
-      ptQueries.push({
-        reference: future,
-        contractAddress: future,
-        abi: apwine.futureABI,
-        calls: [{ reference: 'ptAddress', methodName: 'getPTAddress', methodParameters: [] }]
-      });
-    }
-  });
-
-  // PT Multicall Query Results:
-  let ptMulticallResults = (await multicallQuery(chain, ptQueries)).results;
-
-  // Balance Multicall Query Setup:
-  let balanceQueries: ContractCallContext[] = [];
-  Object.keys(ptMulticallResults).forEach(result => {
-    let ptResult = ptMulticallResults[result].callsReturnContext[0];
-    if(ptResult.success) {
-      let future = ptMulticallResults[result].originalContractCallContext.reference as Address;
-      let pt = ptResult.returnValues[0] as Address;
-      balanceQueries.push({
-        reference: future,
-        contractAddress: pt,
-        abi: minABI,
-        calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
-      });
-    }
-  });
-
-  // Balance Multicall Query Results:
-  let balanceMulticallResults = (await multicallQuery(chain, balanceQueries)).results;
-  let promises = Object.keys(balanceMulticallResults).map(result => (async () => {
-    let balanceResult = balanceMulticallResults[result].callsReturnContext[0];
-    if(balanceResult.success) {
-      let future = balanceMulticallResults[result].originalContractCallContext.reference as Address;
-      let ptBalance = parseBN(balanceResult.returnValues[0]);
+  let futureMulticallResults = await multicallOneContractQuery(chain, registry, apwine.registryABI, calls);
+    
+  // PT Multicall Query:
+  let futureAddresses: Address[] = Object.keys(futureMulticallResults).map(id => futureMulticallResults[id][0]);
+  let ptMulticallResults = await multicallOneMethodQuery(chain, futureAddresses, apwine.futureABI, 'getPTAddress', []);
+  
+  // Balance Multicall Query:
+  let ptAddresses: Address[] = Object.keys(ptMulticallResults).map(future => ptMulticallResults[future as Address][0]);
+  let balanceMulticallResults = await multicallOneMethodQuery(chain, ptAddresses, minABI, 'balanceOf', [wallet]);
+  let promises = futureAddresses.map(future => (async () => {
+    let ptAddress: Address = ptMulticallResults[future][0];
+    let balanceResults = balanceMulticallResults[ptAddress];
+    if(balanceResults) {
+      let ptBalance = parseBN(balanceResults[0]);
       if(ptBalance > 0) {
         let platform = await query(chain, future, apwine.futureABI, 'PLATFORM_NAME', []);
         let futureToken = await query(chain, future, apwine.futureABI, 'getIBTAddress', []);

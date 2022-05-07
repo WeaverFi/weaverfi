@@ -1,9 +1,8 @@
 
 // Imports:
 import { minABI, penguin } from '../../ABIs';
-import { query, multicallQuery, addToken, addLPToken, addXToken, parseBN } from '../../functions';
-import type { ContractCallContext } from 'ethereum-multicall';
-import type { Chain, Address, Token, LPToken, XToken } from '../../types';
+import { query, multicallOneContractQuery, addToken, addLPToken, addXToken, parseBN } from '../../functions';
+import type { Chain, Address, Token, LPToken, XToken, CallContext } from '../../types';
 
 // Initializations:
 const chain: Chain = 'avax';
@@ -37,25 +36,16 @@ export const getIglooBalances = async (wallet: Address) => {
   let igloos = [...Array(iglooCount).keys()];
   let pefiRewards = 0;
   
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  let balanceQuery: ContractCallContext = {
-    reference: 'userInfo',
-    contractAddress: iglooMaster,
-    abi: penguin.masterABI,
-    calls: []
-  }
+  // User Info Multicall Query:
+  let calls: CallContext[] = [];
   igloos.forEach(iglooID => {
-    balanceQuery.calls.push({ reference: iglooID.toString(), methodName: 'userInfo', methodParameters: [iglooID, wallet] });
+    calls.push({ reference: iglooID.toString(), methodName: 'userInfo', methodParameters: [iglooID, wallet] });
   });
-  queries.push(balanceQuery);
-
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
-  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
-    if(result.success) {
-      let iglooID = parseInt(result.reference);
-      let balance = parseBN(result.returnValues[0]);
+  let multicallResults = await multicallOneContractQuery(chain, iglooMaster, penguin.masterABI, calls);
+  let promises = igloos.map(iglooID => (async () => {
+    let userInfoResults = multicallResults[iglooID];
+    if(userInfoResults) {
+      let balance = parseBN(userInfoResults[0]);
       if(balance > 0) {
         let token = (await query(chain, iglooMaster, penguin.masterABI, 'poolInfo', [iglooID])).poolToken;
         let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);

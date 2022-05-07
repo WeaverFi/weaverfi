@@ -1,9 +1,8 @@
 
 // Imports:
 import { minABI, traderjoe } from '../../ABIs';
-import { query, multicallQuery, addToken, addLPToken, addDebtToken, addTraderJoeToken, parseBN } from '../../functions';
-import type { ContractCallContext } from 'ethereum-multicall';
-import type { Chain, Address, Token, LPToken, DebtToken, XToken } from '../../types';
+import { query, multicallOneContractQuery, multicallComplexQuery, addToken, addLPToken, addDebtToken, addTraderJoeToken, parseBN } from '../../functions';
+import type { Chain, Address, Token, LPToken, DebtToken, XToken, CallContext } from '../../types';
 
 // Initializations:
 const chain: Chain = 'avax';
@@ -50,26 +49,17 @@ export const getFarmV2Balances = async (wallet: Address) => {
   let balances: (Token | LPToken | XToken)[] = [];
   let farmCount = parseInt(await query(chain, masterChefV2, traderjoe.masterChefABI, 'poolLength', []));
   let farms = [...Array(farmCount).keys()];
-  
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  let balanceQuery: ContractCallContext = {
-    reference: 'userInfo',
-    contractAddress: masterChefV2,
-    abi: traderjoe.masterChefABI,
-    calls: []
-  }
-  farms.forEach(farmID => {
-    balanceQuery.calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
-  });
-  queries.push(balanceQuery);
 
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
-  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
-    if(result.success) {
-      let farmID = parseInt(result.reference);
-      let balance = parseBN(result.returnValues[0]);
+  // User Info Multicall Query:
+  let calls: CallContext[] = [];
+  farms.forEach(farmID => {
+    calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
+  });
+  let multicallResults = await multicallOneContractQuery(chain, masterChefV2, traderjoe.masterChefABI, calls);
+  let promises = farms.map(farmID => (async () => {
+    let userInfoResults = multicallResults[farmID];
+    if(userInfoResults) {
+      let balance = parseBN(userInfoResults[0]);
       if(balance > 0) {
         let token = (await query(chain, masterChefV2, traderjoe.masterChefABI, 'poolInfo', [farmID])).lpToken;
 
@@ -111,25 +101,16 @@ export const getFarmV3Balances = async (wallet: Address) => {
   let farmCount = parseInt(await query(chain, masterChefV3, traderjoe.masterChefABI, 'poolLength', []));
   let farms = [...Array(farmCount).keys()];
   
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  let balanceQuery: ContractCallContext = {
-    reference: 'userInfo',
-    contractAddress: masterChefV3,
-    abi: traderjoe.masterChefABI,
-    calls: []
-  }
+  // User Info Multicall Query:
+  let calls: CallContext[] = [];
   farms.forEach(farmID => {
-    balanceQuery.calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
+    calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
   });
-  queries.push(balanceQuery);
-  
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
-  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
-    if(result.success) {
-      let farmID = parseInt(result.reference);
-      let balance = parseBN(result.returnValues[0]);
+  let multicallResults = await multicallOneContractQuery(chain, masterChefV3, traderjoe.masterChefABI, calls);
+  let promises = farms.map(farmID => (async () => {
+    let userInfoResults = multicallResults[farmID];
+    if(userInfoResults) {
+      let balance = parseBN(userInfoResults[0]);
       if(balance > 0) {
         let token = (await query(chain, masterChefV3, traderjoe.masterChefABI, 'poolInfo', [farmID])).lpToken;
 
@@ -137,13 +118,13 @@ export const getFarmV3Balances = async (wallet: Address) => {
         if(token === xjoe) {
           let newToken = await addTraderJoeToken(chain, project, 'staked', balance, wallet);
           balances.push(newToken);
-  
+
         // LP Farms:
         } else {
           let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
           balances.push(newToken);
         }
-  
+
         // JOE Rewards:
         let rewards = await query(chain, masterChefV3, traderjoe.masterChefABI, 'pendingTokens', [farmID, wallet]);
         let pendingJoe = parseInt(rewards.pendingJoe);
@@ -151,7 +132,7 @@ export const getFarmV3Balances = async (wallet: Address) => {
           let newToken = await addToken(chain, project, 'unclaimed', joe, pendingJoe, wallet);
           balances.push(newToken);
         }
-  
+
         // Bonus Rewards:
         let pendingBonus = parseInt(rewards.pendingBonusToken);
         if(pendingBonus > 0) {
@@ -171,25 +152,16 @@ export const getBoostedFarmBalances = async (wallet: Address) => {
   let farmCount = parseInt(await query(chain, boostedMasterChef, traderjoe.masterChefABI, 'poolLength', []));
   let farms = [...Array(farmCount).keys()];
   
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  let balanceQuery: ContractCallContext = {
-    reference: 'userInfo',
-    contractAddress: boostedMasterChef,
-    abi: traderjoe.masterChefABI,
-    calls: []
-  }
+  // User Info Multicall Query:
+  let calls: CallContext[] = [];
   farms.forEach(farmID => {
-    balanceQuery.calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
+    calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
   });
-  queries.push(balanceQuery);
-  
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
-  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
-    if(result.success) {
-      let farmID = parseInt(result.reference);
-      let balance = parseBN(result.returnValues[0]);
+  let multicallResults = await multicallOneContractQuery(chain, boostedMasterChef, traderjoe.masterChefABI, calls);
+  let promises = farms.map(farmID => (async () => {
+    let userInfoResults = multicallResults[farmID];
+    if(userInfoResults) {
+      let balance = parseBN(userInfoResults[0]);
       if(balance > 0) {
         let token = (await query(chain, boostedMasterChef, traderjoe.masterChefABI, 'poolInfo', [farmID])).lpToken;
 
@@ -197,13 +169,13 @@ export const getBoostedFarmBalances = async (wallet: Address) => {
         if(token === xjoe) {
           let newToken = await addTraderJoeToken(chain, project, 'staked', balance, wallet);
           balances.push(newToken);
-  
+
         // LP Farms:
         } else {
           let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
           balances.push(newToken);
         }
-  
+
         // JOE Rewards:
         let rewards = await query(chain, boostedMasterChef, traderjoe.masterChefABI, 'pendingTokens', [farmID, wallet]);
         let pendingJoe = parseInt(rewards.pendingJoe);
@@ -211,7 +183,7 @@ export const getBoostedFarmBalances = async (wallet: Address) => {
           let newToken = await addToken(chain, project, 'unclaimed', joe, pendingJoe, wallet);
           balances.push(newToken);
         }
-  
+
         // Bonus Rewards:
         let pendingBonus = parseInt(rewards.pendingBonusToken);
         if(pendingBonus > 0) {
@@ -229,44 +201,38 @@ export const getBoostedFarmBalances = async (wallet: Address) => {
 export const getMarketBalances = async (wallet: Address) => {
   let balances: (Token | DebtToken)[] = [];
   let markets: Address[] = await query(chain, bankController, traderjoe.bankControllerABI, 'getAllMarkets', []);
-  
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  markets.forEach(market => {
-    queries.push({
-      reference: market,
-      contractAddress: market,
-      abi: minABI.concat(traderjoe.marketABI),
-      calls: [
-        { reference: 'marketBalance', methodName: 'balanceOf', methodParameters: [wallet] },
-        { reference: 'accountSnapshot', methodName: 'getAccountSnapshot', methodParameters: [wallet] }
-      ]
-    });
-  });
 
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
+  // Market Balance Multicall Query:
+  let abi = minABI.concat(traderjoe.marketABI);
+  let calls: CallContext[] = [
+    { reference: 'marketBalance', methodName: 'balanceOf', methodParameters: [wallet] },
+    { reference: 'accountSnapshot', methodName: 'getAccountSnapshot', methodParameters: [wallet] }
+  ];
+  let multicallResults = await multicallComplexQuery(chain, markets, abi, calls);
   let promises = markets.map(market => (async () => {
-    let marketBalanceResults = multicallResults[market].callsReturnContext.find(i => i.reference === 'marketBalance');
-    let accountSnapshotResults = multicallResults[market].callsReturnContext.find(i => i.reference === 'accountSnapshot');
-    if(marketBalanceResults && accountSnapshotResults && marketBalanceResults.success && accountSnapshotResults.success) {
-      let balance = parseBN(marketBalanceResults.returnValues[0]);
-      let debt = parseBN(accountSnapshotResults.returnValues[2]);
-      let exchangeRate = parseBN(accountSnapshotResults.returnValues[3]);
-      if(balance > 0 || debt > 0) {
-        let token = await query(chain, market, traderjoe.marketABI, 'underlying', []);
+    let marketResults = multicallResults[market];
+    if(marketResults) {
+      let marketBalanceResults = marketResults['marketBalance'];
+      let accountSnapshotResults = marketResults['accountSnapshot'];
+      if(marketBalanceResults && accountSnapshotResults) {
+        let balance = parseBN(marketBalanceResults[0]);
+        let debt = parseBN(accountSnapshotResults[2]);
+        let exchangeRate = parseBN(accountSnapshotResults[3]);
+        if(balance > 0 || debt > 0) {
+          let token = await query(chain, market, traderjoe.marketABI, 'underlying', []);
         
-        // Lending Balances:
-        if(balance > 0) {
-          let underlyingBalance = balance * (exchangeRate / (10 ** 18));
-          let newToken = await addToken(chain, project, 'lent', token, underlyingBalance, wallet);
-          balances.push(newToken);
-        }
-  
-        // Borrowing Balances:
-        if(debt > 0) {
-          let newToken = await addDebtToken(chain, project, token, debt, wallet);
-          balances.push(newToken);
+          // Lending Balances:
+          if(balance > 0) {
+            let underlyingBalance = balance * (exchangeRate / (10 ** 18));
+            let newToken = await addToken(chain, project, 'lent', token, underlyingBalance, wallet);
+            balances.push(newToken);
+          }
+    
+          // Borrowing Balances:
+          if(debt > 0) {
+            let newToken = await addDebtToken(chain, project, token, debt, wallet);
+            balances.push(newToken);
+          }
         }
       }
     }

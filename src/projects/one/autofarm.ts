@@ -1,9 +1,8 @@
 
 // Imports:
 import { autofarm } from '../../ABIs';
-import { query, multicallQuery, addLPToken, parseBN } from '../../functions';
-import type { ContractCallContext } from 'ethereum-multicall';
-import type { Chain, Address, LPToken } from '../../types';
+import { query, multicallOneContractQuery, addLPToken, parseBN } from '../../functions';
+import type { Chain, Address, LPToken, CallContext } from '../../types';
 
 // Initializations:
 const chain: Chain = 'one';
@@ -31,28 +30,19 @@ export const getVaultBalances = async (wallet: Address) => {
   let balances: LPToken[] = [];
   let poolLength = parseInt(await query(chain, registry, autofarm.oneRegistryABI, 'poolLength', []));
   let vaults = [...Array(poolLength).keys()];
-
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  let balanceQuery: ContractCallContext = {
-    reference: 'userInfo',
-    contractAddress: registry,
-    abi: autofarm.oneRegistryABI,
-    calls: []
-  }
+  
+  // User Info Multicall Query:
+  let calls: CallContext[] = [];
   vaults.forEach(vaultID => {
     if(!ignoredVaults.includes(vaultID)) {
-      balanceQuery.calls.push({ reference: vaultID.toString(), methodName: 'userInfo', methodParameters: [vaultID, wallet] });
+      calls.push({ reference: vaultID.toString(), methodName: 'userInfo', methodParameters: [vaultID, wallet] });
     }
   });
-  queries.push(balanceQuery);
-
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
-  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
-    if(result.success) {
-      let vaultID = parseInt(result.reference);
-      let balance = parseBN(result.returnValues[0]);
+  let multicallResults = await multicallOneContractQuery(chain, registry, autofarm.oneRegistryABI, calls);
+  let promises = vaults.map(vaultID => (async () => {
+    let userInfoResults = multicallResults[vaultID];
+    if(userInfoResults) {
+      let balance = parseBN(userInfoResults[0]);
       if(balance > 99) {
         let lpToken = await query(chain, registry, autofarm.oneRegistryABI, 'lpToken', [vaultID]);
         let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);

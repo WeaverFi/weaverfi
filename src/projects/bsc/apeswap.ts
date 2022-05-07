@@ -1,9 +1,8 @@
 
 // Imports:
 import { minABI, apeswap } from '../../ABIs';
-import { query, multicallQuery, addToken, addLPToken, parseBN } from '../../functions';
-import type { ContractCallContext } from 'ethereum-multicall';
-import type { Chain, Address, Token, LPToken } from '../../types';
+import { query, multicallOneContractQuery, addToken, addLPToken, parseBN } from '../../functions';
+import type { Chain, Address, Token, LPToken, CallContext } from '../../types';
 
 // Initializations:
 const chain: Chain = 'bsc';
@@ -35,25 +34,16 @@ export const getFarmBalances = async (wallet: Address) => {
   let farmCount = parseInt(await query(chain, masterApe, apeswap.masterApeABI, 'poolLength', []));
   let farms = [...Array(farmCount).keys()];
   
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  let balanceQuery: ContractCallContext = {
-    reference: 'userInfo',
-    contractAddress: masterApe,
-    abi: apeswap.masterApeABI,
-    calls: []
-  }
+  // User Info Multicall Query:
+  let calls: CallContext[] = [];
   farms.forEach(farmID => {
-    balanceQuery.calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
+    calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
   });
-  queries.push(balanceQuery);
-
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
-  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
-    if(result.success) {
-      let farmID = parseInt(result.reference);
-      let balance = parseBN(result.returnValues[0]);
+  let multicallResults = await multicallOneContractQuery(chain, masterApe, apeswap.masterApeABI, calls);
+  let promises = farms.map(farmID => (async () => {
+    let userInfoResults = multicallResults[farmID];
+    if(userInfoResults) {
+      let balance = parseBN(userInfoResults[0]);
       if(balance > 0) {
 
         // BANANA Farm:
@@ -90,26 +80,17 @@ export const getVaultBalances = async (wallet: Address) => {
   let vaultCount = parseInt(await query(chain, vaultMaster, apeswap.vaultMasterABI, 'poolLength', []));
   let vaults = [...Array(vaultCount).keys()];
   
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  let balanceQuery: ContractCallContext = {
-    reference: 'stakedWantTokens',
-    contractAddress: vaultMaster,
-    abi: apeswap.vaultMasterABI,
-    calls: []
-  }
+  // Balance Multicall Query:
+  let calls: CallContext[] = [];
   vaults.forEach(vaultID => {
-    balanceQuery.calls.push({ reference: vaultID.toString(), methodName: 'stakedWantTokens', methodParameters: [vaultID, wallet] });
+    calls.push({ reference: vaultID.toString(), methodName: 'stakedWantTokens', methodParameters: [vaultID, wallet] });
   });
-  queries.push(balanceQuery);
-
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
-  let promises = multicallResults['stakedWantTokens'].callsReturnContext.map(result => (async () => {
-    if(result.success) {
-      let vaultID = parseInt(result.reference);
-      let balance = parseBN(result.returnValues[0]);
-      if(balance > 0) {
+  let multicallResults = await multicallOneContractQuery(chain, vaultMaster, apeswap.vaultMasterABI, calls);
+  let promises = vaults.map(vaultID => (async () => {
+    let balanceResults = multicallResults[vaultID];
+    if(balanceResults) {
+      let balance = parseBN(balanceResults[0]);
+      if(balance > 99) {
         let token = (await query(chain, vaultMaster, apeswap.vaultMasterABI, 'poolInfo', [vaultID])).want;
         let symbol = await query(chain, token, minABI, 'symbol', []);
         

@@ -1,7 +1,7 @@
 
 // Imports:
 import { minABI, quickswap } from '../../ABIs';
-import { query, addToken, addLPToken, addXToken } from '../../functions';
+import { query, multicallOneMethodQuery, addToken, addLPToken, addXToken, parseBN } from '../../functions';
 import type { Chain, Address, Token, LPToken, XToken } from '../../types';
 
 // Initializations:
@@ -39,18 +39,24 @@ export const get = async (wallet: Address) => {
 // Function to get all farm balances:
 export const getFarmBalances = async (wallet: Address, farms: Address[], ratio: number) => {
   let balances: (Token | LPToken)[] = [];
+  
+  // Balance Multicall Query:
+  let multicallResults = await multicallOneMethodQuery(chain, farms, minABI, 'balanceOf', [wallet]);
   let promises = farms.map(farm => (async () => {
-    let balance = parseInt(await query(chain, farm, minABI, 'balanceOf', [wallet]));
-    if(balance > 0) {
-      let token = await query(chain, farm, quickswap.farmABI, 'stakingToken', []);
-      let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
-      balances.push(newToken);
-
-      // Pending QUICK Rewards:
-      let rewards = parseInt(await query(chain, farm, quickswap.farmABI, 'earned', [wallet]));
-      if(rewards > 0) {
-        let newToken = await addToken(chain, project, 'unclaimed', quick, rewards * ratio, wallet);
+    let balanceResults = multicallResults[farm];
+    if(balanceResults) {
+      let balance = parseBN(balanceResults[0]);
+      if(balance > 0) {
+        let token = await query(chain, farm, quickswap.farmABI, 'stakingToken', []);
+        let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
         balances.push(newToken);
+
+        // Pending QUICK Rewards:
+        let rewards = parseInt(await query(chain, farm, quickswap.farmABI, 'earned', [wallet]));
+        if(rewards > 0) {
+          let newToken = await addToken(chain, project, 'unclaimed', quick, rewards * ratio, wallet);
+          balances.push(newToken);
+        }
       }
     }
   })());
@@ -61,25 +67,31 @@ export const getFarmBalances = async (wallet: Address, farms: Address[], ratio: 
 // Function to get all dual farm balances:
 export const getDualFarmBalances = async (wallet: Address, dualFarms: Address[], ratio: number) => {
   let balances: (Token | LPToken)[] = [];
+  
+  // Balance Multicall Query:
+  let multicallResults = await multicallOneMethodQuery(chain, dualFarms, minABI, 'balanceOf', [wallet]);
   let promises = dualFarms.map(farm => (async () => {
-    let balance = parseInt(await query(chain, farm, minABI, 'balanceOf', [wallet]));
-    if(balance > 0) {
-      let token = await query(chain, farm, quickswap.dualFarmABI, 'stakingToken', []);
-      let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
-      balances.push(newToken);
-
-      // Pending QUICK Rewards:
-      let rewardsA = parseInt(await query(chain, farm, quickswap.dualFarmABI, 'earnedA', [wallet]));
-      if(rewardsA > 0) {
-        let newToken = await addToken(chain, project, 'unclaimed', quick, rewardsA * ratio, wallet);
+    let balanceResults = multicallResults[farm];
+    if(balanceResults) {
+      let balance = parseBN(balanceResults[0]);
+      if(balance > 0) {
+        let token = await query(chain, farm, quickswap.dualFarmABI, 'stakingToken', []);
+        let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
         balances.push(newToken);
-      }
 
-      // Pending WMATIC Rewards:
-      let rewardsB = parseInt(await query(chain, farm, quickswap.dualFarmABI, 'earnedB', [wallet]));
-      if(rewardsB > 0) {
-        let newToken = await addToken(chain, project, 'unclaimed', wmatic, rewardsB, wallet);
-        balances.push(newToken);
+        // Pending QUICK Rewards:
+        let rewardsA = parseInt(await query(chain, farm, quickswap.dualFarmABI, 'earnedA', [wallet]));
+        if(rewardsA > 0) {
+          let newToken = await addToken(chain, project, 'unclaimed', quick, rewardsA * ratio, wallet);
+          balances.push(newToken);
+        }
+
+        // Pending WMATIC Rewards:
+        let rewardsB = parseInt(await query(chain, farm, quickswap.dualFarmABI, 'earnedB', [wallet]));
+        if(rewardsB > 0) {
+          let newToken = await addToken(chain, project, 'unclaimed', wmatic, rewardsB, wallet);
+          balances.push(newToken);
+        }
       }
     }
   })());

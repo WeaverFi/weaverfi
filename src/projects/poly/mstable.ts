@@ -1,7 +1,7 @@
 
 // Imports:
 import { minABI, mstable } from '../../ABIs';
-import { query, addToken, addStableToken } from '../../functions';
+import { query, multicallOneMethodQuery, addToken, addStableToken, parseBN } from '../../functions';
 import type { Chain, Address, Token } from '../../types';
 
 // Initializations:
@@ -65,11 +65,17 @@ export const getAssetBalances = async (wallet: Address) => {
 // Function to get pool balances:
 export const getPoolBalances = async (wallet: Address) => {
   let balances: Token[] = [];
-  let promises = pools.map(lpToken => (async () => {
-    let balance = parseInt(await query(chain, lpToken, minABI, 'balanceOf', [wallet]));
-    if(balance > 0) {
-      let newToken = await addStableToken(chain, project, 'staked', lpToken, balance, wallet);
-      balances.push(newToken);
+  
+  // Balance Multicall Query:
+  let multicallResults = await multicallOneMethodQuery(chain, pools, minABI, 'balanceOf', [wallet]);
+  let promises = pools.map(pool => (async () => {
+    let balanceResults = multicallResults[pool];
+    if(balanceResults) {
+      let balance = parseBN(balanceResults[0]);
+      if(balance > 0) {
+        let newToken = await addStableToken(chain, project, 'staked', pool, balance, wallet);
+        balances.push(newToken);
+      }
     }
   })());
   await Promise.all(promises);

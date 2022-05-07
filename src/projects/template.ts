@@ -35,3 +35,9 @@ export const getSomething = async (wallet: Address) => { // This function should
     return [];
   }
 }
+
+/*
+  Check out the functions.ts file for many functions you can use to facilitate querying anything you'd like!
+  There are also multicall functions to simplify any multicall queries you intend to use (if necessary).
+  Alternatively, feel free to check out any of the other project integrations done by others.
+*/

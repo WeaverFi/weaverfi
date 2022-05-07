@@ -2,8 +2,7 @@
 // Imports:
 import axios from 'axios';
 import { moonpot } from '../../ABIs';
-import { multicallQuery, addToken, addLPToken, add4BeltToken, addBeltToken, addAlpacaToken, parseBN } from '../../functions';
-import type { ContractCallContext } from 'ethereum-multicall';
+import { multicallOneMethodQuery, addToken, addLPToken, add4BeltToken, addBeltToken, addAlpacaToken, parseBN } from '../../functions';
 import type { Chain, Address, Token, LPToken, XToken, MoonPotAPIResponse } from '../../types';
 
 // Initializations:
@@ -35,23 +34,13 @@ export const get = async (wallet: Address) => {
 export const getPotBalances = async (wallet: Address, pots: MoonPotAPIResponse[]) => {
   let balances: (Token | LPToken | XToken)[] = [];
   
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  pots.forEach(pot => {
-    queries.push({
-      reference: pot.contractAddress,
-      contractAddress: pot.contractAddress,
-      abi: moonpot.potABI,
-      calls: [{ reference: 'balance', methodName: 'userTotalBalance', methodParameters: [wallet] }]
-    });
-  });
-
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
+  // Balance Multicall Query:
+  let potAddresses = pots.map(pot => pot.contractAddress);
+  let multicallResults = await multicallOneMethodQuery(chain, potAddresses, moonpot.potABI, 'userTotalBalance', [wallet]);
   let promises = pots.map(pot => (async () => {
-    let balanceResult = multicallResults[pot.contractAddress].callsReturnContext[0];
-    if(balanceResult.success) {
-      let balance = parseBN(balanceResult.returnValues[0]);
+    let balanceResults = multicallResults[pot.contractAddress];
+    if(balanceResults) {
+      let balance = parseBN(balanceResults[0]);
       if(balance > 0) {
 
         // 4Belt Pot:

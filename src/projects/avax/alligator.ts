@@ -1,9 +1,8 @@
 
 // Imports:
 import { minABI, alligator } from '../../ABIs';
-import { query, multicallQuery, addToken, addLPToken, addXToken, parseBN } from '../../functions';
-import type { ContractCallContext } from 'ethereum-multicall';
-import type { Chain, Address, Token, LPToken, XToken } from '../../types';
+import { query, multicallOneContractQuery, multicallOneMethodQuery, addToken, addLPToken, addXToken, parseBN } from '../../functions';
+import type { Chain, Address, Token, LPToken, XToken, CallContext } from '../../types';
 
 // Initializations:
 const chain: Chain = 'avax';
@@ -36,43 +35,20 @@ export const getPoolBalances = async (wallet: Address) => {
   let poolCount = parseInt(await query(chain, factory, alligator.factoryABI, 'allPairsLength', []));
   let pools = [...Array(poolCount).keys()];
 
-  // LP Token Multicall Query Setup:
-  let lpTokenQueries: ContractCallContext[] = [];
-  let lpTokenQuery: ContractCallContext = {
-    reference: 'allPairs',
-    contractAddress: factory,
-    abi: alligator.factoryABI,
-    calls: []
-  }
+  // LP Token Multicall Query:
+  let lpCalls: CallContext[] = [];
   pools.forEach(poolID => {
-    lpTokenQuery.calls.push({ reference: poolID.toString(), methodName: 'allPairs', methodParameters: [poolID] });
+    lpCalls.push({ reference: poolID.toString(), methodName: 'allPairs', methodParameters: [poolID] });
   });
-  lpTokenQueries.push(lpTokenQuery);
+  let lpMulticallResults = await multicallOneContractQuery(chain, factory, alligator.factoryABI, lpCalls);
 
-  // LP Token Multicall Query Results:
-  let lpTokenMulticallResults = (await multicallQuery(chain, lpTokenQueries)).results;
-
-  // Balance Multicall Query Setup:
-  let balanceQueries: ContractCallContext[] = [];
-  lpTokenMulticallResults['allPairs'].callsReturnContext.forEach(result => {
-    if(result.success) {
-      let lpToken = result.returnValues[0] as Address;
-      balanceQueries.push({
-        reference: result.reference,
-        contractAddress: lpToken,
-        abi: minABI,
-        calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
-      });
-    }
-  });
-
-  // Balance Multicall Query Results:
-  let balanceMulticallResults = (await multicallQuery(chain, balanceQueries)).results;
-  let promises = Object.keys(balanceMulticallResults).map(result => (async () => {
-    let balanceResult = balanceMulticallResults[result].callsReturnContext[0];
-    if(balanceResult.success) {
-      let lpToken = balanceMulticallResults[result].originalContractCallContext.contractAddress as Address;
-      let balance = parseBN(balanceResult.returnValues[0]);
+  // Balance Multicall Query:
+  let lpAddresses = Object.keys(lpMulticallResults).map(id => lpMulticallResults[id][0]) as Address[];
+  let balanceMulticallResults = await multicallOneMethodQuery(chain, lpAddresses, minABI, 'balanceOf', [wallet]);
+  let promises = lpAddresses.map(lpToken => (async () => {
+    let balanceResults = balanceMulticallResults[lpToken];
+    if(balanceResults) {
+      let balance = parseBN(balanceResults[0]);
       if(balance > 0) {
         let newToken = await addLPToken(chain, project, 'staked', lpToken, balance, wallet);
         balances.push(newToken);
@@ -89,25 +65,16 @@ export const getFarmBalances = async (wallet: Address) => {
   let farmCount = parseInt(await query(chain, masterChef, alligator.masterChefABI, 'poolLength', []));
   let farms = [...Array(farmCount).keys()];
 
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  let userInfoQuery: ContractCallContext = {
-    reference: 'userInfo',
-    contractAddress: masterChef,
-    abi: alligator.masterChefABI,
-    calls: []
-  }
+  // User Info Multicall Query:
+  let calls: CallContext[] = [];
   farms.forEach(farmID => {
-    userInfoQuery.calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
+    calls.push({ reference: farmID.toString(), methodName: 'userInfo', methodParameters: [farmID, wallet] });
   });
-  queries.push(userInfoQuery);
-
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
-  let promises = multicallResults['userInfo'].callsReturnContext.map(result => (async () => {
-    if(result.success) {
-      let farmID = parseInt(result.reference);
-      let balance = parseBN(result.returnValues[0]);
+  let multicallResults = await multicallOneContractQuery(chain, masterChef, alligator.masterChefABI, calls);
+  let promises = farms.map(farmID => (async () => {
+    let userInfoResults = multicallResults[farmID];
+    if(userInfoResults) {
+      let balance = parseBN(userInfoResults[0]);
       if(balance > 0) {
         let token = (await query(chain, masterChef, alligator.masterChefABI, 'poolInfo', [farmID])).lpToken;
         let symbol = await query(chain, token, minABI, 'symbol', []);

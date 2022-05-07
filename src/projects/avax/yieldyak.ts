@@ -2,8 +2,7 @@
 // Imports:
 import axios from 'axios';
 import { minABI, yieldyak } from '../../ABIs';
-import { query, multicallQuery, addToken, addLPToken, addAxialToken, parseBN } from '../../functions';
-import type { ContractCallContext } from 'ethereum-multicall';
+import { query, multicallOneMethodQuery, addToken, addLPToken, addAxialToken, parseBN } from '../../functions';
 import type { Chain, Address, URL, Token, LPToken, YieldYakAPIResponse } from '../../types';
 
 // Initializations:
@@ -37,25 +36,14 @@ export const get = async (wallet: Address) => {
 // Function to get farm balances:
 export const getFarmBalances = async (wallet: Address, farms: Record<Address, YieldYakAPIResponse>) => {
   let balances: (Token | LPToken)[] = [];
-  let farmAddresses = Object.keys(farms) as Address[];
   
-  // Multicall Query Setup:
-  let queries: ContractCallContext[] = [];
-  farmAddresses.forEach(farm => {
-    queries.push({
-      reference: farm,
-      contractAddress: farm,
-      abi: minABI,
-      calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
-    });
-  });
-
-  // Multicall Query Results:
-  let multicallResults = (await multicallQuery(chain, queries)).results;
+  // Balance Multicall Query:
+  let farmAddresses = Object.keys(farms) as Address[];
+  let multicallResults = await multicallOneMethodQuery(chain, farmAddresses, minABI, 'balanceOf', [wallet]);
   let promises = farmAddresses.map(farm => (async () => {
-    let balanceResult = multicallResults[farm].callsReturnContext[0];
-    if(balanceResult.success) {
-      let balance = parseBN(balanceResult.returnValues[0]);
+    let balanceResults = multicallResults[farm];
+    if(balanceResults) {
+      let balance = parseBN(balanceResults[0]);
       if(balance > 1) {
         let token = await query(chain, farm, yieldyak.farmABI, 'depositToken', []);
         let totalDeposits = parseInt(await query(chain, farm, yieldyak.farmABI, 'totalDeposits', []));

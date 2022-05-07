@@ -4,10 +4,11 @@ import { ethers } from 'ethers';
 import { chains } from './chains';
 import { projects } from './projects';
 import { getTokenPrice } from './prices';
-import { Multicall, ContractCallResults, ContractCallContext } from 'ethereum-multicall';
+import { Multicall } from 'ethereum-multicall';
 import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data, cronos_data } from './tokens';
 import { minABI, lpABI, aave, balancer, belt, alpaca, curve, bzx, iron, axial, mstable } from './ABIs';
-import type { EVMChain, Address, URL, ABI, ENSDomain, TokenData, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken } from './types';
+import type { ContractCallResults, ContractCallContext } from 'ethereum-multicall';
+import type { EVMChain, Address, URL, ABI, Hash, ENSDomain, TokenData, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken, CallContext } from './types';
 
 // Initializations:
 const defaultTokenLogo: URL = 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@d5c68edec1f5eaec59ac77ff2b48144679cebca1/32/icon/generic.png';
@@ -55,6 +56,62 @@ export const multicallQuery = async (chain: EVMChain, queries: ContractCallConte
   let ethers_provider = new ethers.providers.JsonRpcProvider(chains[chain].rpcs[0]);
   let multicall = new Multicall({ ethersProvider: ethers_provider, tryAggregate: true, multicallCustomContractAddress: chains[chain].multicall });
   let results: ContractCallResults = await multicall.call(queries);
+  return results;
+}
+
+/* ========================================================================================================================================================================= */
+
+// Function to make multicall blockchain queries with a singular method call to multiple contracts:
+export const multicallOneMethodQuery = async (chain: EVMChain, contracts: Address[], abi: ABI[], methodName: string, methodParameters: any[]) => {
+  let results: Record<Address, any[]> = {};
+  let queries: ContractCallContext[] = [];
+  let calls: CallContext[] = [{ reference: '', methodName, methodParameters }];
+  contracts.forEach(contract => {
+    queries.push({ reference: contract, contractAddress: contract, abi, calls });
+  });
+  let multicallQueryResults = (await multicallQuery(chain, queries)).results;
+  contracts.forEach(contract => {
+    let contractResults = multicallQueryResults[contract].callsReturnContext[0];
+    if(contractResults && contractResults.success) {
+      results[contract] = contractResults.returnValues;
+    }
+  });
+  return results;
+}
+
+/* ========================================================================================================================================================================= */
+
+// Function to make multicall blockchain queries with many method calls to a single contract:
+export const multicallOneContractQuery = async (chain: EVMChain, contractAddress: Address, abi: ABI[], calls: CallContext[]) => {
+  let results: Record<string, any[]> = {};
+  let query: ContractCallContext = { reference: 'oneContractQuery', contractAddress, abi, calls };
+  let multicallQueryResults = (await multicallQuery(chain, [query])).results;
+  multicallQueryResults['oneContractQuery'].callsReturnContext.forEach(result => {
+    if(result.success) {
+      results[result.reference] = result.returnValues;
+    }
+  });
+  return results;
+}
+
+/* ========================================================================================================================================================================= */
+
+// Function to make multicall blockchain queries with many method calls to many contracts:
+export const multicallComplexQuery = async (chain: EVMChain, contracts: Address[], abi: ABI[], calls: CallContext[]) => {
+  let results: Record<Address, Record<string, any[]>> = {};
+  let queries: ContractCallContext[] = [];
+  contracts.forEach(contract => {
+    queries.push({ reference: contract, contractAddress: contract, abi, calls });
+  });
+  let multicallQueryResults = (await multicallQuery(chain, queries)).results;
+  contracts.forEach(contract => {
+    let contractResults = multicallQueryResults[contract].callsReturnContext;
+    let queryResults: Record<string, any[]> = {};
+    contractResults.forEach(result => {
+      queryResults[result.reference] = result.returnValues;
+    });
+    results[contract] = queryResults;
+  });
   return results;
 }
 
@@ -411,26 +468,16 @@ const getWalletTokenBalance = async (chain: EVMChain, wallet: Address) => {
   let tokens: Token[] = [];
   let data = getChainTokenData(chain);
   if(data) {
-    let queries: ContractCallContext[] = [];
-    data.tokens.forEach(token => {
-      queries.push({
-        reference: token.symbol,
-        contractAddress: token.address,
-        abi: minABI,
-        calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
-      });
-    });
-    let multicallResults = (await multicallQuery(chain, queries)).results;
+    let addresses: Address[] = data.tokens.map(token => token.address);
+    let multicallResults = await multicallOneMethodQuery(chain, addresses, minABI, 'balanceOf', [wallet]);
     let promises = data.tokens.map(token => (async () => {
-      let tokenResults = multicallResults[token.symbol].callsReturnContext[0];
-      if(tokenResults.success) {
-        let rawBalance = parseBN(tokenResults.returnValues[0]);
+      let balanceResults = multicallResults[token.address];
+      if(balanceResults) {
+        let rawBalance = parseBN(balanceResults[0]);
         if(rawBalance > 0) {
           let newToken = await addTrackedToken(chain, 'wallet', 'none', token, rawBalance, wallet);
           tokens.push(newToken);
         }
-      } else {
-        console.error(`Couldn't fetch ${tokenResults.reference} token balance for ${wallet} (Chain: ${chain.toUpperCase()})`);
       }
     })());
     await Promise.all(promises);
@@ -529,7 +576,7 @@ export const addAaveBLPToken = async (chain: EVMChain, location: string, status:
   address = await query(chain, address, aave.lpABI, 'bPool', []);
 
   // Finding LP Token Info:
-  let lpTokenSupply = await query(chain, address, balancer.tokenABI, 'totalSupply', []) / (10 ** decimals);
+  let lpTokenSupply = await query(chain, address, minABI, 'totalSupply', []) / (10 ** decimals);
   let lpTokenAddresses = await query(chain, address, balancer.tokenABI, 'getCurrentTokens', []);
   let address0 = lpTokenAddresses[0];
   let address1 = lpTokenAddresses[1];
@@ -1078,16 +1125,17 @@ export const addBZXToken = async (chain: EVMChain, location: string, status: Tok
 /* ========================================================================================================================================================================= */
 
 // Function to get Balancer LP token info:
-export const addBalancerToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, id: Address) => {
-  return await addBalancerLikeToken(chain, location, status, address, rawBalance, owner, id, '0xBA12222222228d8Ba445958a75a0704d566BF2C8');
+export const addBalancerToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address) => {
+  return await addBalancerLikeToken(chain, location, status, address, rawBalance, owner, '0xBA12222222228d8Ba445958a75a0704d566BF2C8');
 }
 
 // Function to get Balancer-like LP token info:
-export const addBalancerLikeToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, id: Address, vault: Address): Promise<Token | LPToken> => {
+export const addBalancerLikeToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, vault: Address): Promise<Token | LPToken> => {
 
   // Generic Token Values:
-  let poolInfo = await query(chain, vault, balancer.vaultABI, 'getPoolTokens', [id]);
-  let symbol = await query(chain, address, minABI, 'symbol', []);
+  let poolID: Hash = await query(chain, address, balancer.poolABI, 'getPoolId', []);
+  let poolInfo = await query(chain, vault, balancer.vaultABI, 'getPoolTokens', [poolID]);
+  let symbol: string = await query(chain, address, minABI, 'symbol', []);
   let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
   let balance = rawBalance / (10 ** decimals);
   let lpTokenSupply = parseInt(await query(chain, address, minABI, 'totalSupply', []));

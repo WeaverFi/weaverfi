@@ -240,6 +240,15 @@ export interface TokenPriceData {
 
 /* ========================================================================================================================================================================= */
 
+// Multicall Interfaces:
+export interface CallContext {
+    reference: string
+    methodName: string
+    methodParameters: any[]
+}
+
+/* ========================================================================================================================================================================= */
+
 // Miscellaneous API Response Types:
 export interface SnowballAPIResponse {
     symbol: string
