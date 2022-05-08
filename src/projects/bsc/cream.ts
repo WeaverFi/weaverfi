@@ -1,7 +1,7 @@
 
 // Imports:
 import { minABI, cream } from '../../ABIs';
-import { query, multicallComplexQuery, addToken, addLPToken, addDebtToken, parseBN } from '../../functions';
+import { query, multicallComplexQuery, addToken, addLPToken, addDebtToken, parseBN, defaultAddress } from '../../functions';
 
 // Type Imports:
 import type { Chain, Address, Token, LPToken, DebtToken, CallContext } from '../../types';
@@ -10,7 +10,6 @@ import type { Chain, Address, Token, LPToken, DebtToken, CallContext } from '../
 const chain: Chain = 'bsc';
 const project = 'cream';
 const controller: Address = '0x589de0f0ccf905477646599bb3e5c622c84cc0ba';
-const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
 

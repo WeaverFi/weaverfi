@@ -1,7 +1,7 @@
 
 // Imports:
 import { minABI, benqi } from '../../ABIs';
-import { query, multicallComplexQuery, addToken, addDebtToken, parseBN } from '../../functions';
+import { query, multicallComplexQuery, addToken, addDebtToken, parseBN, defaultAddress } from '../../functions';
 
 // Type Imports:
 import type { Chain, Address, Token, DebtToken, CallContext } from '../../types';
@@ -10,7 +10,6 @@ import type { Chain, Address, Token, DebtToken, CallContext } from '../../types'
 const chain: Chain = 'avax';
 const project = 'benqi';
 const controller: Address = '0x486Af39519B4Dc9a7fCcd318217352830E8AD9b4';
-const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
 

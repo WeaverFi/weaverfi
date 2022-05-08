@@ -1,15 +1,15 @@
 
 // Imports:
 import { WeaverFi as weaver } from './index';
-import { chains } from './chains';
 import { minABI } from './ABIs';
+import { chains } from './chains';
+import { defaultAddress } from './functions';
 
 // Type Imports:
 import type { Address, TerraAddress } from './types';
 
 // Initializations:
 const wallet: Address | TerraAddress = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E';
-const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
 

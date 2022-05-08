@@ -3,7 +3,7 @@
 import axios from 'axios';
 import { minABI, yieldyak } from '../../ABIs';
 import { addAxialToken } from '../../project-functions';
-import { query, multicallOneMethodQuery, addToken, addLPToken, parseBN } from '../../functions';
+import { query, multicallOneMethodQuery, addToken, addLPToken, parseBN, zero } from '../../functions';
 
 // Type Imports:
 import type { Chain, Address, URL, Token, LPToken, YieldYakAPIResponse } from '../../types';
@@ -16,7 +16,6 @@ const yak: Address = '0x59414b3089ce2AF0010e7523Dea7E2b35d776ec7';
 const wavax: Address = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7';
 const lpSymbols: string[] = ['JLP', 'PGL', 'Lydia-LP', 'YSL', 'CRL', 'BGL', 'Olive-LP'];
 const lpAxialSymbols: string[] = ['AS4D', 'AC4D', 'AM3D', 'AA3D'];
-const zero: Address = '0x0000000000000000000000000000000000000000';
 const apiURL: URL = 'https://staging-api.yieldyak.com/apys';
 
 /* ========================================================================================================================================================================= */

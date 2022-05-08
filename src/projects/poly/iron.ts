@@ -2,7 +2,7 @@
 // Imports:
 import { minABI, iron } from '../../ABIs';
 import { addIronToken } from '../../project-functions';
-import { query, multicallOneContractQuery, multicallComplexQuery, addToken, addLPToken, addDebtToken, addXToken, parseBN } from '../../functions';
+import { query, multicallOneContractQuery, multicallComplexQuery, addToken, addLPToken, addDebtToken, addXToken, parseBN, defaultAddress } from '../../functions';
 
 // Type Imports:
 import type { Chain, Address, Token, LPToken, DebtToken, XToken, CallContext } from '../../types';
@@ -14,7 +14,6 @@ const registry: Address = '0x1fD1259Fa8CdC60c6E8C86cfA592CA1b8403DFaD';
 const lending: Address = '0xF20fcd005AFDd3AD48C85d0222210fe168DDd10c';
 const blueice: Address = '0xB1Bf26c7B43D2485Fa07694583d2F17Df0DDe010';
 const ice: Address = '0x4A81f8796e0c6Ad4877A51C86693B0dE8093F2ef';
-const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
 

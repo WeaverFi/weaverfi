@@ -1,7 +1,7 @@
 
 // Imports:
 import { minABI, venus } from '../../ABIs';
-import { query, multicallComplexQuery, addToken, addDebtToken, parseBN } from '../../functions';
+import { query, multicallComplexQuery, addToken, addDebtToken, parseBN, defaultAddress } from '../../functions';
 
 // Type Imports:
 import type { Chain, Address, Token, DebtToken, CallContext } from '../../types';
@@ -14,7 +14,6 @@ const vault: Address = '0x0667eed0a0aab930af74a3dfedd263a73994f216';
 const xvsVault: Address = '0x051100480289e704d20e9DB4804837068f3f9204';
 const vai: Address = '0x4BD17003473389A42DAF6a0a729f6Fdb328BbBd7';
 const xvs: Address = '0xcF6BB5389c92Bdda8a3747Ddb454cB7a64626C63';
-const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
 

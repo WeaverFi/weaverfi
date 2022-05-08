@@ -1,7 +1,7 @@
 
 // Imports:
 import { minABI, quickswap } from '../../ABIs';
-import { query, multicallOneMethodQuery, addToken, addLPToken, addXToken, parseBN } from '../../functions';
+import { query, multicallOneMethodQuery, addToken, addLPToken, addXToken, parseBN, zero } from '../../functions';
 
 // Type Imports:
 import type { Chain, Address, Token, LPToken, XToken } from '../../types';
@@ -14,7 +14,6 @@ const dualRegistry: Address = '0x9Dd12421C637689c3Fc6e661C9e2f02C2F61b3Eb';
 const quick: Address = '0x831753dd7087cac61ab5644b308642cc1c33dc13';
 const dquick: Address = '0xf28164a485b0b2c90639e47b0f377b4a438a16b1';
 const wmatic: Address = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270';
-const zero: Address = '0x0000000000000000000000000000000000000000';
 const minFarmCount = 165;
 const minDualFarmCount = 5;
 

@@ -1,7 +1,7 @@
 
 // Imports:
 import { minABI, compound } from '../../ABIs';
-import { query, multicallComplexQuery, addToken, addDebtToken, parseBN } from '../../functions';
+import { query, multicallComplexQuery, addToken, addDebtToken, parseBN, defaultAddress } from '../../functions';
 
 // Type Imports:
 import type { Chain, Address, Token, DebtToken, CallContext } from '../../types';
@@ -10,7 +10,6 @@ import type { Chain, Address, Token, DebtToken, CallContext } from '../../types'
 const chain: Chain = 'eth';
 const project = 'compound';
 const controller: Address = '0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b';
-const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
 

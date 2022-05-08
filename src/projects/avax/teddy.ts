@@ -1,7 +1,7 @@
 
 // Imports:
 import { teddy } from '../../ABIs';
-import { query, addToken, addDebtToken } from '../../functions';
+import { query, addToken, addDebtToken, defaultAddress } from '../../functions';
 
 // Type Imports:
 import type { Chain, Address, Token, DebtToken } from '../../types';
@@ -14,7 +14,6 @@ const stabilityPool: Address = '0x7AEd63385C03Dc8ed2133F705bbB63E8EA607522';
 const staking: Address = '0xb4387D93B5A9392f64963cd44389e7D9D2E1053c';
 const tsd: Address = '0x4fbf0429599460D327BD5F55625E30E4fC066095';
 const teddyToken: Address = '0x094bd7B2D99711A1486FB94d4395801C6d0fdDcC';
-const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
 

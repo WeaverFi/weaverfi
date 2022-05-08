@@ -1,8 +1,8 @@
 
 // Imports:
 import { minABI, curve } from '../../ABIs';
-import { query, addToken } from '../../functions';
 import { addCurveToken } from '../../project-functions';
+import { query, addToken, zero } from '../../functions';
 
 // Type Imports:
 import type { Chain, Address, Token, LPToken } from '../../types';
@@ -17,7 +17,6 @@ const pools: Address[] = [
   '0x00702bbdead24c40647f235f15971db0867f6bdb', // TriCrypto Gauge
   '0xd4f94d0aaa640bbb72b5eec2d85f6d114d81a88e'  // Geist Gauge
 ];
-const zero: Address = '0x0000000000000000000000000000000000000000';
 
 /* ========================================================================================================================================================================= */
 

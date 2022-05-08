@@ -1,7 +1,7 @@
 
 // Imports:
-import { query } from '../../functions';
 import { minABI, curve } from '../../ABIs';
+import { query, zero } from '../../functions';
 import { addCurveToken } from '../../project-functions';
 
 // Type Imports:
@@ -11,7 +11,6 @@ import type { Chain, Address, Token, LPToken } from '../../types';
 const chain: Chain = 'eth';
 const project = 'curve';
 const registry: Address = '0x90E00ACe148ca3b23Ac1bC8C240C2a7Dd9c2d7f5';
-const zero: Address = '0x0000000000000000000000000000000000000000';
 
 /* ========================================================================================================================================================================= */
 

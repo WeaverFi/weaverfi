@@ -1,8 +1,8 @@
 
 // Imports:
 import { minABI, curve } from '../../ABIs';
-import { query, addToken } from '../../functions';
 import { addCurveToken } from '../../project-functions';
+import { query, addToken, zero } from '../../functions';
 
 // Type Imports:
 import type { Chain, Address, Token, LPToken } from '../../types';
@@ -15,7 +15,6 @@ const pools: Address[] = [
   '0x19793B454D3AfC7b454F206Ffe95aDE26cA6912c', // Aave Gauge
   '0xffbACcE0CC7C19d46132f1258FC16CF6871D153c', // renBTC Gauge
 ];
-const zero: Address = '0x0000000000000000000000000000000000000000';
 
 /* ========================================================================================================================================================================= */
 
