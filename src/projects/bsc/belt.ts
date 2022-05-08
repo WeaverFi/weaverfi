@@ -1,7 +1,10 @@
 
 // Imports:
 import { minABI, belt } from '../../ABIs';
-import { query, multicallOneMethodQuery, multicallOneContractQuery, addToken, addLPToken, addXToken, add4BeltToken, addBeltToken, parseBN } from '../../functions';
+import { add4BeltToken, addBeltToken } from '../../project-functions';
+import { query, multicallOneMethodQuery, multicallOneContractQuery, addToken, addLPToken, addXToken, parseBN } from '../../functions';
+
+// Type Imports:
 import type { Chain, Address, Token, LPToken, XToken, CallContext } from '../../types';
 
 // Initializations:

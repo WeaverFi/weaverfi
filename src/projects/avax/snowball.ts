@@ -2,7 +2,10 @@
 // Imports:
 import axios from 'axios';
 import { minABI, snowball } from '../../ABIs';
-import { query, multicallOneMethodQuery, addToken, addLPToken, addXToken, addAxialToken, parseBN } from '../../functions';
+import { addAxialToken } from '../../project-functions';
+import { query, multicallOneMethodQuery, addToken, addLPToken, addXToken, parseBN } from '../../functions';
+
+// Type Imports:
 import type { Chain, Address, URL, Token, LPToken, XToken, SnowballAPIResponse } from '../../types';
 
 // Initializations:

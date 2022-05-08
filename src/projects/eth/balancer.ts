@@ -1,7 +1,10 @@
 
 // Imports:
 import { minABI } from '../../ABIs';
-import { multicallOneMethodQuery, addBalancerToken, parseBN } from '../../functions';
+import { addBalancerToken } from '../../project-functions';
+import { multicallOneMethodQuery, parseBN } from '../../functions';
+
+// Type Imports:
 import type { Chain, Address, Token, LPToken } from '../../types';
 
 // Initializations:

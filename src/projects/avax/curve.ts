@@ -1,7 +1,10 @@
 
 // Imports:
 import { minABI, curve } from '../../ABIs';
-import { query, addToken, addCurveToken } from '../../functions';
+import { addCurveToken } from '../../project-functions';
+import { query, addToken } from '../../functions';
+
+// Type Imports:
 import type { Chain, Address, Token, LPToken } from '../../types';
 
 // Initializations:

@@ -2,7 +2,10 @@
 // Imports:
 import axios from 'axios';
 import { minABI, beefy } from '../../ABIs';
-import { query, multicallOneMethodQuery, addToken, addLPToken, addCurveToken, addIronToken, parseBN } from '../../functions';
+import { addCurveToken, addIronToken } from '../../project-functions';
+import { query, multicallOneMethodQuery, addToken, addLPToken, parseBN } from '../../functions';
+
+// Type Imports:
 import type { Chain, Address, URL, Token, LPToken, BeefyAPIResponse } from '../../types';
 
 // Initializations:

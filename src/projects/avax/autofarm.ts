@@ -1,7 +1,10 @@
 
 // Imports:
 import { minABI, autofarm } from '../../ABIs';
-import { query, multicallOneContractQuery, addToken, addLPToken, addTraderJoeToken, parseBN } from '../../functions';
+import { addTraderJoeToken } from '../../project-functions';
+import { query, multicallOneContractQuery, addToken, addLPToken, parseBN } from '../../functions';
+
+// Type Imports:
 import type { Chain, Address, Token, LPToken, XToken, CallContext } from '../../types';
 
 // Initializations:

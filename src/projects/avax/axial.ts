@@ -1,7 +1,10 @@
 
 // Imports:
 import { minABI, axial } from '../../ABIs';
-import { query, multicallOneContractQuery, addToken, addLPToken, addAxialToken, parseBN } from '../../functions';
+import { addAxialToken } from '../../project-functions';
+import { query, multicallOneContractQuery, addToken, addLPToken, parseBN } from '../../functions';
+
+// Type Imports:
 import type { Chain, Address, Token, LPToken, CallContext } from '../../types';
 
 // Initializations:

@@ -1,7 +1,10 @@
 
 // Imports:
 import { minABI, mstable } from '../../ABIs';
-import { query, multicallOneMethodQuery, addToken, addStableToken, parseBN } from '../../functions';
+import { addStableToken } from '../../project-functions';
+import { query, multicallOneMethodQuery, addToken, parseBN } from '../../functions';
+
+// Type Imports:
 import type { Chain, Address, Token } from '../../types';
 
 // Initializations:

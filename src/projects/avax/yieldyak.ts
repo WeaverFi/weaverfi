@@ -2,7 +2,10 @@
 // Imports:
 import axios from 'axios';
 import { minABI, yieldyak } from '../../ABIs';
-import { query, multicallOneMethodQuery, addToken, addLPToken, addAxialToken, parseBN } from '../../functions';
+import { addAxialToken } from '../../project-functions';
+import { query, multicallOneMethodQuery, addToken, addLPToken, parseBN } from '../../functions';
+
+// Type Imports:
 import type { Chain, Address, URL, Token, LPToken, YieldYakAPIResponse } from '../../types';
 
 // Initializations:

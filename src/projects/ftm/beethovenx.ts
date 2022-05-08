@@ -1,7 +1,10 @@
 
 // Imports:
 import { minABI, beethovenx } from '../../ABIs';
-import { query, multicallOneMethodQuery, multicallOneContractQuery, addBalancerLikeToken, addToken, parseBN } from '../../functions';
+import { addBalancerLikeToken } from '../../project-functions';
+import { query, multicallOneMethodQuery, multicallOneContractQuery, addToken, parseBN } from '../../functions';
+
+// Type Imports:
 import type { Chain, Address, Token, LPToken, CallContext } from '../../types';
 
 // Initializations:

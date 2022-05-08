@@ -1,6 +1,8 @@
 
 // Imports:
 import { query, addNativeToken, addNativeDebtToken, addToken, addLPToken } from '../../terra-functions';
+
+// Type Imports:
 import type { Chain, TerraAddress, NativeToken, Token, LPToken, DebtToken } from '../../types';
 
 // Initializations:
@@ -78,7 +80,7 @@ export const getBorrowedTokens = async (wallet: TerraAddress) => {
   // Borrowed Tokens:
   let borrowedBalance = parseInt(borrowerInfo.loan_amount);
   if(borrowedBalance > 0) {
-    tokens.push(await addNativeDebtToken(project, 'borrowed', borrowedBalance, wallet, 'uusd'));
+    tokens.push(await addNativeDebtToken(project, borrowedBalance, wallet, 'uusd'));
   }
 
   // Borrowing Rewards:

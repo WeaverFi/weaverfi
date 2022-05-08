@@ -1,7 +1,10 @@
 
 // Imports:
 import { minABI, spookyswap } from '../../ABIs';
-import { query, multicallOneContractQuery, addToken, addLPToken, addSpookyToken, parseBN } from '../../functions';
+import { addSpookyToken } from '../../project-functions';
+import { query, multicallOneContractQuery, addToken, addLPToken, parseBN } from '../../functions';
+
+// Type Imports:
 import type { Chain, Address, Token, LPToken, XToken, CallContext } from '../../types';
 
 // Initializations:

@@ -3,10 +3,12 @@
 import { WeaverFi as weaver } from './index';
 import { chains } from './chains';
 import { minABI } from './ABIs';
+
+// Type Imports:
 import type { Address, TerraAddress } from './types';
 
 // Initializations:
-const wallet: Address | TerraAddress = '0x52610eeD04D9ba715020693c6A515f27c845B625';
+const wallet: Address | TerraAddress = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E';
 const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 /* ========================================================================================================================================================================= */
@@ -15,7 +17,7 @@ const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 const tests = async () => {
 
   // Project Balance Tests:
-  let projectBalance = await weaver.ETH.getProjectBalance(wallet, 'yearn');
+  let projectBalance = await weaver.AVAX.getProjectBalance(wallet, 'aave');
   console.log('🕷️ ~ projectBalance', projectBalance);
 
   /* ================================================== */

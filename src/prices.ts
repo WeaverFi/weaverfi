@@ -3,23 +3,27 @@
 import axios from 'axios';
 import { chains } from './chains';
 import { terra_data } from './tokens';
-import { getChainTokenData } from './functions';
+import { getChainTokenData, defaultAddress } from './functions';
 import { Coin, LCDClient } from '@terra-money/terra.js';
+
+// Type Imports:
 import type { Address, TerraAddress, Chain, EVMChain, TokenPriceData, TokenData, TerraTokenData } from './types';
-
-// Initializations:
-const maxPriceAge = 60000 * 20; // 20 Minutes
-const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
-
-// Terra Connection:
-const terra = new LCDClient({ URL: chains.terra.rpcs[0], chainID: "columbus-5" });
 
 // Prices Object:
 export let prices: Record<Chain, TokenPriceData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [], terra: [] };
 
+// Terra Connection:
+const terra = new LCDClient({ URL: chains.terra.rpcs[0], chainID: "columbus-5" });
+
+// Initializations:
+const maxPriceAge = 60000 * 20; // 20 Minutes
+
 /* ========================================================================================================================================================================= */
 
-// Function to populate prices object with all tracked tokens:
+/**
+ * Function to populate the `prices` object with all tracked tokens' prices.
+ * @returns Current state of the `prices` object post-update.
+ */
 export const getAllTokenPrices = async () => {
   let promises = Object.keys(chains).map(stringChain => (async () => {
     let chain = stringChain as Chain;
@@ -31,7 +35,11 @@ export const getAllTokenPrices = async () => {
 
 /* ========================================================================================================================================================================= */
 
-// Function to populate prices object with a specific chain's tracked tokens:
+/**
+ * Function to populate the `prices` object with all tracked tokens' prices in one chain.
+ * @param chain - The blockchain to query tokens' prices for.
+ * @returns Current state of the `prices` object post-update, including only the selected chain.
+ */
 export const getChainTokenPrices = async (chain: Chain) => {
   let data = chain != 'terra' ? getChainTokenData(chain) : terra_data;
   let missingPrices: (TokenData | TerraTokenData)[] = [];
@@ -106,7 +114,10 @@ export const getChainTokenPrices = async (chain: Chain) => {
 
 /* ========================================================================================================================================================================= */
 
-// Function to populate prices object with all native tokens:
+/**
+ * Function to populate the `prices` object with all native tokens' prices.
+ * @returns Current state of the `prices` object post-update.
+ */
 export const getNativeTokenPrices = async () => {
 
   // Initializations:
@@ -147,7 +158,13 @@ export const getNativeTokenPrices = async () => {
 
 /* ========================================================================================================================================================================= */
 
-// Function to get a token's current price:
+/**
+ * Function to get a token's current price by checking all price sources sequentially until a value is found.
+ * @param chain - The blockchain in which the given token is in.
+ * @param address - The token's address.
+ * @param decimals - The token's decimals.
+ * @returns The token's price (also updates the `prices` object).
+ */
 export const getTokenPrice = async (chain: Chain, address: Address | TerraAddress, decimals?: number): Promise<number> => {
 
   // Initializations:
@@ -227,7 +244,12 @@ export const getTokenPrice = async (chain: Chain, address: Address | TerraAddres
 
 /* ========================================================================================================================================================================= */
 
-// Function to check previously queried token price:
+/**
+ * Function to check a previously queried token's price.
+ * @param chain - The blockchain in which the given token is in.
+ * @param address - The token's address.
+ * @returns The token's price if previously queried, else undefined.
+ */
 export const checkTokenPrice = (chain: Chain, address: Address | TerraAddress) => {
   let foundToken = prices[chain].find(token => token.address == address.toLowerCase());
   if(foundToken) {
@@ -239,7 +261,11 @@ export const checkTokenPrice = (chain: Chain, address: Address | TerraAddress) =
 
 /* ========================================================================================================================================================================= */
 
-// Function to query token prices from CoinGecko:
+/**
+ * Function to query token prices from CoinGecko, and update the `prices` object.
+ * @param chain - The blockchain in which the tokens are in.
+ * @param addresses - The tokens' addresses.
+ */
 export const queryCoinGeckoPrices = async (chain: Chain, addresses: (Address | TerraAddress)[]) => {
 
   // Initializations:
@@ -296,7 +322,12 @@ export const queryCoinGeckoPrices = async (chain: Chain, addresses: (Address | T
 
 /* ========================================================================================================================================================================= */
 
-// Function to query a token's price from 1Inch:
+/**
+ * Function to query a token's price from 1Inch, and update the `prices` object.
+ * @param chain - The blockchain in which the token is in.
+ * @param address - The token's address.
+ * @param decimals - The token's decimals.
+ */
 export const query1InchPrice = async (chain: EVMChain, address: Address, decimals: number) => {
 
   // Checking For Compatibility:
@@ -333,7 +364,12 @@ export const query1InchPrice = async (chain: EVMChain, address: Address, decimal
 
 /* ========================================================================================================================================================================= */
 
-// Function to query a token's price from ParaSwap:
+/**
+ * Function to query a token's price from ParaSwap, and update the `prices` object.
+ * @param chain - The blockchain in which the token is in.
+ * @param address - The token's address.
+ * @param decimals - The token's decimals.
+ */
 export const queryParaSwapPrice = async (chain: EVMChain, address: Address, decimals: number) => {
 
   // Checking For Compatibility:
@@ -371,7 +407,10 @@ export const queryParaSwapPrice = async (chain: EVMChain, address: Address, deci
 
 /* ========================================================================================================================================================================= */
 
-// Function to query Terra's native token prices:
+/**
+ * Function to query Terra's native token prices, and update the `prices` object.
+ * @param lunaPrice - The current price of LUNA.
+ */
 export const queryTerraNativeTokenPrices = async (lunaPrice: number) => {
   let allTokens = (await terra.bank.total())[0];
   let ignoredTokens = ['uluna', 'unok', 'uidr'];
@@ -396,7 +435,11 @@ export const queryTerraNativeTokenPrices = async (lunaPrice: number) => {
 
 /* ========================================================================================================================================================================= */
 
-// Function to update prices object with new token price:
+/**
+ * Function to update the `prices` object with a token's newly queried price.
+ * @param chain - The blockchain in which the token is in.
+ * @param priceData - The token's new price data.
+ */
 export const updatePrices = (chain: Chain, priceData: TokenPriceData) => {
   let foundPrice = prices[chain].findIndex(token => token.address == priceData.address);
   if(foundPrice != -1) {
@@ -426,7 +469,11 @@ export const updatePrices = (chain: Chain, priceData: TokenPriceData) => {
 
 /* ========================================================================================================================================================================= */
 
-// Function to redirect token price feeds where necessary:
+/**
+ * Function to redirect common token's price feeds where necessary to other equivalent token's price sources, and update the `prices` object.
+ * @param chain - The chain the original token is in.
+ * @param address - The original token's address.
+ */
 const redirectTokenPriceFeed = async (chain: Chain, address: Address | TerraAddress) => {
 
   // Initializations:

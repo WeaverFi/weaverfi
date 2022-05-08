@@ -4,14 +4,12 @@ import { projects } from './projects';
 import { terra_data } from './tokens';
 import { getTokenPrice } from './prices';
 import { TNS } from '@tns-money/tns.js';
+import { defaultTokenLogo, defaultAddress } from './functions';
 import { Pagination } from '@terra-money/terra.js/dist/client/lcd/APIRequester';
 import { Coin, Coins, LCDClient, AccPubKey, Delegation } from '@terra-money/terra.js';
-import type { Chain, Address, TerraAddress, TerraDenom, URL, TNSDomain, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken } from './types';
 
-// Initializations:
-const chain: Chain = 'terra';
-const defaultTokenLogo: URL = 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@d5c68edec1f5eaec59ac77ff2b48144679cebca1/32/icon/generic.png';
-const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+// Type Imports:
+import type { Chain, Address, TerraAddress, TerraDenom, TNSDomain, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken } from './types';
 
 // Setting Up Blockchain Connection:
 const terra = new LCDClient({ URL: "https://lcd.terra.dev", chainID: "columbus-5" });
@@ -19,9 +17,17 @@ const terra = new LCDClient({ URL: "https://lcd.terra.dev", chainID: "columbus-5
 // Setting Up Terra Name Service Object:
 const tns = new TNS();
 
+// Initializations:
+const chain: Chain = 'terra';
+
 /* ========================================================================================================================================================================= */
 
-// Function to make blockchain queries:
+/**
+ * Function to make blockchain queries.
+ * @param address - The contract's address to query.
+ * @param query - The query to make to the contract.
+ * @returns Query results.
+ */
 export const query = async (address: TerraAddress, query: any): Promise<any> => {
   try {
     let result = await terra.wasm.contractQuery(address, query);
@@ -33,7 +39,11 @@ export const query = async (address: TerraAddress, query: any): Promise<any> => 
 
 /* ========================================================================================================================================================================= */
 
-// Function to fetch wallet balances:
+/**
+ * Function to fetch wallet balances.
+ * @param wallet - The wallet to query balances for.
+ * @returns All native and token balances for the specified wallet.
+ */
 export const getWalletBalance = async (wallet: TerraAddress) => {
   let walletBalance: (NativeToken | Token)[] = [];
   walletBalance.push(...(await getWalletNativeTokenBalance(wallet)));
@@ -43,7 +53,12 @@ export const getWalletBalance = async (wallet: TerraAddress) => {
 
 /* ========================================================================================================================================================================= */
 
-// Function to fetch project balances:
+/**
+ * Function to fetch project balanmces for a given wallet.
+ * @param wallet - The wallet to query balances for.
+ * @param project - The project/dapp to query for balances in.
+ * @returns A wallet's balance on the specified project/dapp.
+ */
 export const getProjectBalance = async (wallet: TerraAddress, project: string) => {
   let projectBalance: (NativeToken | Token | LPToken | DebtToken | XToken)[] = [];
   if(projects[chain].includes(project)) {
@@ -58,7 +73,11 @@ export const getProjectBalance = async (wallet: TerraAddress, project: string) =
 
 /* ========================================================================================================================================================================= */
 
-// Function to check if a hash corresponds to a valid wallet/contract address:
+/**
+ * Function to fheck if a hash corresponds to a valid wallet/contract address.
+ * @param address - The hash to check for validity.
+ * @returns True or false, depending on if the hash is a valid Terra address or not.
+ */
 export const isAddress = (address: TerraAddress) => {
   try {
     AccPubKey.fromAccAddress(address);
@@ -70,7 +89,15 @@ export const isAddress = (address: TerraAddress) => {
 
 /* ========================================================================================================================================================================= */
 
-// Function to get native token info:
+/**
+ * Function to get all relevant native token info.
+ * @param location - The current location of the native token, either in a wallet or in some project's contract.
+ * @param status - The current status of the native token.
+ * @param rawBalance - The balance to be assigned to the native token's object, with decimals.
+ * @param owner - The native token owner's wallet address.
+ * @param denom - The denominator for the given Terra native token.
+ * @returns A NativeToken object with all its information.
+ */
 export const addNativeToken = async (location: string, status: TokenStatus, rawBalance: number, owner: TerraAddress, denom: TerraDenom): Promise<NativeToken> => {
 
   // Initializing Token Values:
@@ -98,11 +125,19 @@ export const addNativeToken = async (location: string, status: TokenStatus, rawB
 
 /* ========================================================================================================================================================================= */
 
-// Function to get native debt token info:
-export const addNativeDebtToken = async (location: string, status: TokenStatus, rawBalance: number, owner: TerraAddress, denom: TerraDenom): Promise<DebtToken> => {
+/**
+ * Function to get all relevant debt token info.
+ * @param location - The current location of the native token, either in a wallet or in some project's contract.
+ * @param rawBalance - The balance to be assigned to the native token's object, with decimals.
+ * @param owner - The native token owner's wallet address.
+ * @param denom - The denominator for the given Terra native token.
+ * @returns A DebtToken object with all its information.
+ */
+export const addNativeDebtToken = async (location: string, rawBalance: number, owner: TerraAddress, denom: TerraDenom): Promise<DebtToken> => {
 
   // Initializing Token Values:
-  let nativeToken = await addNativeToken(location, status, rawBalance, owner, denom);
+  let nativeToken = await addNativeToken(location, 'borrowed', rawBalance, owner, denom);
+  let status = nativeToken.status;
   let symbol = nativeToken.symbol;
   let address = nativeToken.address;
   let balance = nativeToken.balance;
@@ -117,7 +152,17 @@ export const addNativeDebtToken = async (location: string, status: TokenStatus, 
 
 /* ========================================================================================================================================================================= */
 
-// Function to get token info:
+/**
+ * Function to get all relevant token info.
+ * @param location - The current location of the token, either in a wallet or in some project's contract.
+ * @param status - The current status of the token.
+ * @param address - The token's address.
+ * @param symbol - The token's symbol.
+ * @param decimals - The token's decimals.
+ * @param rawBalance - The balance to be assigned to the token's object, with decimals.
+ * @param owner - The token owner's wallet address.
+ * @returns A Token object with all its information.
+ */
 export const addToken = async (location: string, status: TokenStatus, address: TerraAddress, symbol: string, decimals: number, rawBalance: number, owner: TerraAddress): Promise<Token> => {
 
   // Initializing Token Values:
@@ -131,7 +176,16 @@ export const addToken = async (location: string, status: TokenStatus, address: T
 
 /* ========================================================================================================================================================================= */
 
-// Function to get LP token info:
+/**
+ * Function to get all relevant liquidity pool token info:
+ * @param location - The current location of the token, either in a wallet or in some project's contract.
+ * @param status - The current status of the token.
+ * @param address - The token's address.
+ * @param rawBalance - The balance to be assigned to the token's object, with decimals.
+ * @param owner - The token owner's wallet address.
+ * @param symbol - The token's symbol (optional).
+ * @returns A LPToken object with all its information.
+ */
 export const addLPToken = async (location: string, status: TokenStatus, address: TerraAddress, rawBalance: number, owner: TerraAddress, symbol?: string): Promise<LPToken> => {
   
   // Initializing Token Values:
@@ -163,7 +217,16 @@ export const addLPToken = async (location: string, status: TokenStatus, address:
 
 /* ========================================================================================================================================================================= */
 
-// Function to get token info:
+/**
+ * Function to get all relevant debt token info.
+ * @param location - The current location of the token, either in a wallet or in some project's contract.
+ * @param address - The token's address.
+ * @param symbol - The token's symbol.
+ * @param decimals - The token's decimals.
+ * @param rawBalance - The balance to be assigned to the token's object, with decimals.
+ * @param owner - The token owner's wallet address.
+ * @returns A DebtToken object with all its information.
+ */
 export const addDebtToken = async (location: string, address: TerraAddress, symbol: string, decimals: number, rawBalance: number, owner: TerraAddress): Promise<DebtToken> => {
 
   // Initializing Token Values:
@@ -178,14 +241,21 @@ export const addDebtToken = async (location: string, address: TerraAddress, symb
 
 /* ========================================================================================================================================================================= */
 
-// Function to get a list of tracked tokens:
+/**
+ * Function to get a list of all tracked tokens on Terra.
+ * @returns An array of all tracked tokens on Terra.
+ */
 export const getTokens = () => {
   return terra_data.tokens;
 }
 
 /* ========================================================================================================================================================================= */
 
-// Function to get a token's logo:
+/**
+ * Function to get a token's logo.
+ * @param symbol - The token's symbol.
+ * @returns The token logo if available, else a generic coin logo.
+ */
 export const getTokenLogo = (symbol: string) => {
 
   // Initializing Default Token Logo:
@@ -207,7 +277,11 @@ export const getTokenLogo = (symbol: string) => {
 
 /* ========================================================================================================================================================================= */
 
-// Function to resolve a TNS domain:
+/**
+ * Function to resolve a TNS domain into a Terra address.
+ * @param tnsAddress - The TNS domain to resolve.
+ * @returns A Terra address if resolvable, else null.
+ */
 export const resolveTNS = async (tnsAddress: TNSDomain) => {
   let name = tns.name(tnsAddress);
   let address = await name.getOwner();
@@ -220,7 +294,11 @@ export const resolveTNS = async (tnsAddress: TNSDomain) => {
 
 /* ========================================================================================================================================================================= */
 
-// Function to reverse lookup a TNS domain:
+/**
+ * Function to reverse lookup a TNS domain.
+ * @param address - The Terra address to reverse lookup.
+ * @returns A TNS domain if resolvable, else null.
+ */
 export const lookupTNS = async (address: TerraAddress) => {
   let tnsAddress = await tns.getName(address);
   if(tnsAddress) {
@@ -232,7 +310,11 @@ export const lookupTNS = async (address: TerraAddress) => {
 
 /* ========================================================================================================================================================================= */
 
-// Function to get a wallet's native token balance:
+/**
+ * Function to get a wallet's native token balance.
+ * @param wallet - The wallet to query native balances for.
+ * @returns An array of NativeToken objects if any balances are found.
+ */
 const getWalletNativeTokenBalance = async (wallet: TerraAddress) => {
 
   // Initializations:
@@ -283,7 +365,11 @@ const getWalletNativeTokenBalance = async (wallet: TerraAddress) => {
 
 /* ========================================================================================================================================================================= */
 
-// Function to get a wallet's token balance:
+/**
+ * Function to get a wallet's token balance.
+ * @param wallet - The wallet to query token balances for.
+ * @returns An array of Token objects if any balances are found.
+ */
 const getWalletTokenBalance = async (wallet: TerraAddress) => {
   let tokens: Token[] = [];
   let promises = terra_data.tokens.map(token => (async () => {
@@ -299,7 +385,12 @@ const getWalletTokenBalance = async (wallet: TerraAddress) => {
 
 /* ========================================================================================================================================================================= */
 
-// Underlying LP Token Helper Function:
+/**
+ * Helper function for getting underlying native token info.
+ * @param rawBalance - The balance to be assigned to the native token's object, with decimals.
+ * @param denom - The denominator for the given Terra native token.
+ * @returns A PricedToken object with all its information.
+ */
 const addNativePricedToken = async (rawBalance: number, denom: TerraDenom): Promise<PricedToken> => {
 
   // Finding Underlying Token Info:
@@ -315,7 +406,12 @@ const addNativePricedToken = async (rawBalance: number, denom: TerraDenom): Prom
 
 /* ========================================================================================================================================================================= */
 
-// Underlying LP Token Helper Function:
+/**
+ * Helper function for getting underlying token info.
+ * @param address - The token's address.
+ * @param rawBalance - The balance to be assigned to the token's object, with decimals.
+ * @returns A PricedToken object with all its information.
+ */
 const addPricedToken = async (address: TerraAddress, rawBalance: number): Promise<PricedToken> => {
 
   // Finding Underlying Token Info:

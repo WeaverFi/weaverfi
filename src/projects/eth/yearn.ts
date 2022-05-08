@@ -1,7 +1,10 @@
 
 // Imports:
 import { minABI, yearn } from '../../ABIs';
-import { query, multicallOneContractQuery, multicallOneMethodQuery, addToken, addCurveToken, parseBN } from '../../functions';
+import { addCurveToken } from '../../project-functions';
+import { query, multicallOneContractQuery, multicallOneMethodQuery, addToken, parseBN } from '../../functions';
+
+// Type Imports:
 import type { Chain, Address, Token, LPToken, CallContext } from '../../types';
 
 // Initializations:

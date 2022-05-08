@@ -1,7 +1,10 @@
 
 // Imports:
+import { addCurveToken } from '../../project-functions';
 import { minABI, apwine, paladin, aave, harvest, yearn, paraswap, truefi } from '../../ABIs';
-import { query, multicallOneContractQuery, multicallOneMethodQuery, addToken, addXToken, addCurveToken, parseBN } from '../../functions';
+import { query, multicallOneContractQuery, multicallOneMethodQuery, addToken, addXToken, parseBN } from '../../functions';
+
+// Type Imports:
 import type { Chain, Address, Token, LPToken, XToken, CallContext } from '../../types';
 
 // Initializations:

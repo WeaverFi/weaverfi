@@ -2,6 +2,8 @@
 // Imports:
 import { autofarm } from '../../ABIs';
 import { query, multicallOneContractQuery, addLPToken, parseBN } from '../../functions';
+
+// Type Imports:
 import type { Chain, Address, LPToken, CallContext } from '../../types';
 
 // Initializations:

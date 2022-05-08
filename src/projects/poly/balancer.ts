@@ -1,13 +1,15 @@
 
 // Imports:
 import { minABI } from '../../ABIs';
-import { multicallOneMethodQuery, addBalancerToken, parseBN } from '../../functions';
+import { addBalancerToken } from '../../project-functions';
+import { multicallOneMethodQuery, parseBN } from '../../functions';
+
+// Type Imports:
 import type { Chain, Address, Token, LPToken } from '../../types';
 
 // Initializations:
 const chain: Chain = 'poly';
 const project = 'balancer';
-const vault: Address = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
 const pools: Address[] = [
   '0x01abc00E86C7e258823b9a055Fd62cA6CF61a163',
   '0x021c343C6180f03cE9E48FaE3ff432309b9aF199',

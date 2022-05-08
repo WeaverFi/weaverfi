@@ -1,5 +1,5 @@
 
-// Imports:
+// Type Imports:
 import type { Chain } from './types';
 
 // Exporting Projects List:

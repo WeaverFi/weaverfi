@@ -2,6 +2,8 @@
 // Imports:
 import { minABI, aave } from '../ABIs'; // Edit to include all the ABIs you need. Also change path to '../../ABIs'.
 import { query, addToken, addLPToken } from '../functions'; // Edit to include all functions you need. Also change path to '../../functions'.
+
+// Type Imports:
 import type { Chain, Address, Token, LPToken } from '../types'; // Edit to include all types you need. Also change path to '../../types'.
 
 // Initializations:
