@@ -1,6 +1,6 @@
 
 // Imports:
-import { WeaverFi as weaver } from './index';
+import weaver from './index';
 import { minABI } from './ABIs';
 import { chains } from './chains';
 import { defaultAddress } from './functions';
