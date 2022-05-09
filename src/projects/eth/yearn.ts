@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, yearn } from '../../ABIs';
 import { addCurveToken } from '../../project-functions';
 import { query, multicallOneContractQuery, multicallOneMethodQuery, addToken, parseBN } from '../../functions';
@@ -28,12 +29,8 @@ const yTokenList: Address[] = [
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
-  try {
-    balance.push(...(await getVaultBalances(wallet)));
-    balance.push(...(await getTokenBalances(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getVaultBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getVaultBalances()', err) })));
+  balance.push(...(await getTokenBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getTokenBalances()', err) })));
   return balance;
 }
 

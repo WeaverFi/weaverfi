@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, apwine, aave, harvest, beefy } from '../../ABIs';
 import { addCurveToken, addBalancerToken } from '../../project-functions';
 import { query, multicallOneContractQuery, multicallOneMethodQuery, addToken, addLPToken, parseBN } from '../../functions';
@@ -17,11 +18,7 @@ const registry: Address = '0x72d15EAE2Cd729D8F2e41B1328311f3e275612B9';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
-  try {
-    balance.push(...(await getFutureBalances(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getFutureBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getFutureBalances()', err) })));
   return balance;
 }
 
@@ -74,8 +71,6 @@ export const getFutureBalances = async (wallet: Address) => {
           } else if(underlyingToken.toLowerCase() === '0x002fbb34646c32fce6bb1d973b7585e62eee6aa9') { // BP-BTC-SP
             let newToken = await addBalancerToken(chain, project, 'staked', futureToken, (ptBalance + fytBalance) * underlyingExchangeRate, wallet);
             balances.push(newToken);
-          } else {
-            console.warn(`Unsupported Harvest Future on APWine: ${future}`);
           }
 
         // Beefy Futures:
@@ -95,15 +90,7 @@ export const getFutureBalances = async (wallet: Address) => {
           } else if(underlyingToken.toLowerCase() === '0x160532d2536175d65c03b97b0630a9802c274dad') { // UNI-V2
             let newToken = await addLPToken(chain, project, 'staked', underlyingToken, (ptBalance + fytBalance) * underlyingExchangeRate, wallet);
             balances.push(newToken);
-          } else {
-            console.warn(`Unsupported Beefy Future on APWine: ${future}`);
           }
-
-        // StakeDAO Futures:
-        } else if(platform === 'StakeDAO') {
-          console.warn(`Unsupported StakeDAO Future on APWine: ${future}`);
-        } else {
-          console.warn(`Unidentified APWine Future Platform: ${platform}`);
         }
       }
     }

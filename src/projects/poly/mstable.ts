@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, mstable } from '../../ABIs';
 import { addStableToken } from '../../project-functions';
 import { query, multicallOneMethodQuery, addToken, parseBN } from '../../functions';
@@ -22,12 +23,8 @@ const pools: Address[] = [
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: Token[] = [];
-  try {
-    balance.push(...(await getAssetBalances(wallet)));
-    balance.push(...(await getPoolBalances(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getAssetBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getAssetBalances()', err) })));
+  balance.push(...(await getPoolBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getPoolBalances()', err) })));
   return balance;
 }
 

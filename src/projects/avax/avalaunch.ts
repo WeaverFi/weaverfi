@@ -1,6 +1,7 @@
 
 // Imports:
 import { avalaunch } from '../../ABIs';
+import { WeaverError } from '../../error';
 import { query, addToken, addLPToken } from '../../functions';
 
 // Type Imports:
@@ -19,12 +20,8 @@ const xava: Address = '0xd1c3f94de7e5b45fa4edbba472491a9f4b166fc4';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
-  try {
-    balance.push(...(await getStakedXAVA(wallet)));
-    balance.push(...(await getStakedLP(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getStakedXAVA(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedXAVA()', err) })));
+  balance.push(...(await getStakedLP(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedLP()', err) })));
   return balance;
 }
 

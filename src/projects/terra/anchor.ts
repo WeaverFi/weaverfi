@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { query, addNativeToken, addNativeDebtToken, addToken, addLPToken } from '../../terra-functions';
 
 // Type Imports:
@@ -33,15 +34,11 @@ const astroGenerator: TerraAddress = 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzup
 // Function to get project balance:
 export const get = async (wallet: TerraAddress) => {
   let balance: (NativeToken | Token | LPToken | DebtToken)[] = [];
-  try {
-    balance.push(...(await getEarnBalance(wallet)));
-    balance.push(...(await getBAssetRewards(wallet)));
-    balance.push(...(await getBorrowedTokens(wallet)));
-    balance.push(...(await getAncGovTokens(wallet)));
-    balance.push(...(await getStakedLP(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getEarnBalance(wallet).catch((err) => { throw new WeaverError(chain, project, 'getEarnBalance()', err) })));
+  balance.push(...(await getBAssetRewards(wallet).catch((err) => { throw new WeaverError(chain, project, 'getBAssetRewards()', err) })));
+  balance.push(...(await getBorrowedTokens(wallet).catch((err) => { throw new WeaverError(chain, project, 'getBorrowedTokens()', err) })));
+  balance.push(...(await getAncGovTokens(wallet).catch((err) => { throw new WeaverError(chain, project, 'getAncGovTokens()', err) })));
+  balance.push(...(await getStakedLP(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedLP()', err) })));
   return balance;
 }
 

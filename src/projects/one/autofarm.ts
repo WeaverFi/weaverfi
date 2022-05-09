@@ -1,6 +1,7 @@
 
 // Imports:
 import { autofarm } from '../../ABIs';
+import { WeaverError } from '../../error';
 import { query, multicallOneContractQuery, addLPToken, parseBN } from '../../functions';
 
 // Type Imports:
@@ -17,11 +18,7 @@ const ignoredVaults: number[] = [];
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: LPToken[] = [];
-  try {
-    balance.push(...(await getVaultBalances(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getVaultBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getVaultBalances()', err) })));
   return balance;
 }
 

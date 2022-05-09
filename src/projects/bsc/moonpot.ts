@@ -2,6 +2,7 @@
 // Imports:
 import axios from 'axios';
 import { moonpot } from '../../ABIs';
+import { WeaverError } from '../../error';
 import { add4BeltToken, addBeltToken, addAlpacaToken } from '../../project-functions';
 import { multicallOneMethodQuery, addToken, addLPToken, parseBN } from '../../functions';
 
@@ -17,16 +18,16 @@ const project = 'moonpot';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken | XToken)[] = [];
-  try {
-    let pots: MoonPotAPIResponse[] = [];
-    let potsData: Record<string, MoonPotAPIResponse> = (await axios.get('https://api.moonpot.com/pots')).data.data;
-    let potsKeys = Object.keys(potsData).filter(pot => potsData[pot].status === 'active');
-    potsKeys.forEach(key => {
-      pots.push(potsData[key]);
-    });
-    balance.push(...(await getPotBalances(wallet, pots)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
+  let pots: MoonPotAPIResponse[] = [];
+  let potsData: Record<string, MoonPotAPIResponse> = (await axios.get('https://api.moonpot.com/pots')).data.data;
+  let potsKeys = Object.keys(potsData).filter(pot => potsData[pot].status === 'active');
+  potsKeys.forEach(key => {
+    pots.push(potsData[key]);
+  });
+  if(pots.length > 0) {
+    balance.push(...(await getPotBalances(wallet, pots).catch((err) => { throw new WeaverError(chain, project, 'getPotBalances()', err) })));
+  } else {
+    throw new WeaverError(chain, project, 'Invalid response from Moonpot API');
   }
   return balance;
 }

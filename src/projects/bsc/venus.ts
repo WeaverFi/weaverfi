@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, venus } from '../../ABIs';
 import { query, multicallComplexQuery, addToken, addDebtToken, parseBN, defaultAddress } from '../../functions';
 
@@ -20,14 +21,10 @@ const xvs: Address = '0xcF6BB5389c92Bdda8a3747Ddb454cB7a64626C63';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | DebtToken)[] = [];
-  try {
-    balance.push(...(await getMarketBalances(wallet)));
-    balance.push(...(await getPendingRewards(wallet)));
-    balance.push(...(await getStakedVAI(wallet)));
-    balance.push(...(await getStakedXVS(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getMarketBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketBalances()', err) })));
+  balance.push(...(await getPendingRewards(wallet).catch((err) => { throw new WeaverError(chain, project, 'getPendingRewards()', err) })));
+  balance.push(...(await getStakedVAI(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedVAI()', err) })));
+  balance.push(...(await getStakedXVS(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedXVS()', err) })));
   return balance;
 }
 

@@ -565,7 +565,6 @@ export const addCurveToken = async (chain: EVMChain, location: string, status: T
   }
 
   // No Token Identified:
-  console.warn(`Unidentified Curve Token: ${address}`);
   return {
     type: 'token',
     chain: chain,

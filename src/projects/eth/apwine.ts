@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { addCurveToken } from '../../project-functions';
 import { minABI, apwine, paladin, aave, harvest, yearn, paraswap, truefi } from '../../ABIs';
 import { query, multicallOneContractQuery, multicallOneMethodQuery, addToken, addXToken, parseBN } from '../../functions';
@@ -19,12 +20,8 @@ const veapw: Address = '0xC5ca1EBF6e912E49A6a70Bb0385Ea065061a4F09';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken | XToken)[] = [];
-  try {
-    balance.push(...(await getStakedAPW(wallet)));
-    balance.push(...(await getFutureBalances(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getStakedAPW(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedAPW()', err) })));
+  balance.push(...(await getFutureBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getFutureBalances()', err) })));
   return balance;
 }
 
@@ -84,13 +81,7 @@ export const getFutureBalances = async (wallet: Address) => {
             let fytBalance = await fetchFYTBalance(wallet, future, futureToken);
             let newToken = await addToken(chain, project, 'staked', underlyingToken, (ptBalance + fytBalance) * underlyingExchangeRate, wallet);
             balances.push(newToken);
-          } else {
-            console.warn(`Unsupported StakeDAO Future on APWine: ${future}`);
           }
-
-        // IDLE Finance Futures:
-        } else if(platform === 'IDLE Finance') {
-          console.warn(`Unsupported IDLE Finance Future on APWine: ${future}`);
 
         // Lido Futures:
         } else if(platform === 'Lido') {
@@ -106,8 +97,6 @@ export const getFutureBalances = async (wallet: Address) => {
             let fytBalance = await fetchFYTBalance(wallet, future, futureToken);
             let newToken = await addCurveToken(chain, project, 'staked', underlyingToken, (ptBalance + fytBalance) * underlyingExchangeRate, wallet);
             balances.push(newToken);
-          } else {
-            console.warn(`Unsupported Yearn Future on APWine: ${future}`);
           }
 
         // Harvest Futures:
@@ -164,8 +153,6 @@ export const getFutureBalances = async (wallet: Address) => {
           let fytBalance = await fetchFYTBalance(wallet, future, futureToken);
           let newToken = await addToken(chain, project, 'staked', underlyingToken, (ptBalance + fytBalance) * underlyingExchangeRate, wallet);
           balances.push(newToken);
-        } else {
-          console.warn(`Unidentified APWine Future Platform: ${platform}`);
         }
       }
     }

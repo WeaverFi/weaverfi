@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, quickswap } from '../../ABIs';
 import { query, multicallOneMethodQuery, addToken, addLPToken, addXToken, parseBN, zero } from '../../functions';
 
@@ -22,16 +23,12 @@ const minDualFarmCount = 5;
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken | XToken)[] = [];
-  try {
-    let farms = await getFarms();
-    let dualFarms = await getDualFarms();
-    let ratio = await getRatio();
-    balance.push(...(await getFarmBalances(wallet, farms, ratio)));
-    balance.push(...(await getDualFarmBalances(wallet, dualFarms, ratio)));
-    balance.push(...(await getStakedQUICK(wallet, ratio)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  let farms = await getFarms().catch((err) => { throw new WeaverError(chain, project, 'getFarms()', err) });
+  let dualFarms = await getDualFarms().catch((err) => { throw new WeaverError(chain, project, 'getDualFarms()', err) });
+  let ratio = await getRatio().catch((err) => { throw new WeaverError(chain, project, 'getRatio()', err) });
+  balance.push(...(await getFarmBalances(wallet, farms, ratio).catch((err) => { throw new WeaverError(chain, project, 'getFarmBalances()', err) })));
+  balance.push(...(await getDualFarmBalances(wallet, dualFarms, ratio).catch((err) => { throw new WeaverError(chain, project, 'getDualFarmBalances()', err) })));
+  balance.push(...(await getStakedQUICK(wallet, ratio).catch((err) => { throw new WeaverError(chain, project, 'getStakedQUICK()', err) })));
   return balance;
 }
 

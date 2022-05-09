@@ -1,6 +1,7 @@
 
 // Imports:
 import { teddy } from '../../ABIs';
+import { WeaverError } from '../../error';
 import { query, addToken, addDebtToken, defaultAddress } from '../../functions';
 
 // Type Imports:
@@ -20,13 +21,9 @@ const teddyToken: Address = '0x094bd7B2D99711A1486FB94d4395801C6d0fdDcC';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | DebtToken)[] = [];
-  try {
-    balance.push(...(await getTroveBalance(wallet)));
-    balance.push(...(await getStabilityPoolBalance(wallet)));
-    balance.push(...(await getStakedTEDDY(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getTroveBalance(wallet).catch((err) => { throw new WeaverError(chain, project, 'getTroveBalance()', err) })));
+  balance.push(...(await getStabilityPoolBalance(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStabilityPoolBalance()', err) })));
+  balance.push(...(await getStakedTEDDY(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedTEDDY()', err) })));
   return balance;
 }
 

@@ -1,6 +1,7 @@
 
 // Imports:
 import { aave } from '../../ABIs';
+import { WeaverError } from '../../error';
 import { query, multicallOneContractQuery, addToken, addDebtToken, parseBN } from '../../functions';
 
 // Type Imports:
@@ -20,11 +21,7 @@ const wftm: Address = '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | DebtToken)[] = [];
-  try {
-    balance.push(...(await getMarketBalancesV3(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getMarketBalancesV3(wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketBalancesV3()', err) })));
   return balance;
 }
 

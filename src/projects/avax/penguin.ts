@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, penguin } from '../../ABIs';
 import { query, multicallOneContractQuery, addToken, addLPToken, addXToken, parseBN } from '../../functions';
 
@@ -19,13 +20,9 @@ const ipefi: Address = '0xE9476e16FE488B90ada9Ab5C7c2ADa81014Ba9Ee';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken | XToken)[] = [];
-  try {
-    balance.push(...(await getIglooBalances(wallet)));
-    balance.push(...(await getStakedPEFI(wallet)));
-    balance.push(...(await getClubPenguinBalance(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getIglooBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getIglooBalances()', err) })));
+  balance.push(...(await getStakedPEFI(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedPEFI()', err) })));
+  balance.push(...(await getClubPenguinBalance(wallet).catch((err) => { throw new WeaverError(chain, project, 'getClubPenguinBalance()', err) })));
   return balance;
 }
 

@@ -1,6 +1,7 @@
 
 // Imports:
 import axios from 'axios';
+import { WeaverError } from '../../error';
 import { minABI, aave } from '../../ABIs';
 import { query, multicallQuery, multicallOneContractQuery, addToken, addDebtToken, parseBN } from '../../functions';
 
@@ -25,13 +26,13 @@ const apiURL: URL = 'https://aave-api-v2.aave.com/data/liquidity/v2';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | DebtToken)[] = [];
-  try {
-    let markets: AaveAPIResponse[] = (await axios.get(`${apiURL}?poolId=${addressProvider}`)).data;
-    balance.push(...(await getMarketBalances(markets, wallet)));
-    balance.push(...(await getIncentives(wallet)));
-    balance.push(...(await getMarketBalancesV3(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
+  let markets: AaveAPIResponse[] = (await axios.get(`${apiURL}?poolId=${addressProvider}`)).data;
+  if(markets.length > 0) {
+    balance.push(...(await getMarketBalances(markets, wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketBalances()', err) })));
+    balance.push(...(await getIncentives(wallet).catch((err) => { throw new WeaverError(chain, project, 'getIncentives()', err) })));
+    balance.push(...(await getMarketBalancesV3(wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketBalancesV3()', err) })));
+  } else {
+    throw new WeaverError(chain, project, 'Invalid response from Aave API');
   }
   return balance;
 }

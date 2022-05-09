@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, scream } from '../../ABIs';
 import { query, multicallComplexQuery, addToken, addDebtToken, addXToken, parseBN } from '../../functions';
 
@@ -18,12 +19,8 @@ const xscream: Address = '0xe3D17C7e840ec140a7A51ACA351a482231760824';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | DebtToken | XToken)[] = [];
-  try {
-    balance.push(...(await getMarketBalances(wallet)));
-    balance.push(...(await getStakedSCREAM(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getMarketBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketBalances()', err) })));
+  balance.push(...(await getStakedSCREAM(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedSCREAM()', err) })));
   return balance;
 }
 

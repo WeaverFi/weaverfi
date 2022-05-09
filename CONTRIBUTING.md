@@ -22,7 +22,7 @@ Doing so was made as easy and straightforward as possible. Simply fork this repo
 - A file in `/src/projects/` with the functionality of querying the new dapp in the appropriate chain folder, as a `.ts` file.
 - The name of your project (the same as the file name) in `/src/projects.ts`.
 
-There is a template at `/src/projects/template.ts` to help new contributors, and plenty of other dapp implementations to use as examples.
+There are tons of already present implementations of dapps in `/src/projects/`, use any relevant ones as a template for your new integration!
 
 You can test your implementation through `npm run test`, and a lot of tests are already setup and available in `/src/tests.ts`.
 

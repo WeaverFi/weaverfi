@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, iron } from '../../ABIs';
 import { addIronToken } from '../../project-functions';
 import { query, multicallOneContractQuery, multicallComplexQuery, addToken, addLPToken, addDebtToken, addXToken, parseBN, defaultAddress } from '../../functions';
@@ -20,14 +21,10 @@ const ice: Address = '0x4A81f8796e0c6Ad4877A51C86693B0dE8093F2ef';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken | DebtToken | XToken)[] = [];
-  try {
-    balance.push(...(await getFarmBalances(wallet)));
-    balance.push(...(await getMarketBalances(wallet)));
-    balance.push(...(await getMarketRewards(wallet)));
-    balance.push(...(await getStakedICE(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getFarmBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getFarmBalances()', err) })));
+  balance.push(...(await getMarketBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketBalances()', err) })));
+  balance.push(...(await getMarketRewards(wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketRewards()', err) })));
+  balance.push(...(await getStakedICE(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedICE()', err) })));
   return balance;
 }
 

@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, spookyswap } from '../../ABIs';
 import { addSpookyToken } from '../../project-functions';
 import { query, multicallOneContractQuery, addToken, addLPToken, parseBN } from '../../functions';
@@ -19,12 +20,8 @@ const xboo: Address = '0xa48d959AE2E88f1dAA7D5F611E01908106dE7598';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken | XToken)[] = [];
-  try {
-    balance.push(...(await getPoolBalances(wallet)));
-    balance.push(...(await getStakedBOO(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getPoolBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getPoolBalances()', err) })));
+  balance.push(...(await getStakedBOO(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedBOO()', err) })));
   return balance;
 }
 

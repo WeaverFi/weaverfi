@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, alligator } from '../../ABIs';
 import { query, multicallOneContractQuery, multicallOneMethodQuery, addToken, addLPToken, addXToken, parseBN } from '../../functions';
 
@@ -19,13 +20,9 @@ const xgtr: Address = '0x32A948F018870548bEd7e888Cd97a257b700D4c6';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken | XToken)[] = [];
-  try {
-    balance.push(...(await getPoolBalances(wallet)));
-    balance.push(...(await getFarmBalances(wallet)));
-    balance.push(...(await getStakedGTR(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getPoolBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getPoolBalances()', err) })));
+  balance.push(...(await getFarmBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getFarmBalances()', err) })));
+  balance.push(...(await getStakedGTR(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedGTR()', err) })));
   return balance;
 }
 

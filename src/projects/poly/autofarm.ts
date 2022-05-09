@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, autofarm } from '../../ABIs';
 import { addCurveToken, addBZXToken } from '../../project-functions';
 import { query, multicallOneContractQuery, addToken, addLPToken, parseBN } from '../../functions';
@@ -18,11 +19,7 @@ const ignoredVaults: number[] = [];
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
-  try {
-    balance.push(...(await getVaultBalances(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getVaultBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getVaultBalances()', err) })));
   return balance;
 }
 

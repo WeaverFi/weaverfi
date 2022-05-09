@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, bouje } from '../../ABIs';
 import { query, multicallOneContractQuery, addToken, addLPToken, parseBN } from '../../functions';
 
@@ -17,11 +18,7 @@ const bastille: Address = '0xcef2b88d5599d578c8d92E7a6e6235FBfaD01eF4';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
-  try {
-    balance.push(...(await getPoolBalances(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getPoolBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getPoolBalances()', err) })));
   return balance;
 }
 

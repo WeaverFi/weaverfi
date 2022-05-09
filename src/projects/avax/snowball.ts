@@ -1,6 +1,7 @@
 
 // Imports:
 import axios from 'axios';
+import { WeaverError } from '../../error';
 import { minABI, snowball } from '../../ABIs';
 import { addAxialToken } from '../../project-functions';
 import { query, multicallOneMethodQuery, addToken, addLPToken, addXToken, parseBN } from '../../functions';
@@ -21,17 +22,17 @@ const apiQuery = { query: '{ LastSnowballInfo { poolsInfo { symbol address lpAdd
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken | XToken)[] = [];
-  try {
-    let farms: SnowballAPIResponse[] = (await axios({
-      url: apiURL,
-      method: 'post',
-      headers: { 'content-type': 'application/json' },
-      data: apiQuery
-    })).data.data.LastSnowballInfo.poolsInfo;
-    balance.push(...(await getFarmBalances(farms, wallet)));
-    balance.push(...(await getStakedSNOB(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
+  let farms: SnowballAPIResponse[] = (await axios({
+    url: apiURL,
+    method: 'post',
+    headers: { 'content-type': 'application/json' },
+    data: apiQuery
+  })).data.data.LastSnowballInfo.poolsInfo;
+  if(farms.length > 0) {
+    balance.push(...(await getFarmBalances(farms, wallet).catch((err) => { throw new WeaverError(chain, project, 'getFarmBalances()', err) })));
+    balance.push(...(await getStakedSNOB(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedSNOB()', err) })));
+  } else {
+    throw new WeaverError(chain, project, 'Invalid response from Snowball API');
   }
   return balance;
 }

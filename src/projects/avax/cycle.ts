@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, cycle } from '../../ABIs';
 import { query, multicallOneContractQuery, multicallOneMethodQuery, addToken, addLPToken, parseBN } from '../../functions';
 
@@ -23,12 +24,8 @@ const wavax: Address = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
-  try {
-    balance.push(...(await getVaultBalances(wallet)));
-    balance.push(...(await getStakedCYCLE(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getVaultBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getVaultBalances()', err) })));
+  balance.push(...(await getStakedCYCLE(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedCYCLE()', err) })));
   return balance;
 }
 

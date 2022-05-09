@@ -3,6 +3,7 @@
 import { ethers } from 'ethers';
 import { chains } from './chains';
 import { projects } from './projects';
+import { WeaverError } from './error';
 import { minABI, lpABI } from './ABIs';
 import { getTokenPrice } from './prices';
 import { Multicall } from 'ethereum-multicall';
@@ -48,7 +49,7 @@ export const query = async (chain: EVMChain, address: Address, abi: ABI[], metho
       if(++rpcID >= chains[chain].rpcs.length) {
         if(++errors >= maxQueryRetries) {
           if(!ignoredErrors.find(i => i.chain === chain && i.address === address.toLowerCase())) {
-            console.error(`Error Calling ${method}(${args}) on ${address} (Chain: ${chain.toUpperCase()})`);
+            throw new WeaverError(chain, null, `Querying ${method}(${args}) on ${address}`);
           }
         } else {
           rpcID = 0;
@@ -69,10 +70,14 @@ export const query = async (chain: EVMChain, address: Address, abi: ABI[], metho
  * @see {@link multicallOneMethodQuery}, {@link multicallOneContractQuery} and {@link multicallComplexQuery} for simpler use cases.
  */
 export const multicallQuery = async (chain: EVMChain, queries: ContractCallContext[]) => {
-  let ethers_provider = new ethers.providers.JsonRpcProvider(chains[chain].rpcs[0]);
-  let multicall = new Multicall({ ethersProvider: ethers_provider, tryAggregate: true, multicallCustomContractAddress: chains[chain].multicall });
-  let results: ContractCallResults = await multicall.call(queries);
-  return results;
+  try {
+    let ethers_provider = new ethers.providers.JsonRpcProvider(chains[chain].rpcs[0]);
+    let multicall = new Multicall({ ethersProvider: ethers_provider, tryAggregate: true, multicallCustomContractAddress: chains[chain].multicall });
+    let results: ContractCallResults = await multicall.call(queries);
+    return results;
+  } catch(err) {
+    throw new WeaverError(chain, null, `Invalid multicall query`, err);
+  }
 }
 
 /* ========================================================================================================================================================================= */
@@ -184,7 +189,7 @@ export const getProjectBalance = async (chain: EVMChain, wallet: Address, projec
     let balance = await dapp.get(wallet);
     projectBalance.push(...(balance));
   } else {
-    console.warn(`Invalid Project Queried: ${project} (Chain: ${chain.toUpperCase()})`);
+    throw new WeaverError(chain, null, `Unknown project: ${project}`);
   }
   return projectBalance;
 }

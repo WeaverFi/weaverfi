@@ -1,6 +1,7 @@
 
 // Imports:
 import { sushiswap } from '../../ABIs';
+import { WeaverError } from '../../error';
 import { query, multicallOneContractQuery, addToken, addLPToken, parseBN } from '../../functions';
 
 // Type Imports:
@@ -17,11 +18,7 @@ const sushi: Address = '0xbec775cb42abfa4288de81f387a9b1a3c4bc552a';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
-  try {
-    balance.push(...(await getFarmBalances(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getFarmBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getFarmBalances()', err) })));
   return balance;
 }
 

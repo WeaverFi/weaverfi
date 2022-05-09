@@ -2,6 +2,7 @@
 // Imports:
 import { projects } from './projects';
 import { terra_data } from './tokens';
+import { WeaverError } from './error';
 import { getTokenPrice } from './prices';
 import { TNS } from '@tns-money/tns.js';
 import { defaultTokenLogo, defaultAddress } from './functions';
@@ -33,7 +34,7 @@ export const query = async (address: TerraAddress, query: any): Promise<any> => 
     let result = await terra.wasm.contractQuery(address, query);
     return result;
   } catch {
-    console.error(`Calling ${JSON.stringify(query)} on ${address} (Chain: TERRA)`);
+    throw new WeaverError(chain, null, `Querying ${JSON.stringify(query)} on ${address}`);
   }
 };
 
@@ -54,7 +55,7 @@ export const getWalletBalance = async (wallet: TerraAddress) => {
 /* ========================================================================================================================================================================= */
 
 /**
- * Function to fetch project balanmces for a given wallet.
+ * Function to fetch project balances for a given wallet.
  * @param wallet - The wallet to query balances for.
  * @param project - The project/dapp to query for balances in.
  * @returns A wallet's balance on the specified project/dapp.
@@ -66,7 +67,7 @@ export const getProjectBalance = async (wallet: TerraAddress, project: string) =
     let balance = await dapp.get(wallet);
     projectBalance.push(...(balance));
   } else {
-    console.warn(`Invalid Project Queried: ${project} (Chain: ${chain.toUpperCase()})`);
+    throw new WeaverError(chain, null, `Unknown project: ${project}`);
   }
   return projectBalance;
 }

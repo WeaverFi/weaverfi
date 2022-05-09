@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, apeswap } from '../../ABIs';
 import { query, multicallOneContractQuery, addToken, addLPToken, parseBN } from '../../functions';
 
@@ -18,12 +19,8 @@ const banana: Address = '0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
-  try {
-    balance.push(...(await getFarmBalances(wallet)));
-    balance.push(...(await getVaultBalances(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getFarmBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getFarmBalances()', err) })));
+  balance.push(...(await getVaultBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getVaultBalances()', err) })));
   return balance;
 }
 

@@ -1,6 +1,7 @@
 
 // Imports:
 import { pancakeswap } from '../../ABIs';
+import { WeaverError } from '../../error';
 import { query, multicallOneContractQuery, addToken, addLPToken, parseBN } from '../../functions';
 
 // Type Imports:
@@ -19,13 +20,9 @@ const cake: Address = '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
-  try {
-    balance.push(...(await getFarmBalances(wallet)));
-    balance.push(...(await getFarmBalancesV2(wallet)));
-    balance.push(...(await getAutoCakePoolBalance(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getFarmBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getFarmBalances()', err) })));
+  balance.push(...(await getFarmBalancesV2(wallet).catch((err) => { throw new WeaverError(chain, project, 'getFarmBalancesV2()', err) })));
+  balance.push(...(await getAutoCakePoolBalance(wallet).catch((err) => { throw new WeaverError(chain, project, 'getAutoCakePoolBalance()', err) })));
   return balance;
 }
 

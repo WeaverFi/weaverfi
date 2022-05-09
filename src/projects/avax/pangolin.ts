@@ -1,6 +1,7 @@
 
 // Imports:
 import { pangolin } from '../../ABIs';
+import { WeaverError } from '../../error';
 import { query, multicallOneContractQuery, addToken, addLPToken, parseBN } from '../../functions';
 
 // Type Imports:
@@ -17,11 +18,7 @@ const png: Address = '0x60781c2586d68229fde47564546784ab3faca982';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
-  try {
-    balance.push(...(await getFarmBalances(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getFarmBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getFarmBalances()', err) })));
   return balance;
 }
 

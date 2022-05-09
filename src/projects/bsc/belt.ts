@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, belt } from '../../ABIs';
 import { add4BeltToken, addBeltToken } from '../../project-functions';
 import { query, multicallOneMethodQuery, multicallOneContractQuery, addToken, addLPToken, addXToken, parseBN } from '../../functions';
@@ -30,13 +31,9 @@ const pools: Record<string, {token: Address, vaultID?: number}> = {
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken | XToken)[] = [];
-  try {
-    balance.push(...(await getStakedBELT(wallet)));
-    balance.push(...(await getPoolBalances(wallet)));
-    balance.push(...(await getVaultBalances(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getStakedBELT(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedBELT()', err) })));
+  balance.push(...(await getPoolBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getPoolBalances()', err) })));
+  balance.push(...(await getVaultBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getVaultBalances()', err) })));
   return balance;
 }
 

@@ -1,6 +1,7 @@
 
 // Imports:
 import { minABI } from '../../ABIs';
+import { WeaverError } from '../../error';
 import { query, addToken } from '../../functions';
 import { query as queryTerra } from '../../terra-functions';
 
@@ -19,11 +20,7 @@ const market: TerraAddress = 'terra1sepfj7s0aeg5967uxnfk4thzlerrsktkpelm5s';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: Token[] = [];
-  try {
-    balance.push(...(await getEarnBalance(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getEarnBalance(wallet).catch((err) => { throw new WeaverError(chain, project, 'getEarnBalance()', err) })));
   return balance;
 }
 

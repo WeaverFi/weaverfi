@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, cream } from '../../ABIs';
 import { query, addToken } from '../../functions';
 
@@ -22,11 +23,7 @@ const creamToken: Address = '0x2ba592f78db6436527729929aaf6c908497cb200';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken | DebtToken)[] = [];
-  try {
-    balance.push(...(await getStakedCREAM(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getStakedCREAM(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedCREAM()', err) })));
   return balance;
 }
 

@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, lydia } from '../../ABIs';
 import { query, multicallOneContractQuery, multicallOneMethodQuery, addToken, addLPToken, parseBN } from '../../functions';
 
@@ -27,13 +28,9 @@ const maximusFarms: Address[] = [
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
-  try {
-    balance.push(...(await getFarmBalances(wallet)));
-    balance.push(...(await getAutoLYDFarmBalance(wallet)));
-    balance.push(...(await getMaximusFarmBalances(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getFarmBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getFarmBalances()', err) })));
+  balance.push(...(await getAutoLYDFarmBalance(wallet).catch((err) => { throw new WeaverError(chain, project, 'getAutoLYDFarmBalance()', err) })));
+  balance.push(...(await getMaximusFarmBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getMaximusFarmBalances()', err) })));
   return balance;
 }
 

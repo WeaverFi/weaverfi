@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, cream } from '../../ABIs';
 import { query, multicallComplexQuery, addToken, addDebtToken, parseBN } from '../../functions';
 
@@ -16,11 +17,7 @@ const controller: Address = '0x4250A6D3BD57455d7C6821eECb6206F507576cD2';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | DebtToken)[] = [];
-  try {
-    balance.push(...(await getMarketBalances(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getMarketBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketBalances()', err) })));
   return balance;
 }
 

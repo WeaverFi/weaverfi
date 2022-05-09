@@ -1,6 +1,7 @@
 
 // Imports:
 import { minABI } from '../../ABIs';
+import { WeaverError } from '../../error';
 import { query, addToken } from '../../functions';
 
 // Type Imports:
@@ -17,11 +18,7 @@ const usdc: Address = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: Token[] = [];
-  try {
-    balance.push(...(await getPoolBalanceV4(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getPoolBalanceV4(wallet).catch((err) => { throw new WeaverError(chain, project, 'getPoolBalanceV4()', err) })));
   return balance;
 }
 

@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, axial } from '../../ABIs';
 import { addAxialToken } from '../../project-functions';
 import { query, multicallOneContractQuery, addToken, addLPToken, parseBN } from '../../functions';
@@ -18,11 +19,7 @@ const axialToken: Address = '0xcF8419A615c57511807236751c0AF38Db4ba3351';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
-  try {
-    balance.push(...(await getPoolBalances(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getPoolBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getPoolBalances()', err) })));
   return balance;
 }
 

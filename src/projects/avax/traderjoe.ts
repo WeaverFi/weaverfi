@@ -1,5 +1,6 @@
 
 // Imports:
+import { WeaverError } from '../../error';
 import { minABI, traderjoe } from '../../ABIs';
 import { addTraderJoeToken } from '../../project-functions';
 import { query, multicallOneContractQuery, multicallComplexQuery, addToken, addLPToken, addDebtToken, parseBN } from '../../functions';
@@ -22,15 +23,11 @@ const xjoe: Address = '0x57319d41F71E81F3c65F2a47CA4e001EbAFd4F33';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken | DebtToken | XToken)[] = [];
-  try {
-    balance.push(...(await getStakedJOE(wallet)));
-    balance.push(...(await getFarmV2Balances(wallet)));
-    balance.push(...(await getFarmV3Balances(wallet)));
-    balance.push(...(await getBoostedFarmBalances(wallet)));
-    balance.push(...(await getMarketBalances(wallet)));
-  } catch {
-    console.error(`Error fetching ${project} balances on ${chain.toUpperCase()}.`);
-  }
+  balance.push(...(await getStakedJOE(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedJOE()', err) })));
+  balance.push(...(await getFarmV2Balances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getFarmV2Balances()', err) })));
+  balance.push(...(await getFarmV3Balances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getFarmV3Balances()', err) })));
+  balance.push(...(await getBoostedFarmBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getBoostedFarmBalances()', err) })));
+  balance.push(...(await getMarketBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketBalances()', err) })));
   return balance;
 }
 
