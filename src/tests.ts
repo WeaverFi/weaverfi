@@ -17,7 +17,7 @@ const wallet: Address | TerraAddress = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD2
 const tests = async () => {
 
   // Project Balance Tests:
-  let projectBalance = await weaver.AVAX.getProjectBalance(wallet, 'aave');
+  let projectBalance = await weaver.AVAX.getProjectBalance(wallet, 'traderjoe');
   console.log('🕷️ ~ projectBalance', projectBalance);
 
   /* ================================================== */

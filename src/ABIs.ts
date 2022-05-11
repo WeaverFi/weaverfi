@@ -14,6 +14,9 @@ export const minABI: ABI[] = [
 
 // General-Purpose LP Token ABI:
 export const lpABI: ABI[] = [
+  { constant: true, inputs: [{ name: "", type: "address" }], name: "balanceOf", outputs: [{ name: "", type: "uint256" }], type: "function" },
+  { constant: true, inputs: [], name: "symbol", outputs: [{ name: "", type: "string" }], type: "function" },
+  { constant: true, inputs: [], name: "decimals", outputs: [{ name: "", type: "uint8" }], type: "function" },
   { constant: true, inputs: [], name: "token0", outputs: [{ name: "", type: "address" }], type: "function" },
   { constant: true, inputs: [], name: "token1", outputs: [{ name: "", type: "address" }], type: "function" },
   { constant: true, inputs: [], name: "getReserves", outputs: [{ name: "", type: "uint112" }, { name: "", type: "uint112" }, { name: "", type: "uint32" }], type: "function" },

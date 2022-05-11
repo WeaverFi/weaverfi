@@ -79,7 +79,7 @@ export const getVaultBalances = async (wallet: Address) => {
       if(balance > 0) {
         let underlyingToken = await query(chain, vault, yearn.vaultABI, 'token', []);
         let multiplier = await query(chain, vault, yearn.vaultABI, 'pricePerShare', []);
-        let decimals = await query(chain, vault, minABI, 'decimals', []);
+        let decimals = parseInt(await query(chain, vault, minABI, 'decimals', []));
         let underlyingBalance = balance * (multiplier / (10 ** decimals));
         let symbol = await query(chain, underlyingToken, minABI, 'symbol', []);
         if(symbol.startsWith('crv') || (symbol.length > 3 && symbol.endsWith('CRV'))) {
@@ -109,7 +109,7 @@ export const getTokenBalances = async (wallet: Address) => {
       if(balance > 0) {
         let underlyingToken = await query(chain, yToken, yearn.tokenABI, 'token', []);
         let multiplier = await query(chain, yToken, yearn.tokenABI, 'getPricePerFullShare', []);
-        let decimals = await query(chain, yToken, minABI, 'decimals', []);
+        let decimals = parseInt(await query(chain, yToken, minABI, 'decimals', []));
         let underlyingBalance = balance * (multiplier / (10 ** decimals));
         let newToken = await addToken(chain, project, 'staked', underlyingToken, underlyingBalance, wallet);
         balances.push(newToken);

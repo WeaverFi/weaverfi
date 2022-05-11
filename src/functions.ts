@@ -252,6 +252,12 @@ export const addToken = async (chain: EVMChain, location: string, status: TokenS
   let decimals = 18;
   let logo: URL;
 
+  // Initializing Multicall:
+  let calls: CallContext[] = [
+    { reference: 'symbol', methodName: 'symbol', methodParameters: [] },
+    { reference: 'decimals', methodName: 'decimals', methodParameters: [] }
+  ];
+
   // Finding Token Info:
   if(address.toLowerCase() === defaultAddress) {
     symbol = getNativeTokenSymbol(chain);
@@ -263,8 +269,9 @@ export const addToken = async (chain: EVMChain, location: string, status: TokenS
       decimals = token.decimals;
       logo = token.logo;
     } else {
-      symbol = await query(chain, address, minABI, 'symbol', []);
-      decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
+      let multicallResults = await multicallOneContractQuery(chain, address, minABI, calls);
+      symbol = multicallResults['symbol'][0];
+      decimals = multicallResults['decimals'][0];
       logo = getTokenLogo(chain, symbol);
     }
   }
@@ -292,37 +299,56 @@ export const addLPToken = async (chain: EVMChain, location: string, status: Toke
 
   // Initializing Token Values:
   let type: TokenType = 'lpToken';
-  let symbol: string = await query(chain, address, minABI, 'symbol', []);
-  let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
-  let balance = rawBalance / (10 ** decimals);
+  let symbol = '';
+  let decimals = 18;
   let symbol0 = '';
   let symbol1 = '';
   let decimals0 = 18;
   let decimals1 = 18;
 
+  // Initializing Multicalls:
+  let lpCalls: CallContext[] = [
+    { reference: 'symbol', methodName: 'symbol', methodParameters: [] },
+    { reference: 'decimals', methodName: 'decimals', methodParameters: [] },
+    { reference: 'reserves', methodName: 'getReserves', methodParameters: [] },
+    { reference: 'totalSupply', methodName: 'totalSupply', methodParameters: [] },
+    { reference: 'token0', methodName: 'token0', methodParameters: [] },
+    { reference: 'token1', methodName: 'token1', methodParameters: [] }
+  ];
+  let tokenCalls: CallContext[] = [
+    { reference: 'symbol', methodName: 'symbol', methodParameters: [] },
+    { reference: 'decimals', methodName: 'decimals', methodParameters: [] }
+  ];
+
   // Finding LP Token Info:
-  let lpTokenReserves: string[] = await query(chain, address, lpABI, 'getReserves', []);
-  let lpTokenSupply = await query(chain, address, lpABI, 'totalSupply', []) / (10 ** decimals);
-  let address0: Address = await query(chain, address, lpABI, 'token0', []);
-  let address1: Address = await query(chain, address, lpABI, 'token1', []);
+  let lpMulticallResults = await multicallOneContractQuery(chain, address, lpABI, lpCalls);
+  symbol = lpMulticallResults['symbol'][0];
+  decimals = lpMulticallResults['decimals'][0];
+  let balance = rawBalance / (10 ** decimals);
+  let lpTokenReserves: any[] = lpMulticallResults['reserves'];
+  let lpTokenSupply = parseBN(lpMulticallResults['totalSupply'][0]) / (10 ** decimals);
+  let address0: Address = lpMulticallResults['token0'][0];
+  let address1: Address = lpMulticallResults['token1'][0];
   let trackedToken0 = getTrackedTokenInfo(chain, address0);
   let trackedToken1 = getTrackedTokenInfo(chain, address1);
   if(trackedToken0) {
     symbol0 = trackedToken0.symbol;
     decimals0 = trackedToken0.decimals;
   } else {
-    symbol0 = await query(chain, address0, minABI, 'symbol', []);
-    decimals0 = parseInt(await query(chain, address0, minABI, 'decimals', []));
+    let tokenMulticallResults = await multicallOneContractQuery(chain, address0, minABI, tokenCalls);
+    symbol0 = tokenMulticallResults['symbol'][0];
+    decimals0 = tokenMulticallResults['decimals'][0];
   }
   if(trackedToken1) {
     symbol1 = trackedToken1.symbol;
     decimals1 = trackedToken1.decimals;
   } else {
-    symbol1 = await query(chain, address1, minABI, 'symbol', []);
-    decimals1 = parseInt(await query(chain, address1, minABI, 'decimals', []));
+    let tokenMulticallResults = await multicallOneContractQuery(chain, address1, minABI, tokenCalls);
+    symbol1 = tokenMulticallResults['symbol'][0];
+    decimals1 = tokenMulticallResults['decimals'][0];
   }
-  let supply0 = parseInt(lpTokenReserves[0]) / (10 ** decimals0);
-  let supply1 = parseInt(lpTokenReserves[1]) / (10 ** decimals1);
+  let supply0 = parseBN(lpTokenReserves[0]) / (10 ** decimals0);
+  let supply1 = parseBN(lpTokenReserves[1]) / (10 ** decimals1);
 
   // First Paired Token:
   let token0: PricedToken = {
@@ -365,6 +391,12 @@ export const addDebtToken = async (chain: EVMChain, location: string, address: A
   let decimals = 18;
   let logo: URL;
 
+  // Initializing Multicall:
+  let calls: CallContext[] = [
+    { reference: 'symbol', methodName: 'symbol', methodParameters: [] },
+    { reference: 'decimals', methodName: 'decimals', methodParameters: [] }
+  ];
+
   // Finding Token Info:
   if(address.toLowerCase() === defaultAddress) {
     symbol = getNativeTokenSymbol(chain);
@@ -376,8 +408,9 @@ export const addDebtToken = async (chain: EVMChain, location: string, address: A
       decimals = token.decimals;
       logo = token.logo;
     } else {
-      symbol = await query(chain, address, minABI, 'symbol', []);
-      decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
+      let multicallResults = await multicallOneContractQuery(chain, address, minABI, calls);
+      symbol = multicallResults['symbol'][0];
+      decimals = multicallResults['decimals'][0];
       logo = getTokenLogo(chain, symbol);
     }
   }
@@ -407,14 +440,23 @@ export const addXToken = async (chain: EVMChain, location: string, status: Token
 
   // Initializing Token Values:
   let type: TokenType = 'xToken';
-  let symbol: string = await query(chain, address, minABI, 'symbol', []);
-  let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
-  let balance = rawBalance / (10 ** decimals);
+  let symbol = '';
+  let decimals = 18;
   let underlyingSymbol = '';
   let underlyingDecimals = 18;
   let underlyingLogo: URL;
 
-  // Finding Token Logo:
+  // Initializing Multicall:
+  let calls: CallContext[] = [
+    { reference: 'symbol', methodName: 'symbol', methodParameters: [] },
+    { reference: 'decimals', methodName: 'decimals', methodParameters: [] }
+  ];
+
+  // Finding Token Info:
+  let multicallResults = await multicallOneContractQuery(chain, address, minABI, calls);
+  symbol = multicallResults['symbol'][0];
+  decimals = multicallResults['decimals'][0];
+  let balance = rawBalance / (10 ** decimals);
   let logo = getTokenLogo(chain, symbol);
 
   // Finding Underlying Token Info:
@@ -424,8 +466,9 @@ export const addXToken = async (chain: EVMChain, location: string, status: Token
     underlyingDecimals = token.decimals;
     underlyingLogo = token.logo;
   } else {
-    underlyingSymbol = await query(chain, underlyingAddress, minABI, 'symbol', []);
-    underlyingDecimals = parseInt(await query(chain, underlyingAddress, minABI, 'decimals', []));
+    let underlyingMulticallResults = await multicallOneContractQuery(chain, underlyingAddress, minABI, calls);
+    underlyingSymbol = underlyingMulticallResults['symbol'][0];
+    underlyingDecimals = underlyingMulticallResults['decimals'][0];
     underlyingLogo = getTokenLogo(chain, underlyingSymbol);
   }
 
