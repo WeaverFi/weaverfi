@@ -68,8 +68,6 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 
 The ETH chain also contains the `resolveENS(ensDomain)` and `lookupENS(address)` methods.
 
-The TERRA chain also contains the `resolveTNS(tnsDomain)` and `lookupTNS(address)` methods.
-
 ## Chains Supported
 
 - ETH (Ethereum)
@@ -79,7 +77,6 @@ The TERRA chain also contains the `resolveTNS(tnsDomain)` and `lookupTNS(address
 - AVAX (Avalanche)
 - ONE (Harmony)
 - CRONOS (Cronos)
-- TERRA (Terra)
 
 ---
 

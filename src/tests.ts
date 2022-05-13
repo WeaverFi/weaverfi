@@ -6,10 +6,10 @@ import { chains } from './chains';
 import { defaultAddress } from './functions';
 
 // Type Imports:
-import type { Address, TerraAddress } from './types';
+import type { Address } from './types';
 
 // Initializations:
-const wallet: Address | TerraAddress = '0x9E3bCf89CaA56F2E52AaF74A707335CB9A7B68a5';
+const wallet: Address = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E';
 
 /* ========================================================================================================================================================================= */
 
@@ -17,7 +17,7 @@ const wallet: Address | TerraAddress = '0x9E3bCf89CaA56F2E52AaF74A707335CB9A7B68
 const tests = async () => {
 
   // Project Balance Tests:
-  let projectBalance = await weaver.FTM.getProjectBalance(wallet, 'curve');
+  let projectBalance = await weaver.POLY.getProjectBalance(wallet, 'pooltogether');
   console.log('🕷️ ~ projectBalance', projectBalance);
 
   /* ================================================== */
@@ -37,8 +37,6 @@ const tests = async () => {
   // console.log('🕷️ ~ oneWalletBalance', oneWalletBalance);
   // let cronosWalletBalance = await weaver.CRONOS.getWalletBalance(wallet);
   // console.log('🕷️ ~ cronosWalletBalance', cronosWalletBalance);
-  // let terraWalletBalance = await weaver.TERRA.getWalletBalance(wallet);
-  // console.log('🕷️ ~ terraWalletBalance', terraWalletBalance);
 
   /* ================================================== */
 
@@ -57,8 +55,6 @@ const tests = async () => {
   // console.log('🕷️ ~ oneWalletCheck', oneWalletCheck);
   // let cronosWalletCheck = await weaver.CRONOS.isAddress(wallet);
   // console.log('🕷️ ~ cronosWalletCheck', cronosWalletCheck);
-  // let terraWalletCheck = await weaver.TERRA.isAddress(wallet);
-  // console.log('🕷️ ~ terraWalletCheck', terraWalletCheck);
 
   /* ================================================== */
 
@@ -77,8 +73,6 @@ const tests = async () => {
   // console.log('🕷️ ~ oneProjects', oneProjects);
   // let cronosProjects = weaver.CRONOS.getProjects();
   // console.log('🕷️ ~ cronosProjects', cronosProjects);
-  // let terraProjects = weaver.TERRA.getProjects();
-  // console.log('🕷️ ~ terraProjects', terraProjects);
 
   /* ================================================== */
 
@@ -97,8 +91,6 @@ const tests = async () => {
   // console.log('🕷️ ~ oneTokens', oneTokens);
   // let cronosTokens = weaver.CRONOS.getTokens();
   // console.log('🕷️ ~ cronosTokens', cronosTokens);
-  // let terraTokens = weaver.TERRA.getTokens();
-  // console.log('🕷️ ~ terraTokens', terraTokens);
 
   /* ================================================== */
 
@@ -117,8 +109,6 @@ const tests = async () => {
   // console.log('🕷️ ~ oneQueryResult', oneQueryResult);
   // let cronosQueryResult = parseInt(await weaver.CRONOS.query(chains['cronos'].usdc, minABI, 'balanceOf', [wallet]));
   // console.log('🕷️ ~ cronosQueryResult', cronosQueryResult);
-  // let terraQueryResult = parseInt((await weaver.TERRA.query('terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76', { balance: { address: wallet } })).balance);
-  // console.log('🕷️ ~ terraQueryResult', terraQueryResult);
 
   /* ================================================== */
 
@@ -145,10 +135,6 @@ const tests = async () => {
   // console.log('🕷️ ~ ensAddress', ensAddress);
   // let ensDomain = await weaver.ETH.lookupENS(wallet);
   // console.log('🕷️ ~ ensDomain', ensDomain);
-  // let tnsAddress = await weaver.TERRA.resolveTNS('ncookie.ust');
-  // console.log('🕷️ ~ tnsAddress', tnsAddress);
-  // let tnsDomain = await weaver.TERRA.lookupTNS(wallet);
-  // console.log('🕷️ ~ tnsDomain', tnsDomain);
 
   /* ================================================== */
 
@@ -167,8 +153,6 @@ const tests = async () => {
   // console.log('🕷️ ~ oneTokenPrices', oneTokenPrices);
   // let cronosTokenPrices = await weaver.CRONOS.getTokenPrices();
   // console.log('🕷️ ~ cronosTokenPrices', cronosTokenPrices);
-  // let terraTokenPrices = await weaver.TERRA.getTokenPrices();
-  // console.log('🕷️ ~ terraTokenPrices', terraTokenPrices);
 
   /* ================================================== */
 
@@ -187,8 +171,6 @@ const tests = async () => {
   // console.log('🕷️ ~ oneTokenPrice', oneTokenPrice);
   // let cronosTokenPrice = await weaver.CRONOS.getTokenPrice(defaultAddress, 18);
   // console.log('🕷️ ~ cronosTokenPrice', cronosTokenPrice);
-  // let terraTokenPrice = await weaver.TERRA.getTokenPrice(defaultAddress, 18);
-  // console.log('🕷️ ~ terraTokenPrice', terraTokenPrice);
 
 }
 

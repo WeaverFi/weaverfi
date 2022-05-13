@@ -2,18 +2,13 @@
 // Imports:
 import axios from 'axios';
 import { chains } from './chains';
-import { terra_data } from './tokens';
 import { getChainTokenData, defaultAddress } from './functions';
-import { Coin, LCDClient } from '@terra-money/terra.js';
 
 // Type Imports:
-import type { Address, TerraAddress, Chain, EVMChain, TokenPriceData, TokenData, TerraTokenData } from './types';
+import type { Address, Chain, TokenPriceData, TokenData } from './types';
 
 // Prices Object:
-export let prices: Record<Chain, TokenPriceData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [], terra: [] };
-
-// Terra Connection:
-const terra = new LCDClient({ URL: chains.terra.rpcs[0], chainID: "columbus-5" });
+export let prices: Record<Chain, TokenPriceData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [] };
 
 // Initializations:
 const maxPriceAge = 60000 * 20; // 20 Minutes
@@ -41,22 +36,14 @@ export const getAllTokenPrices = async () => {
  * @returns Current state of the `prices` object post-update, including only the selected chain.
  */
 export const getChainTokenPrices = async (chain: Chain) => {
-  let data = chain != 'terra' ? getChainTokenData(chain) : terra_data;
-  let missingPrices: (TokenData | TerraTokenData)[] = [];
+  let data = getChainTokenData(chain);
+  let missingPrices: TokenData[] = [];
   if(data) {
 
     // Querying All Tokens Through CoinGecko:
     let addresses = data.tokens.map(token => token.address);
     addresses.push(defaultAddress);
     await queryCoinGeckoPrices(chain, addresses);
-
-    // Querying Terra Native Stablecoin Prices:
-    if(chain === 'terra') {
-      let luna = checkTokenPrice(chain, defaultAddress);
-      if(luna) {
-        await queryTerraNativeTokenPrices(luna.price);
-      }
-    }
 
     // Checking Missing Token Prices:
     for(let token of data.tokens) {
@@ -65,7 +52,7 @@ export const getChainTokenPrices = async (chain: Chain) => {
         let priceFound = false;
 
         // Querying 1Inch:
-        if(chain != 'terra' && chains[chain].inch && !priceFound) {
+        if(chains[chain].inch && !priceFound) {
           await query1InchPrice(chain, token.address as Address, token.decimals);
           foundToken = checkTokenPrice(chain, token.address);
           if(foundToken) {
@@ -74,7 +61,7 @@ export const getChainTokenPrices = async (chain: Chain) => {
         }
 
         // Querying ParaSwap:
-        if(chain != 'terra' && chains[chain].paraswap && !priceFound) {
+        if(chains[chain].paraswap && !priceFound) {
           await queryParaSwapPrice(chain, token.address as Address, token.decimals);
           foundToken = checkTokenPrice(chain, token.address);
           if(foundToken) {
@@ -145,13 +132,6 @@ export const getNativeTokenPrices = async () => {
         timestamp: Date.now()
       });
     });
-
-    // Querying Terra Native Stablecoin Prices:
-    let luna = checkTokenPrice('terra', defaultAddress);
-    if(luna) {
-      await queryTerraNativeTokenPrices(luna.price);
-    }
-    
   } catch {}
   return prices;
 }
@@ -165,7 +145,7 @@ export const getNativeTokenPrices = async () => {
  * @param decimals - The token's decimals.
  * @returns The token's price (also updates the `prices` object).
  */
-export const getTokenPrice = async (chain: Chain, address: Address | TerraAddress, decimals?: number): Promise<number> => {
+export const getTokenPrice = async (chain: Chain, address: Address, decimals?: number): Promise<number> => {
 
   // Initializations:
   let priceFound = false;
@@ -176,25 +156,6 @@ export const getTokenPrice = async (chain: Chain, address: Address | TerraAddres
   if(token && maxTime < token.timestamp) {
     priceFound = true;
     return token.price;
-  }
-
-  // Querying Terra Native Stablecoins:
-  if(chain === 'terra' && address != defaultAddress && address.startsWith(defaultAddress)) {
-    let luna = checkTokenPrice(chain, defaultAddress);
-    if(luna) {
-      await queryTerraNativeTokenPrices(luna.price);
-    } else {
-      await queryCoinGeckoPrices(chain, [defaultAddress]);
-      luna = checkTokenPrice(chain, defaultAddress);
-      if(luna) {
-        await queryTerraNativeTokenPrices(luna.price);
-      }
-    }
-    let token = checkTokenPrice(chain, address);
-    if(token && maxTime < token.timestamp) {
-      priceFound = true;
-      return token.price;
-    }
   }
 
   // Querying CoinGecko:
@@ -208,7 +169,7 @@ export const getTokenPrice = async (chain: Chain, address: Address | TerraAddres
   }
 
   // Querying 1Inch:
-  if(chain != 'terra' && chains[chain].inch && decimals && !priceFound) {
+  if(chains[chain].inch && decimals && !priceFound) {
     await query1InchPrice(chain, address as Address, decimals);
     let token = checkTokenPrice(chain, address);
     if(token && maxTime < token.timestamp) {
@@ -218,7 +179,7 @@ export const getTokenPrice = async (chain: Chain, address: Address | TerraAddres
   }
 
   // Querying ParaSwap:
-  if(chain != 'terra' && chains[chain].paraswap && decimals && !priceFound) {
+  if(chains[chain].paraswap && decimals && !priceFound) {
     await queryParaSwapPrice(chain, address as Address, decimals);
     let token = checkTokenPrice(chain, address);
     if(token && maxTime < token.timestamp) {
@@ -250,7 +211,7 @@ export const getTokenPrice = async (chain: Chain, address: Address | TerraAddres
  * @param address - The token's address.
  * @returns The token's price if previously queried, else undefined.
  */
-export const checkTokenPrice = (chain: Chain, address: Address | TerraAddress) => {
+export const checkTokenPrice = (chain: Chain, address: Address) => {
   let foundToken = prices[chain].find(token => token.address == address.toLowerCase());
   if(foundToken) {
     return foundToken;
@@ -266,7 +227,7 @@ export const checkTokenPrice = (chain: Chain, address: Address | TerraAddress) =
  * @param chain - The blockchain in which the tokens are in.
  * @param addresses - The tokens' addresses.
  */
-export const queryCoinGeckoPrices = async (chain: Chain, addresses: (Address | TerraAddress)[]) => {
+export const queryCoinGeckoPrices = async (chain: Chain, addresses: Address[]) => {
 
   // Initializations:
   let formattedAddresses = '';
@@ -308,7 +269,7 @@ export const queryCoinGeckoPrices = async (chain: Chain, addresses: (Address | T
           if(response[token].usd) {
             updatePrices(chain, {
               symbol: null,
-              address: token.toLowerCase() as Address | TerraAddress,
+              address: token.toLowerCase() as Address,
               price: response[token].usd,
               source: 'coingecko',
               timestamp: Date.now()
@@ -328,7 +289,7 @@ export const queryCoinGeckoPrices = async (chain: Chain, addresses: (Address | T
  * @param address - The token's address.
  * @param decimals - The token's decimals.
  */
-export const query1InchPrice = async (chain: EVMChain, address: Address, decimals: number) => {
+export const query1InchPrice = async (chain: Chain, address: Address, decimals: number) => {
 
   // Checking For Compatibility:
   if(chains[chain].inch) {
@@ -370,7 +331,7 @@ export const query1InchPrice = async (chain: EVMChain, address: Address, decimal
  * @param address - The token's address.
  * @param decimals - The token's decimals.
  */
-export const queryParaSwapPrice = async (chain: EVMChain, address: Address, decimals: number) => {
+export const queryParaSwapPrice = async (chain: Chain, address: Address, decimals: number) => {
 
   // Checking For Compatibility:
   if(chains[chain].paraswap) {
@@ -408,34 +369,6 @@ export const queryParaSwapPrice = async (chain: EVMChain, address: Address, deci
 /* ========================================================================================================================================================================= */
 
 /**
- * Function to query Terra's native token prices, and update the `prices` object.
- * @param lunaPrice - The current price of LUNA.
- */
-export const queryTerraNativeTokenPrices = async (lunaPrice: number) => {
-  let allTokens = (await terra.bank.total())[0];
-  let ignoredTokens = ['uluna', 'unok', 'uidr'];
-  let nativeTokens = allTokens.filter(token => token.denom.charAt(0) === 'u' && !ignoredTokens.includes(token.denom.toLowerCase()));
-  let promises = nativeTokens.map(token => (async () => {
-    try {
-      let lunaRate = (await terra.market.swapRate(new Coin(token.denom, 10 ** 6), 'uluna')).amount.toNumber() / (10 ** 6);
-      let tokenSymbol = token.denom.slice(1, -1) + 't';
-      updatePrices('terra', {
-        symbol: tokenSymbol.toUpperCase(),
-        address: defaultAddress + tokenSymbol as Address,
-        price: lunaRate * lunaPrice,
-        source: 'chain',
-        timestamp: Date.now()
-      });
-    } catch {
-      console.warn(`TERRA: Token Price Not Found - ${token.denom}`);
-    }
-  })());
-  await Promise.all(promises);
-}
-
-/* ========================================================================================================================================================================= */
-
-/**
  * Function to update the `prices` object with a token's newly queried price.
  * @param chain - The blockchain in which the token is in.
  * @param priceData - The token's new price data.
@@ -450,17 +383,12 @@ export const updatePrices = (chain: Chain, priceData: TokenPriceData) => {
     }
   } else {
     if(!priceData.symbol) {
-      let foundToken: TokenData | TerraTokenData | undefined;
-      if(chain != 'terra') {
-        let data = getChainTokenData(chain);
-        if(data) {
-          foundToken = data.tokens.find(token => token.address.toLowerCase() === priceData.address.toLowerCase());
+      let data = getChainTokenData(chain);
+      if(data) {
+        let foundToken = data.tokens.find(token => token.address.toLowerCase() === priceData.address.toLowerCase());
+        if(foundToken) {
+          priceData.symbol = foundToken.symbol;
         }
-      } else {
-        foundToken = terra_data.tokens.find(token => token.address.toLowerCase() === priceData.address.toLowerCase());
-      }
-      if(foundToken) {
-        priceData.symbol = foundToken.symbol;
       }
     }
     prices[chain].push(priceData);
@@ -474,10 +402,10 @@ export const updatePrices = (chain: Chain, priceData: TokenPriceData) => {
  * @param chain - The chain the original token is in.
  * @param address - The original token's address.
  */
-const redirectTokenPriceFeed = async (chain: Chain, address: Address | TerraAddress) => {
+const redirectTokenPriceFeed = async (chain: Chain, address: Address) => {
 
   // Initializations:
-  let proxyToken: { chain: Chain, address: Address | TerraAddress, decimals?: number } | undefined = undefined;
+  let proxyToken: { chain: Chain, address: Address, decimals?: number } | undefined = undefined;
 
   // Redirecting Price Feed:
   switch(chain) {
@@ -514,9 +442,6 @@ const redirectTokenPriceFeed = async (chain: Chain, address: Address | TerraAddr
       break;
     case 'one':
       switch(address.toLowerCase()) {
-        case '0x95ce547d730519a90def30d647f37d9e5359b6ae': // LUNA
-          proxyToken = { chain: 'terra', address: defaultAddress };
-          break;
         case '0x7a791e76bf4d4f3b9b492abb74e5108180be6b5a': // 1LINK
           proxyToken = { chain: 'eth', address: '0x514910771af9ca656af840dff83e8264ecf986ca', decimals: 18 };
           break;
@@ -541,11 +466,6 @@ const redirectTokenPriceFeed = async (chain: Chain, address: Address | TerraAddr
           break;
       }
       break;
-    case 'terra':
-      switch(address.toLowerCase()) {
-        // None yet.
-      }
-      break;
   }
 
   // Fetching Proxy Token Price & Updating Token Price:
@@ -555,7 +475,7 @@ const redirectTokenPriceFeed = async (chain: Chain, address: Address | TerraAddr
     if(proxyTokenData) {
       updatePrices(chain, {
         symbol: null,
-        address: address.toLowerCase() as Address | TerraAddress,
+        address: address.toLowerCase() as Address,
         price: tokenPrice,
         source: proxyTokenData.source,
         timestamp: Date.now()

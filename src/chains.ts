@@ -128,15 +128,5 @@ export const chains: Chains = {
       nativeTokenID: 'crypto-com-chain',
     },
     multicall: '0x5e954f5972EC6BFc7dECd75779F10d848230345F'
-  },
-  terra: {
-    token: 'LUNA',
-    rpcs: [
-      'https://lcd.terra.dev'
-    ],
-    coingeckoIDs: {
-      chainID: 'terra',
-      nativeTokenID: 'terra-luna',
-    }
   }
 }

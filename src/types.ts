@@ -1,17 +1,12 @@
 
 // Chain Types:
-export type Chain = 'eth' | 'bsc' | 'poly' | 'ftm' | 'avax' | 'one' | 'cronos' | 'terra';
-export type UpperCaseChain = 'ETH' | 'BSC' | 'POLY' | 'FTM' | 'AVAX' | 'ONE' | 'CRONOS' | 'TERRA';
-export type EVMChain = 'eth' | 'bsc' | 'poly' | 'ftm' | 'avax' | 'one' | 'cronos';
+export type Chain = 'eth' | 'bsc' | 'poly' | 'ftm' | 'avax' | 'one' | 'cronos';
+export type UpperCaseChain = 'ETH' | 'BSC' | 'POLY' | 'FTM' | 'AVAX' | 'ONE' | 'CRONOS';
 export type ChainID = 1 | 56 | 137 | 250 | 43114 | 1666600000 | 25;
 
 // Address Types:
 export type Address = `0x${string}`;
-export type TerraAddress = `terra1${string}`;
-
-// Domain Types:
 export type ENSDomain = `${string}.eth`;
-export type TNSDomain = `${string}.ust`;
 
 // Token Types:
 export type TokenType = 'nativeToken' | 'token' | 'lpToken' | 'debt' | 'xToken';
@@ -23,9 +18,6 @@ export type TXType = 'transfer' | 'approve' | 'revoke';
 // Price Source Types:
 export type PriceSource = 'chain' | 'coingecko' | '1inch' | 'paraswap';
 
-// Terra Native Token Denoms:
-export type TerraDenom = 'uluna' | 'uaud' | 'ucad' | 'uchf' | 'ucny' | 'udkk' | 'ueur' | 'ugbp' | 'uhkd' | 'uidr' | 'uinr' | 'ujpy' | 'ukrw' | 'umnt' | 'uphp' | 'usdr' | 'usek' | 'usgd' | 'uthb' | 'uusd' | 'umyr' | 'utwd';
-
 // Generic Types:
 export type URL = `https://${string}`;
 export type Hash = `0x${string}`;
@@ -35,7 +27,7 @@ export type Hash = `0x${string}`;
 // Token Interfaces:
 export interface BaseToken {
     symbol: string
-    address: Address | TerraAddress
+    address: Address
     balance: number
 }
 export interface PricedToken extends BaseToken {
@@ -47,7 +39,7 @@ export interface OwnedToken extends BaseToken {
     chain: Chain
     location: string
     status: TokenStatus
-    owner: Address | TerraAddress
+    owner: Address
     info?: TokenInfo
 }
 export interface NativeToken extends OwnedToken, PricedToken {
@@ -174,7 +166,6 @@ export interface Chains {
     avax: ChainData
     one: ChainData
     cronos: ChainData
-    terra: TerraChainData
 }
 export interface ChainData {
     id: ChainID
@@ -188,11 +179,6 @@ export interface ChainData {
     coingeckoIDs: CoinGeckoIDs
     multicall: Address
 }
-export interface TerraChainData {
-    token: string
-    rpcs: URL[]
-    coingeckoIDs: CoinGeckoIDs
-}
 export interface CoinGeckoIDs {
     chainID: string
     nativeTokenID: string
@@ -201,23 +187,12 @@ export interface CoinGeckoIDs {
 /* ========================================================================================================================================================================= */
 
 // Chain Token Data Interfaces:
-export interface BaseChainTokenData {
-    logos: LogoData[]
-}
-export interface ChainTokenData extends BaseChainTokenData {
+export interface ChainTokenData {
     tokens: TokenData[]
-}
-export interface TerraChainTokenData extends BaseChainTokenData {
-    tokens: TerraTokenData[]
+    logos: LogoData[]
 }
 export interface TokenData {
     address: Address
-    symbol: string
-    logo: URL
-    decimals: number
-}
-export interface TerraTokenData {
-    address: TerraAddress
     symbol: string
     logo: URL
     decimals: number
@@ -232,7 +207,7 @@ export interface LogoData {
 // Token Price Data Interfaces:
 export interface TokenPriceData {
     symbol: string | null
-    address: Address | TerraAddress
+    address: Address
     price: number
     source: PriceSource
     timestamp: number

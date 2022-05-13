@@ -1,6 +1,6 @@
 
 // Type Imports:
-import type { ChainTokenData, TerraChainTokenData } from './types';
+import type { ChainTokenData } from './types';
 
 /* ========================================================================================================================================================================= */
 
@@ -645,40 +645,5 @@ export const cronos_data: ChainTokenData = {
   ],
   logos: [
     { symbol: 'CRO', logo: 'https://cronoscan.com/token/images/cryptocom_32.png' }
-  ]
-}
-
-/* ========================================================================================================================================================================= */
-
-// Terra:
-export const terra_data: TerraChainTokenData = {
-  tokens: [
-    { address: 'terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76', symbol: 'ANC', logo: 'https://whitelist.anchorprotocol.com/logo/ANC.png', decimals: 6 },
-    { address: 'terra1kcthelkax4j9x8d3ny6sdag0qmxxynl3qtcrpy', symbol: 'MINE', logo: 'https://assets.pylon.rocks/logo/MINE.png', decimals: 6 },
-    { address: 'terra13xujxcrc9dqft4p9a8ls0w3j0xnzm6y2uvve8n', symbol: 'STT', logo: 'https://starterra.io/assets/100x100_starterra.png', decimals: 6 },
-    { address: 'terra1dzhzukyezv0etz22ud940z7adyv7xgcjkahuun', symbol: 'bETH', logo: 'https://whitelist.anchorprotocol.com/logo/bETH.png', decimals: 6 },
-    { address: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp', symbol: 'bLUNA', logo: 'https://whitelist.anchorprotocol.com/logo/bLUNA.png', decimals: 6 }
-  ],
-  logos: [
-    { symbol: 'LUNA', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/Luna.png?raw=true' },
-    { symbol: 'UST', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/UST.png?raw=true' },
-    { symbol: 'AUT', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/AUT.png?raw=true' },
-    { symbol: 'CAT', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/CAT.png?raw=true' },
-    { symbol: 'CHT', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/CHT.png?raw=true' },
-    { symbol: 'CNT', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/CNT.png?raw=true' },
-    { symbol: 'DKT', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/DKT.png?raw=true' },
-    { symbol: 'EUT', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/EUT.png?raw=true' },
-    { symbol: 'GBT', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/GBT.png?raw=true' },
-    { symbol: 'HKT', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/HKT.png?raw=true' },
-    { symbol: 'IDT', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/IDT.png?raw=true' },
-    { symbol: 'INT', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/INT.png?raw=true' },
-    { symbol: 'JPT', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/JPT.png?raw=true' },
-    { symbol: 'KRT', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/KRT.png?raw=true' },
-    { symbol: 'MNT', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/MNT.png?raw=true' },
-    { symbol: 'PHT', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/PHT.png?raw=true' },
-    { symbol: 'SDT', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/SDT.png?raw=true' },
-    { symbol: 'SET', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/SET.png?raw=true' },
-    { symbol: 'SGT', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/SGT.png?raw=true' },
-    { symbol: 'THT', logo: 'https://github.com/terra-money/assets/blob/master/icon/60/THT.png?raw=true' }
   ]
 }

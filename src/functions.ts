@@ -11,7 +11,7 @@ import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data, cronos_da
 
 // Type Imports:
 import type { ContractCallResults, ContractCallContext } from 'ethereum-multicall';
-import type { EVMChain, Address, URL, ABI, ENSDomain, TokenData, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken, CallContext } from './types';
+import type { Chain, Address, URL, ABI, ENSDomain, TokenData, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken, CallContext } from './types';
 
 // Initializations:
 export const defaultTokenLogo: URL = 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@d5c68edec1f5eaec59ac77ff2b48144679cebca1/32/icon/generic.png';
@@ -20,7 +20,7 @@ export const zero: Address = '0x0000000000000000000000000000000000000000';
 const maxQueryRetries = 3;
 
 // Ignored Errors On Blockchain Queries:
-export const ignoredErrors: { chain: EVMChain, address: Address }[] = [
+export const ignoredErrors: { chain: Chain, address: Address }[] = [
   {chain: 'poly', address: '0x8aaa5e259f74c8114e0a471d9f2adfc66bfe09ed'}, // QuickSwap Registry
   {chain: 'poly', address: '0x9dd12421c637689c3fc6e661c9e2f02c2f61b3eb'}  // QuickSwap Dual Rewards Registry
 ];
@@ -36,7 +36,7 @@ export const ignoredErrors: { chain: EVMChain, address: Address }[] = [
  * @param args - Any arguments to pass to the method called.
  * @returns Query results.
  */
-export const query = async (chain: EVMChain, address: Address, abi: ABI[], method: string, args: any[]) => {
+export const query = async (chain: Chain, address: Address, abi: ABI[], method: string, args: any[]) => {
   let result;
   let errors = 0;
   let rpcID = 0;
@@ -69,7 +69,7 @@ export const query = async (chain: EVMChain, address: Address, abi: ABI[], metho
  * @returns Query results for all given queries.
  * @see {@link multicallOneMethodQuery}, {@link multicallOneContractQuery} and {@link multicallComplexQuery} for simpler use cases.
  */
-export const multicallQuery = async (chain: EVMChain, queries: ContractCallContext[]) => {
+export const multicallQuery = async (chain: Chain, queries: ContractCallContext[]) => {
   try {
     let ethers_provider = new ethers.providers.JsonRpcProvider(chains[chain].rpcs[0]);
     let multicall = new Multicall({ ethersProvider: ethers_provider, tryAggregate: true, multicallCustomContractAddress: chains[chain].multicall });
@@ -91,7 +91,7 @@ export const multicallQuery = async (chain: EVMChain, queries: ContractCallConte
  * @param methodParameters - Any arguments to pass to the method called.
  * @returns Query results for each contract.
  */
-export const multicallOneMethodQuery = async (chain: EVMChain, contracts: Address[], abi: ABI[], methodName: string, methodParameters: any[]) => {
+export const multicallOneMethodQuery = async (chain: Chain, contracts: Address[], abi: ABI[], methodName: string, methodParameters: any[]) => {
   let results: Record<Address, any[]> = {};
   let queries: ContractCallContext[] = [];
   let calls: CallContext[] = [{ reference: '', methodName, methodParameters }];
@@ -118,7 +118,7 @@ export const multicallOneMethodQuery = async (chain: EVMChain, contracts: Addres
  * @param calls - All method calls to query the target contract.
  * @returns Query results for each method call.
  */
-export const multicallOneContractQuery = async (chain: EVMChain, contractAddress: Address, abi: ABI[], calls: CallContext[]) => {
+export const multicallOneContractQuery = async (chain: Chain, contractAddress: Address, abi: ABI[], calls: CallContext[]) => {
   let results: Record<string, any[]> = {};
   let query: ContractCallContext = { reference: 'oneContractQuery', contractAddress, abi, calls };
   let multicallQueryResults = (await multicallQuery(chain, [query])).results;
@@ -140,7 +140,7 @@ export const multicallOneContractQuery = async (chain: EVMChain, contractAddress
  * @param calls - All method calls to query the target contracts.
  * @returns Query results for each method call, for each contract.
  */
-export const multicallComplexQuery = async (chain: EVMChain, contracts: Address[], abi: ABI[], calls: CallContext[]) => {
+export const multicallComplexQuery = async (chain: Chain, contracts: Address[], abi: ABI[], calls: CallContext[]) => {
   let results: Record<Address, Record<string, any[]>> = {};
   let queries: ContractCallContext[] = [];
   contracts.forEach(contract => {
@@ -166,7 +166,7 @@ export const multicallComplexQuery = async (chain: EVMChain, contracts: Address[
  * @param wallet - The wallet to query balances for.
  * @returns All native and token balances for the specified wallet.
  */
-export const getWalletBalance = async (chain: EVMChain, wallet: Address) => {
+export const getWalletBalance = async (chain: Chain, wallet: Address) => {
   let walletBalance: (NativeToken | Token)[] = [];
   walletBalance.push(...(await getWalletNativeTokenBalance(chain, wallet)));
   walletBalance.push(...(await getWalletTokenBalance(chain, wallet)));
@@ -182,7 +182,7 @@ export const getWalletBalance = async (chain: EVMChain, wallet: Address) => {
  * @param project - The project/dapp to query for balances in.
  * @returns A wallet's balance on the specified project/dapp.
  */
-export const getProjectBalance = async (chain: EVMChain, wallet: Address, project: string) => {
+export const getProjectBalance = async (chain: Chain, wallet: Address, project: string) => {
   let projectBalance: (NativeToken | Token | LPToken | DebtToken | XToken)[] = [];
   if(projects[chain].includes(project)) {
     let dapp = await import(`./projects/${chain}/${project}`);
@@ -214,7 +214,7 @@ export const isAddress = (address: Address) => {
  * @param owner - The native token owner's wallet address.
  * @returns A NativeToken object with all its information.
  */
-export const addNativeToken = async (chain: EVMChain, rawBalance: number, owner: Address): Promise<NativeToken> => {
+export const addNativeToken = async (chain: Chain, rawBalance: number, owner: Address): Promise<NativeToken> => {
 
   // Initializing Token Values:
   let type: TokenType = 'nativeToken';
@@ -244,7 +244,7 @@ export const addNativeToken = async (chain: EVMChain, rawBalance: number, owner:
  * @param owner - The token owner's wallet address.
  * @returns A Token object with all its information.
  */
-export const addToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -295,7 +295,7 @@ export const addToken = async (chain: EVMChain, location: string, status: TokenS
  * @param owner - The token owner's wallet address.
  * @returns A LPToken object with all its information.
  */
-export const addLPToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<LPToken> => {
+export const addLPToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<LPToken> => {
 
   // Initializing Token Values:
   let type: TokenType = 'lpToken';
@@ -382,7 +382,7 @@ export const addLPToken = async (chain: EVMChain, location: string, status: Toke
  * @param owner - The token owner's wallet address.
  * @returns A DebtToken object with all its information.
  */
-export const addDebtToken = async (chain: EVMChain, location: string, address: Address, rawBalance: number, owner: Address): Promise<DebtToken> => {
+export const addDebtToken = async (chain: Chain, location: string, address: Address, rawBalance: number, owner: Address): Promise<DebtToken> => {
 
   // Initializing Token Values:
   let type: TokenType = 'debt';
@@ -436,7 +436,7 @@ export const addDebtToken = async (chain: EVMChain, location: string, address: A
  * @param underlyingRawBalance - The equivalent balance of the underlying token this xToken represents.
  * @returns A XToken object with all its information.
  */
-export const addXToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, underlyingAddress: Address, underlyingRawBalance: number): Promise<XToken> => {
+export const addXToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, underlyingAddress: Address, underlyingRawBalance: number): Promise<XToken> => {
 
   // Initializing Token Values:
   let type: TokenType = 'xToken';
@@ -491,7 +491,7 @@ export const addXToken = async (chain: EVMChain, location: string, status: Token
  * @param chain - The chain to fetch tracked tokens from.
  * @returns An array of all tracked tokens in the given chain.
  */
-export const getTokens = (chain: EVMChain) => {
+export const getTokens = (chain: Chain) => {
   let chainTokenData = getChainTokenData(chain);
   if(chainTokenData) {
     return chainTokenData.tokens;
@@ -507,7 +507,7 @@ export const getTokens = (chain: EVMChain) => {
  * @param chain - The chain to fetch data from.
  * @returns The given chain's token data.
  */
-export const getChainTokenData = (chain: EVMChain) => {
+export const getChainTokenData = (chain: Chain) => {
   switch(chain) {
     case 'eth':
       return eth_data;
@@ -536,7 +536,7 @@ export const getChainTokenData = (chain: EVMChain) => {
  * @param symbol - The token's symbol.
  * @returns The token logo if available, else a generic coin logo.
  */
-export const getTokenLogo = (chain: EVMChain, symbol: string) => {
+export const getTokenLogo = (chain: Chain, symbol: string) => {
 
   // Initializing Default Token Logo:
   let logo = defaultTokenLogo;
@@ -613,7 +613,7 @@ export const parseBN = (bn: any) => {
  * @param wallet - The wallet to query native balance for.
  * @returns An array of NativeToken objects if any balance is found.
  */
-const getWalletNativeTokenBalance = async (chain: EVMChain, wallet: Address) => {
+const getWalletNativeTokenBalance = async (chain: Chain, wallet: Address) => {
   let balance;
   let errors = 0;
   let rpcID = 0;
@@ -643,7 +643,7 @@ const getWalletNativeTokenBalance = async (chain: EVMChain, wallet: Address) => 
  * @param wallet - The wallet to query token balances for.
  * @returns An array of Token objects if any balances are found.
  */
-const getWalletTokenBalance = async (chain: EVMChain, wallet: Address) => {
+const getWalletTokenBalance = async (chain: Chain, wallet: Address) => {
   let tokens: Token[] = [];
   let data = getChainTokenData(chain);
   if(data) {
@@ -672,7 +672,7 @@ const getWalletTokenBalance = async (chain: EVMChain, wallet: Address) => {
  * @param address - The token's address.
  * @returns The token's data if tracked, else undefined.
  */
-const getTrackedTokenInfo = (chain: EVMChain, address: Address) => {
+const getTrackedTokenInfo = (chain: Chain, address: Address) => {
   let data = getChainTokenData(chain);
   if(data) {
     return data.tokens.find(token => token.address.toLowerCase() === address.toLowerCase());
@@ -693,7 +693,7 @@ const getTrackedTokenInfo = (chain: EVMChain, address: Address) => {
  * @param owner - The token owner's wallet address.
  * @returns A Token object with all its information.
  */
-const addTrackedToken = async (chain: EVMChain, location: string, status: TokenStatus, token: TokenData, rawBalance: number, owner: Address): Promise<Token> => {
+const addTrackedToken = async (chain: Chain, location: string, status: TokenStatus, token: TokenData, rawBalance: number, owner: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -714,7 +714,7 @@ const addTrackedToken = async (chain: EVMChain, location: string, status: TokenS
  * @param chain - The blockchain the native token belongs to.
  * @returns The appropriate token's symbol.
  */
-const getNativeTokenSymbol = (chain: EVMChain) => {
+const getNativeTokenSymbol = (chain: Chain) => {
   if(chain === 'bsc') {
     return 'BNB';
   } else if(chain === 'poly') {

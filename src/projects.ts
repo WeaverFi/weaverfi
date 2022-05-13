@@ -55,7 +55,6 @@ export const projects: Record<Chain, string[]> = {
   avax: [
     'aave',
     'alligator',
-    'anchor',
     'autofarm',
     'avalaunch',
     'axial',
@@ -78,8 +77,5 @@ export const projects: Record<Chain, string[]> = {
     'beefy',
     'sushiswap'
   ],
-  cronos: [],
-  terra: [
-    'anchor'
-  ]
+  cronos: []
 }

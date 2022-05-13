@@ -2,12 +2,11 @@
 // Imports:
 import * as $ from './prices';
 import * as evm from './functions';
-import * as terra from './terra-functions';
 import { chains } from './chains';
 import { projects } from './projects';
 
 // Type Imports:
-import type { Chain, Address, TerraAddress, ENSDomain, TNSDomain, TokenData, TerraTokenData, TokenPriceData, ABI, UpperCaseChain } from './types';
+import type { Chain, Address, ENSDomain, TokenData, TokenPriceData, ABI, UpperCaseChain } from './types';
 
 /* ========================================================================================================================================================================= */
 
@@ -279,49 +278,6 @@ export const WeaverFi = {
     }
   },
 
-  // Terra Functions:
-  TERRA: {
-    query: (address: TerraAddress, query: any) => {
-      return terra.query(address, query);
-    },
-    isAddress: (address: TerraAddress) => {
-      return terra.isAddress(address);
-    },
-    getWalletBalance: (wallet: TerraAddress) => {
-      return terra.getWalletBalance(wallet);
-    },
-    getProjectBalance: (wallet: TerraAddress, project: string) => {
-      return terra.getProjectBalance(wallet, project);
-    },
-    getTokens: () => {
-      return terra.getTokens();
-    },
-    getTokenLogo: (symbol: string) => {
-      return terra.getTokenLogo(symbol);
-    },
-    getInfo: () => {
-      return chains['terra'];
-    },
-    getProjects: () => {
-      return projects['terra'];
-    },
-    getTokenPrices: () => {
-      return $.getChainTokenPrices('terra');
-    },
-    getTokenPrice: (address: Address | TerraAddress, decimals?: number) => {
-      return $.getTokenPrice('terra', address, decimals);
-    },
-    updateTokenPrice: (priceData: TokenPriceData) => {
-      return $.updatePrices('terra', priceData);
-    },
-    resolveTNS: (address: TNSDomain) => {
-      return terra.resolveTNS(address);
-    },
-    lookupTNS: (address: TerraAddress) => {
-      return terra.lookupTNS(address);
-    }
-  },
-
   /* ================================================== */
 
   // Function to get all supported chains:
@@ -341,14 +297,10 @@ export const WeaverFi = {
 
   // Function to get a list of all tracked tokens:
   getAllTokens: () => {
-    let tokens: Record<Chain, (TokenData | TerraTokenData)[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [], terra: [] };
+    let tokens: Record<Chain, TokenData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [] };
     Object.keys(tokens).forEach(stringChain => {
       let chain = stringChain as Chain;
-      if(chain === 'terra') {
-        tokens[chain].push(...terra.getTokens());
-      } else {
-        tokens[chain].push(...evm.getTokens(chain));
-      }
+      tokens[chain].push(...evm.getTokens(chain));
     });
     return tokens;
   },

@@ -1,6 +1,6 @@
 {
   "name": "weaverfi",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "description": "The NPM package to query DeFi.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -35,8 +35,6 @@
     "url": "https://github.com/CookieTrack-io/weaverfi/labels/bug"
   },
   "dependencies": {
-    "@terra-money/terra.js": "^3.0.8",
-    "@tns-money/tns.js": "^1.2.0",
     "axios": "^0.26.1",
     "ethereum-multicall": "^2.10.0",
     "ethers": "^5.6.0"
