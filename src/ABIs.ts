@@ -181,41 +181,45 @@ export const alpaca: Record<string, ABI[]> = {
 }
 
 // Curve ABIs:
-export const curve: Record<string, ABI[]> = {
+type curveABIs = 'provider' | 'registry' | 'cryptoRegistry' | 'factory' | 'poolInfoGetter' | 'gauge';
+export const curve: Record<`${curveABIs}ABI`, ABI[]> = {
+  providerABI: [
+    { constant: true, inputs: [{ name: "_id", type: "uint256" }], name: "get_address", outputs: [{ name: "", type: "address" }], type: "function" }
+  ],
   registryABI: [
     { constant: true, inputs: [], name: "pool_count", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "arg0", type: "uint256" }], name: "pool_list", outputs: [{ name: "", type: "address" }], type: "function" },
+    { constant: true, inputs: [{ name: "arg0", type: "uint256" }], name: "get_lp_token", outputs: [{ name: "", type: "address" }], type: "function" },
     { constant: true, inputs: [{ name: "_pool", type: "address" }], name: "get_gauges", outputs: [{ name: "", type: "address[10]" }, { name: "", type: "int128[10]" }], type: "function" },
     { constant: true, inputs: [{ name: "arg0", type: "address" }], name: "get_pool_from_lp_token", outputs: [{ name: "", type: "address" }], type: "function" },
     { constant: true, inputs: [{ name: "_pool", type: "address" }], name: "get_underlying_coins", outputs: [{ name: "", type: "address[8]" }], type: "function" },
     { constant: true, inputs: [{ name: "_pool", type: "address" }], name: "get_underlying_balances", outputs: [{ name: "", type: "uint256[8]" }], type: "function" },
     { constant: true, inputs: [{ name: "_token", type: "address" }], name: "get_virtual_price_from_lp_token", outputs: [{ name: "", type: "uint256" }], type: "function" }
   ],
+  cryptoRegistryABI: [
+    { constant: true, inputs: [{ name: "_pool", type: "address" }], name: "get_coins", outputs: [{ name: "", type: "address[8]" }], type: "function" },
+    { constant: true, inputs: [{ name: "_pool", type: "address" }], name: "get_balances", outputs: [{ name: "", type: "uint256[8]" }], type: "function" },
+    { constant: true, inputs: [{ name: "_pool", type: "address" }], name: "get_decimals", outputs: [{ name: "", type: "uint256[8]" }], type: "function" },
+    { constant: true, inputs: [{ name: "_token", type: "address" }], name: "get_virtual_price_from_lp_token", outputs: [{ name: "", type: "uint256" }], type: "function" }
+  ],
+  factoryABI: [
+    { constant: true, inputs: [{ name: "_pool", type: "address" }], name: "get_gauge", outputs: [{ name: "", type: "address" }], type: "function" },
+    { constant: true, inputs: [{ name: "_pool", type: "address" }], name: "is_meta", outputs: [{ name: "", type: "bool" }], type: "function" },
+    { constant: true, inputs: [{ name: "_pool", type: "address" }], name: "get_coins", outputs: [{ name: "", type: "address[4]" }], type: "function" },
+    { constant: true, inputs: [{ name: "_pool", type: "address" }], name: "get_balances", outputs: [{ name: "", type: "uint256[4]" }], type: "function" },
+    { constant: true, inputs: [{ name: "_pool", type: "address" }], name: "get_decimals", outputs: [{ name: "", type: "uint256[4]" }], type: "function" },
+    { constant: true, inputs: [{ name: "_pool", type: "address" }], name: "get_underlying_coins", outputs: [{ name: "", type: "address[8]" }], type: "function" },
+    { constant: true, inputs: [{ name: "_pool", type: "address" }], name: "get_underlying_balances", outputs: [{ name: "", type: "uint256[8]" }], type: "function" },
+    { constant: true, inputs: [{ name: "_pool", type: "address" }], name: "get_underlying_decimals", outputs: [{ name: "", type: "uint256[8]" }], type: "function" }
+  ],
+  poolInfoGetterABI: [
+    { constant: true, inputs: [{ name: "_pool", type: "address" }], name: "get_pool_coins", outputs: [{ name: "coins", type: "address[8]" }, { name: "underlying_coins", type: "address[8]" }, { name: "decimals", type: "uint256[8]" }, { name: "underlying_decimals", type: "uint256[8]" }], type: "function" },
+    { constant: true, inputs: [{ name: "_pool", type: "address" }], name: "get_pool_info", outputs: [{ name: "balances", type: "uint256[8]" }, { name: "underlying_balances", type: "uint256[8]" }, { name: "decimals", type: "uint256[8]" }, { name: "underlying_decimals", type: "uint256[8]" }, { name: "rates", type: "uint256[8]" }, { name: "lp_token", type: "address" }], type: "function" }
+  ],
   gaugeABI: [
     { constant: true, inputs: [], name: "lp_token", outputs: [{ name: "", type: "address" }], type: "function" },
     { constant: true, inputs: [{ name: "arg0", type: "uint256" }], name: "reward_tokens", outputs: [{ name: "", type: "address" }], type: "function" },
     { constant: true, inputs: [{ name: "_addr", type: "address" }, { name: "_token", type: "address" }], name: "claimable_reward", outputs: [{ name: "", type: "uint256" }], type: "function" }
-  ],
-  polyTokenABI: [
-    { constant: true, inputs: [], name: "minter", outputs: [{ name: "", type: "address" }], type: "function" }
-  ],
-  ftmTokenABI: [
-    { constant: true, inputs: [], name: "get_virtual_price", outputs: [{ name: "", type: "uint256" }], type: "function" },
-    { constant: true, inputs: [{ name: "arg0", type: "uint256" }], name: "balances", outputs: [{ name: "", type: "uint256" }], type: "function" },
-    { constant: true, inputs: [{ name: "arg0", type: "uint256" }], name: "coins", outputs: [{ name: "", type: "address" }], type: "function" },
-    { constant: true, inputs: [], name: "minter", outputs: [{ name: "", type: "address" }], type: "function" }
-  ],
-  avaxTokenABI: [
-    { constant: true, inputs: [], name: "minter", outputs: [{ name: "", type: "address" }], type: "function" }
-  ],
-  minterABI: [
-    { constant: true, inputs: [{ name: "i", type: "uint256" }], name: "balances", outputs: [{ name: "", type: "uint256" }], type: "function" },
-    { constant: true, inputs: [], name: "get_virtual_price", outputs: [{ name: "", type: "uint256" }], type: "function" },
-    { constant: true, inputs: [{ name: "arg0", type: "uint256" }], name: "coins", outputs: [{ name: "", type: "address" }], type: "function" },
-    { constant: true, inputs: [{ name: "arg0", type: "uint256" }], name: "underlying_coins", outputs: [{ name: "", type: "address" }], type: "function" }
-  ],
-  intermediaryABI: [
-    { constant: true, inputs: [], name: "UNDERLYING_ASSET_ADDRESS", outputs: [{ name: "", type: "address" }], type: "function" }
   ]
 }
 

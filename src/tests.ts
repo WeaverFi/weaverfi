@@ -9,7 +9,7 @@ import { defaultAddress } from './functions';
 import type { Address, TerraAddress } from './types';
 
 // Initializations:
-const wallet: Address | TerraAddress = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E';
+const wallet: Address | TerraAddress = '0x9E3bCf89CaA56F2E52AaF74A707335CB9A7B68a5';
 
 /* ========================================================================================================================================================================= */
 
@@ -17,7 +17,7 @@ const wallet: Address | TerraAddress = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD2
 const tests = async () => {
 
   // Project Balance Tests:
-  let projectBalance = await weaver.AVAX.getProjectBalance(wallet, 'traderjoe');
+  let projectBalance = await weaver.FTM.getProjectBalance(wallet, 'curve');
   console.log('🕷️ ~ projectBalance', projectBalance);
 
   /* ================================================== */

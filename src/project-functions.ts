@@ -1,11 +1,12 @@
 
 // Imports:
+import { WeaverError } from './error';
 import { getTokenPrice } from './prices';
-import { query, addXToken, getTokenLogo, defaultTokenLogo, defaultAddress, zero } from './functions';
+import { query, multicallOneContractQuery, multicallOneMethodQuery, addXToken, getTokenLogo, defaultTokenLogo, parseBN, zero } from './functions';
 import { minABI, lpABI, aave, balancer, belt, alpaca, curve, bzx, iron, axial, mstable } from './ABIs';
 
 // Type Imports:
-import type { EVMChain, Address, Hash, TokenStatus, TokenType, Token, LPToken, PricedToken } from './types';
+import type { EVMChain, Address, Hash, TokenStatus, TokenType, Token, LPToken, PricedToken, CallContext } from './types';
 
 /* ========================================================================================================================================================================= */
 
@@ -127,455 +128,202 @@ export const addAlpacaToken = async (chain: EVMChain, location: string, status: 
 /* ========================================================================================================================================================================= */
 
 // Function to get Curve token info:
-export const addCurveToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token | LPToken> => {
+export const addCurveToken = async (chain: EVMChain, location: string, status: TokenStatus, lpToken: Address, rawBalance: number, owner: Address): Promise<Token | LPToken> => {
+
+  // Initializations:
+  const addressProvider: Address = '0x0000000022D53366457F9d5E68Ec105046FC4383';
+  let registry: 'base' | 'crypto' | 'factory' = 'base';
+  let poolAddress: Address;
+  let poolMultiplier: number;
+  let poolInfo: { coin: Address, decimals: number, balance: number, underlyingCoin?: Address, underlyingDecimals?: number, underlyingBalance?: number }[] = [];
   
-  // Ethereum Token:
-  if(chain === 'eth') {
-
-    // Generic Token Values:
-    let registry: Address = '0x90E00ACe148ca3b23Ac1bC8C240C2a7Dd9c2d7f5';
-    let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
-    let balance = rawBalance / (10 ** decimals);
-    let symbol: string = await query(chain, address, minABI, 'symbol', []);
-    let lpTokenSupply = await query(chain, address, minABI, 'totalSupply', []) / (10 ** decimals);
-    let poolAddress: Address = await query(chain, registry, curve.registryABI, 'get_pool_from_lp_token', [address]);
-    let tokens: Address[] = (await query(chain, registry, curve.registryABI, 'get_underlying_coins', [poolAddress])).filter((token: Address) => token != zero);
-    let reserves: string[] = (await query(chain, registry, curve.registryABI, 'get_underlying_balances', [poolAddress])).filter((balance: number) => balance != 0);
-    let multiplier = parseInt(await query(chain, registry, curve.registryABI, 'get_virtual_price_from_lp_token', [address])) / (10 ** decimals);
-
-    // Function to redirect synthetic asset price fetching:
-    const getPrice = async (chain: EVMChain, address: Address, decimals: number): Promise<number> => {
-      if(address.toLowerCase() === '0xbbc455cb4f1b9e4bfc4b73970d360c8f032efee6') { // sLINK
-        return await getTokenPrice(chain, '0x514910771af9ca656af840dff83e8264ecf986ca', decimals);
-      } else if(address.toLowerCase() === '0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6') { // sBTC
-        return await getTokenPrice(chain, '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', decimals);
-      } else if(address.toLowerCase() === '0xd71ecff9342a5ced620049e616c5035f1db98620') { // sEUR
-        return await getTokenPrice(chain, '0xdb25f211ab05b1c97d595516f45794528a807ad8', decimals);
-      } else {
-        return await getTokenPrice(chain, address, decimals);
-      }
-    }
-
-    // 3+ Asset Tokens:
-    if(tokens.length > 2) {
-
-      // Initializing Token Values:
-      let type: TokenType = 'token';
-      let logo = getTokenLogo(chain, symbol);
-
-      // Finding Token Price:
-      let price = 0;
-      for(let i = 0; i < tokens.length; i++) {
-        let tokenDecimals = parseInt(await query(chain, tokens[i], minABI, 'decimals', []));
-        let tokenPrice = await getPrice(chain, tokens[i], tokenDecimals);
-        price += (parseInt(reserves[i]) / (10 ** tokenDecimals)) * tokenPrice;
-      }
-      price /= lpTokenSupply;
-      price *= multiplier;
-
-      return { type, chain, location, status, owner, symbol, address, balance, price, logo };
-
-    // Standard LP Tokens:
-    } else if(tokens.length === 2) {
-
-      // Initializing Token Values:
-      let type: TokenType = 'lpToken';
-
-      // Finding LP Token Info:
-      let address0 = tokens[0];
-      let address1 = tokens[1];
-      let decimals0 = 18;
-      let decimals1 = 18;
-      let symbol0 = '';
-      let symbol1 = '';
-      if(tokens[0].toLowerCase() === defaultAddress) {
-        symbol0 = 'ETH';
-      } else {
-        decimals0 = parseInt(await query(chain, address0, minABI, 'decimals', []));
-        symbol0 = await query(chain, address0, minABI, 'symbol', []);
-      }
-      if(tokens[1].toLowerCase() === defaultAddress) {
-        symbol1 = 'ETH';
-      } else {
-        decimals1 = parseInt(await query(chain, address1, minABI, 'decimals', []));
-        symbol1 = await query(chain, address1, minABI, 'symbol', []);
-      }
-
-      // First Paired Token:
-      let token0: PricedToken = {
-        symbol: symbol0,
-        address: address0,
-        balance: (parseInt(reserves[0]) / (10 ** 18)) * (balance / lpTokenSupply),
-        price: await getTokenPrice(chain, address0, decimals0),
-        logo: getTokenLogo(chain, symbol0)
-      }
-
-      // Second Paired Token:
-      let token1: PricedToken = {
-        symbol: symbol1,
-        address: address1,
-        balance: (parseInt(reserves[1]) / (10 ** 18)) * (balance / lpTokenSupply),
-        price: await getTokenPrice(chain, address1, decimals1),
-        logo: getTokenLogo(chain, symbol1)
-      }
-
-      return { type, chain, location, status, owner, symbol, address, balance, token0, token1 };
-    }
-
-  // Polygon Token:
-  } else if(chain === 'poly') {
-
-    // Generic Token Values:
-    let symbol: string = await query(chain, address, minABI, 'symbol', []);
-    let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
-    let balance = rawBalance / (10 ** decimals);
-    
-    // crvUSDBTCETH (Atricrypto V3):
-    if(address.toLowerCase() === '0xdad97f7713ae9437fa9249920ec8507e5fbb23d3') {
-
-      // Initializing Token Values:
-      let type: TokenType = 'token';
-      let logo = getTokenLogo(chain, symbol);
-
-      // Finding Token Price:
-      let lpTokenSupply = await query(chain, address, minABI, 'totalSupply', []) / (10 ** decimals);
-      let minter = await query(chain, address, curve.polyTokenABI, 'minter', []);
-      let multiplier = parseInt(await query(chain, minter, curve.minterABI, 'get_virtual_price', [])) / (10 ** decimals);
-      let address0 = await query(chain, minter, curve.minterABI, 'coins', [0]);
-      let address1 = await query(chain, minter, curve.minterABI, 'coins', [1]);
-      let address2 = await query(chain, minter, curve.minterABI, 'coins', [2]);
-      let token0 = await query(chain, address0, curve.polyTokenABI, 'minter', []);
-      let token1 = await query(chain, address1, curve.intermediaryABI, 'UNDERLYING_ASSET_ADDRESS', []);
-      let token2 = await query(chain, address2, curve.intermediaryABI, 'UNDERLYING_ASSET_ADDRESS', []);
-      let decimals0 = 18;
-      let decimals1 = parseInt(await query(chain, token1, minABI, 'decimals', []));
-      let decimals2 = parseInt(await query(chain, token2, minABI, 'decimals', []));
-      let supply0 = parseInt(await query(chain, minter, curve.minterABI, 'balances', [0])) / (10 ** decimals0);
-      let supply1 = parseInt(await query(chain, minter, curve.minterABI, 'balances', [1])) / (10 ** decimals1);
-      let supply2 = parseInt(await query(chain, minter, curve.minterABI, 'balances', [2])) / (10 ** decimals2);
-      let price0 = parseInt(await query(chain, token0, curve.minterABI, 'get_virtual_price', [])) / (10 ** decimals0);
-      let price1 = await getTokenPrice(chain, token1, decimals1);
-      let price2 = await getTokenPrice(chain, token2, decimals2);
-      let price = multiplier * (((supply0 * price0) + (supply1 * price1) + (supply2 * price2)) / lpTokenSupply);
-
-      return { type, chain, location, status, owner, symbol, address, balance, price, logo };
-
-    // am3CRV (Aave):
-    } else if(address.toLowerCase() === '0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171') {
-
-      // Initializing Token Values:
-      let type: TokenType = 'token';
-      let logo = getTokenLogo(chain, symbol);
-
-      // Finding Token Price:
-      let minter: Address = await query(chain, address, curve.polyTokenABI, 'minter', []);
-      let price = parseInt(await query(chain, minter, curve.minterABI, 'get_virtual_price', [])) / (10 ** decimals);
-
-      return { type, chain, location, status, owner, symbol, address, balance, price, logo };
-
-    // btcCRV (Ren):
-    } else if(address.toLowerCase() === '0xf8a57c1d3b9629b77b6726a042ca48990a84fb49') {
-
-      // Initializing Token Values:
-      let type: TokenType = 'lpToken';
-
-      // Finding LP Token Info:
-      let lpTokenSupply = await query(chain, address, lpABI, 'totalSupply', []) / (10 ** decimals);
-      let minter: Address = await query(chain, address, curve.polyTokenABI, 'minter', []);
-      let address0: Address = await query(chain, minter, curve.minterABI, 'underlying_coins', [0]);
-      let address1: Address = await query(chain, minter, curve.minterABI, 'underlying_coins', [1]);
-      let symbol0: string = await query(chain, address0, minABI, 'symbol', []);
-      let symbol1: string = await query(chain, address1, minABI, 'symbol', []);
-      let decimals0 = parseInt(await query(chain, address0, minABI, 'decimals', []));
-      let decimals1 = parseInt(await query(chain, address1, minABI, 'decimals', []));
-      let supply0 = await query(chain, minter, curve.minterABI, 'balances', [0]) / (10 ** decimals);
-      let supply1 = await query(chain, minter, curve.minterABI, 'balances', [1]) / (10 ** decimals);
-
-      // First Paired Token:
-      let token0: PricedToken = {
-        symbol: symbol0,
-        address: address0,
-        balance: (supply0 * (balance / lpTokenSupply)) / (10 ** decimals0),
-        price: await getTokenPrice(chain, address0, decimals0),
-        logo: getTokenLogo(chain, symbol0)
-      }
-
-      // Second Paired Token:
-      let token1: PricedToken = {
-        symbol: symbol1,
-        address: address1,
-        balance: (supply1 * (balance / lpTokenSupply)) / (10 ** decimals1),
-        price: await getTokenPrice(chain, address1, decimals1),
-        logo: getTokenLogo(chain, symbol1)
-      }
-
-      return { type, chain, location, status, owner, symbol, address, balance, token0, token1 };
-
-    // crvEURTUSD (EURtUSD):
-    } else if(address.toLowerCase() === '0x600743b1d8a96438bd46836fd34977a00293f6aa') {
-
-      // Initializing Token Values:
-      let type: TokenType = 'token';
-      let logo = getTokenLogo(chain, symbol);
-
-      // Finding Token Price:
-      let lpTokenSupply = await query(chain, address, minABI, 'totalSupply', []) / (10 ** decimals);
-      let minter: Address = await query(chain, address, curve.polyTokenABI, 'minter', []);
-      let multiplier = parseInt(await query(chain, minter, curve.minterABI, 'get_virtual_price', [])) / (10 ** decimals);
-      let token0: Address = await query(chain, minter, curve.minterABI, 'coins', [0]);
-      let address1: Address = await query(chain, minter, curve.minterABI, 'coins', [1]);
-      let token1: Address = await query(chain, address1, curve.polyTokenABI, 'minter', []);
-      let decimals0 = parseInt(await query(chain, token0, minABI, 'decimals', []));
-      let decimals1 = 18;
-      let supply0 = parseInt(await query(chain, minter, curve.minterABI, 'balances', [0])) / (10 ** decimals0);
-      let supply1 = parseInt(await query(chain, minter, curve.minterABI, 'balances', [1])) / (10 ** decimals1);
-      let price0 = await getTokenPrice(chain, token0, decimals0);
-      let price1 = parseInt(await query(chain, token1, curve.minterABI, 'get_virtual_price', [])) / (10 ** decimals1);
-      let price = multiplier * (((supply0 * price0) + (supply1 * price1)) / lpTokenSupply);
-
-      return { type, chain, location, status, owner, symbol, address, balance, price, logo };
-    }
-
-  // Fantom Token:
-  } else if(chain === 'ftm') {
-
-    // Generic Token Values:
-    let symbol: string = await query(chain, address, minABI, 'symbol', []);
-    let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
-    let balance = rawBalance / (10 ** decimals);
-    
-    // DAI+USDC (2pool):
-    if(address.toLowerCase() === '0x27e611fd27b276acbd5ffd632e5eaebec9761e40') {
-
-      // Initializing Token Values:
-      let type: TokenType = 'lpToken';
-
-      // Finding LP Token Info:
-      let lpTokenSupply = await query(chain, address, lpABI, 'totalSupply', []) / (10 ** decimals);
-      let address0: Address = await query(chain, address, curve.ftmTokenABI, 'coins', [0]);
-      let address1: Address = await query(chain, address, curve.ftmTokenABI, 'coins', [1]);
-      let symbol0: string = await query(chain, address0, minABI, 'symbol', []);
-      let symbol1: string = await query(chain, address1, minABI, 'symbol', []);
-      let decimals0 = parseInt(await query(chain, address0, minABI, 'decimals', []));
-      let decimals1 = parseInt(await query(chain, address1, minABI, 'decimals', []));
-      let supply0 = await query(chain, address, curve.ftmTokenABI, 'balances', [0]) / (10 ** decimals);
-      let supply1 = await query(chain, address, curve.ftmTokenABI, 'balances', [1]) / (10 ** decimals);
-
-      // First Paired Token:
-      let token0: PricedToken = {
-        symbol: symbol0,
-        address: address0,
-        balance: (supply0 * (balance / lpTokenSupply)) / (10 ** decimals0),
-        price: await getTokenPrice(chain, address0, decimals0),
-        logo: getTokenLogo(chain, symbol0)
-      }
-
-      // Second Paired Token:
-      let token1: PricedToken = {
-        symbol: symbol1,
-        address: address1,
-        balance: (supply1 * (balance / lpTokenSupply)) / (10 ** decimals1),
-        price: await getTokenPrice(chain, address1, decimals1),
-        logo: getTokenLogo(chain, symbol1)
-      }
-
-      return { type, chain, location, status, owner, symbol, address, balance, token0, token1 };
-
-    // fUSDT+DAI+USDC (fUSDT):
-    } else if(address.toLowerCase() === '0x92d5ebf3593a92888c25c0abef126583d4b5312e') {
-
-      // Initializing Token Values:
-      let type: TokenType = 'token';
-      let logo = getTokenLogo(chain, symbol);
-      symbol = 'fUSDTCRV';
-
-      // Finding Token Price:
-      let price = parseInt(await query(chain, address, curve.ftmTokenABI, 'get_virtual_price', [])) / (10 ** decimals);
-
-      return { type, chain, location, status, owner, symbol, address, balance, price, logo };
-
-    // btcCRV (Ren):
-    } else if(address.toLowerCase() === '0x5b5cfe992adac0c9d48e05854b2d91c73a003858') {
-
-      // Initializing Token Values:
-      let type: TokenType = 'lpToken';
-
-      // Finding LP Token Info:
-      let lpTokenSupply = await query(chain, address, lpABI, 'totalSupply', []) / (10 ** decimals);
-      let minter: Address = await query(chain, address, curve.ftmTokenABI, 'minter', []);
-      let address0: Address = await query(chain, minter, curve.minterABI, 'coins', [0]);
-      let address1: Address = await query(chain, minter, curve.minterABI, 'coins', [1]);
-      let symbol0: string = await query(chain, address0, minABI, 'symbol', []);
-      let symbol1: string = await query(chain, address1, minABI, 'symbol', []);
-      let decimals0 = parseInt(await query(chain, address0, minABI, 'decimals', []));
-      let decimals1 = parseInt(await query(chain, address1, minABI, 'decimals', []));
-      let supply0 = await query(chain, minter, curve.minterABI, 'balances', [0]) / (10 ** decimals);
-      let supply1 = await query(chain, minter, curve.minterABI, 'balances', [1]) / (10 ** decimals);
-
-      // First Paired Token:
-      let token0: PricedToken = {
-        symbol: symbol0,
-        address: address0,
-        balance: (supply0 * (balance / lpTokenSupply)) / (10 ** decimals0),
-        price: await getTokenPrice(chain, address0, decimals0),
-        logo: getTokenLogo(chain, symbol0)
-      }
-
-      // Second Paired Token:
-      let token1: PricedToken = {
-        symbol: symbol1,
-        address: address1,
-        balance: (supply1 * (balance / lpTokenSupply)) / (10 ** decimals1),
-        price: await getTokenPrice(chain, address1, decimals1),
-        logo: getTokenLogo(chain, symbol1)
-      }
-
-      return { type, chain, location, status, owner, symbol, address, balance, token0, token1 };
-
-    // crv3crypto (Tricrypto):
-    } else if(address.toLowerCase() === '0x58e57ca18b7a47112b877e31929798cd3d703b0f') {
-
-      // Initializing Token Values:
-      let type: TokenType = 'token';
-      let logo = getTokenLogo(chain, symbol);
-
-      // Finding Token Price:
-      let lpTokenSupply = await query(chain, address, minABI, 'totalSupply', []) / (10 ** decimals);
-      let minter: Address = await query(chain, address, curve.ftmTokenABI, 'minter', []);
-      let multiplier = parseInt(await query(chain, minter, curve.minterABI, 'get_virtual_price', [])) / (10 ** decimals);
-      let token0: Address = await query(chain, minter, curve.minterABI, 'coins', [0]);
-      let token1: Address = await query(chain, minter, curve.minterABI, 'coins', [1]);
-      let token2: Address = await query(chain, minter, curve.minterABI, 'coins', [2]);
-      let decimals0 = parseInt(await query(chain, token0, minABI, 'decimals', []));
-      let decimals1 = parseInt(await query(chain, token1, minABI, 'decimals', []));
-      let decimals2 = parseInt(await query(chain, token2, minABI, 'decimals', []));
-      let supply0 = parseInt(await query(chain, minter, curve.minterABI, 'balances', [0])) / (10 ** decimals0);
-      let supply1 = parseInt(await query(chain, minter, curve.minterABI, 'balances', [1])) / (10 ** decimals1);
-      let supply2 = parseInt(await query(chain, minter, curve.minterABI, 'balances', [2])) / (10 ** decimals2);
-      let price0 = await getTokenPrice(chain, token0, decimals0);
-      let price1 = await getTokenPrice(chain, token1, decimals1);
-      let price2 = await getTokenPrice(chain, token2, decimals2);
-      let price = multiplier * (((supply0 * price0) + (supply1 * price1) + (supply2 * price2)) / lpTokenSupply);
-
-      return { type, chain, location, status, owner, symbol, address, balance, price, logo };
-
-    // g3CRV (Geist):
-    } else if(address.toLowerCase() === '0xd02a30d33153877bc20e5721ee53dedee0422b2f') {
-
-      // Initializing Token Values:
-      let type: TokenType = 'token';
-      let logo = getTokenLogo(chain, symbol);
-
-      // Finding Token Price:
-      let minter: Address = await query(chain, address, curve.ftmTokenABI, 'minter', []);
-      let price = parseInt(await query(chain, minter, curve.minterABI, 'get_virtual_price', [])) / (10 ** decimals);
-
-      return { type, chain, location, status, owner, symbol, address, balance, price, logo };
-    }
-
-  // Avalanche Token:
-  } else if(chain === 'avax') {
-
-    // Generic Token Values:
-    let symbol: string = await query(chain, address, minABI, 'symbol', []);
-    let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
-    let balance = rawBalance / (10 ** decimals);
-    
-    // crvUSDBTCETH (Atricrypto V2):
-    if(address.toLowerCase() === '0x1dab6560494b04473a0be3e7d83cf3fdf3a51828') {
-
-      // Initializing Token Values:
-      let type: TokenType = 'token';
-      let logo = getTokenLogo(chain, symbol);
-
-      // Finding Token Price:
-      let lpTokenSupply = await query(chain, address, minABI, 'totalSupply', []) / (10 ** decimals);
-      let minter: Address = await query(chain, address, curve.avaxTokenABI, 'minter', []);
-      let multiplier = parseInt(await query(chain, minter, curve.minterABI, 'get_virtual_price', [])) / (10 ** decimals);
-      let address0: Address = await query(chain, minter, curve.minterABI, 'coins', [0]);
-      let address1: Address = await query(chain, minter, curve.minterABI, 'coins', [1]);
-      let address2: Address = await query(chain, minter, curve.minterABI, 'coins', [2]);
-      let token0: Address = await query(chain, address0, curve.avaxTokenABI, 'minter', []);
-      let token1: Address = await query(chain, address1, curve.intermediaryABI, 'UNDERLYING_ASSET_ADDRESS', []);
-      let token2: Address = await query(chain, address2, curve.intermediaryABI, 'UNDERLYING_ASSET_ADDRESS', []);
-      let decimals0 = 18;
-      let decimals1 = parseInt(await query(chain, token1, minABI, 'decimals', []));
-      let decimals2 = parseInt(await query(chain, token2, minABI, 'decimals', []));
-      let supply0 = parseInt(await query(chain, minter, curve.minterABI, 'balances', [0])) / (10 ** decimals0);
-      let supply1 = parseInt(await query(chain, minter, curve.minterABI, 'balances', [1])) / (10 ** decimals1);
-      let supply2 = parseInt(await query(chain, minter, curve.minterABI, 'balances', [2])) / (10 ** decimals2);
-      let price0 = parseInt(await query(chain, token0, curve.minterABI, 'get_virtual_price', [])) / (10 ** decimals0);
-      let price1 = await getTokenPrice(chain, token1, decimals1);
-      let price2 = await getTokenPrice(chain, token2, decimals2);
-      let price = multiplier * (((supply0 * price0) + (supply1 * price1) + (supply2 * price2)) / lpTokenSupply);
-
-      return { type, chain, location, status, owner, symbol, address, balance, price, logo };
-
-    // am3CRV (Aave):
-    } else if(address.toLowerCase() === '0x1337bedc9d22ecbe766df105c9623922a27963ec') {
-
-      // Initializing Token Values:
-      let type: TokenType = 'token';
-      let logo = getTokenLogo(chain, symbol);
-
-      // Finding Token Price:
-      let minter: Address = await query(chain, address, curve.avaxTokenABI, 'minter', []);
-      let price = parseInt(await query(chain, minter, curve.minterABI, 'get_virtual_price', [])) / (10 ** decimals);
-
-      return { type, chain, location, status, owner, symbol, address, balance, price, logo };
-
-    // btcCRV (Ren):
-    } else if(address.toLowerCase() === '0xc2b1df84112619d190193e48148000e3990bf627') {
-
-      // Initializing Token Values:
-      let type: TokenType = 'lpToken';
-
-      // Finding LP Token Info:
-      let lpTokenSupply = await query(chain, address, lpABI, 'totalSupply', []) / (10 ** decimals);
-      let minter: Address = await query(chain, address, curve.avaxTokenABI, 'minter', []);
-      let address0: Address = await query(chain, minter, curve.minterABI, 'underlying_coins', [0]);
-      let address1: Address = await query(chain, minter, curve.minterABI, 'underlying_coins', [1]);
-      let symbol0: string = await query(chain, address0, minABI, 'symbol', []);
-      let symbol1: string = await query(chain, address1, minABI, 'symbol', []);
-      let decimals0 = parseInt(await query(chain, address0, minABI, 'decimals', []));
-      let decimals1 = parseInt(await query(chain, address1, minABI, 'decimals', []));
-      let supply0 = await query(chain, minter, curve.minterABI, 'balances', [0]) / (10 ** decimals);
-      let supply1 = await query(chain, minter, curve.minterABI, 'balances', [1]) / (10 ** decimals);
-
-      // First Paired Token:
-      let token0: PricedToken = {
-        symbol: symbol0,
-        address: address0,
-        balance: (supply0 * (balance / lpTokenSupply)) / (10 ** decimals0),
-        price: await getTokenPrice(chain, address0, decimals0),
-        logo: getTokenLogo(chain, symbol0)
-      }
-
-      // Second Paired Token:
-      let token1: PricedToken = {
-        symbol: symbol1,
-        address: address1,
-        balance: (supply1 * (balance / lpTokenSupply)) / (10 ** decimals1),
-        price: await getTokenPrice(chain, address1, decimals1),
-        logo: getTokenLogo(chain, symbol1)
-      }
-
-      return { type, chain, location, status, owner, symbol, address, balance, token0, token1 };
+  // Initializing Multicalls:
+  const providerCalls: CallContext[] = [
+    { reference: 'registry', methodName: 'get_address', methodParameters: [0] },
+    { reference: 'poolInfoGetter', methodName: 'get_address', methodParameters: [1] },
+    { reference: 'factoryRegistry', methodName: 'get_address', methodParameters: [3] },
+    { reference: 'cryptoRegistry', methodName: 'get_address', methodParameters: [5] }
+  ];
+  const lpCalls: CallContext[] = [
+    { reference: 'symbol', methodName: 'symbol', methodParameters: [] },
+    { reference: 'decimals', methodName: 'decimals', methodParameters: [] },
+    { reference: 'totalSupply', methodName: 'totalSupply', methodParameters: [] }
+  ];
+  
+  // Fetching Addresses:
+  let providerMulticallResults = await multicallOneContractQuery(chain, addressProvider, curve.providerABI, providerCalls);
+  let baseRegistry: Address = providerMulticallResults['registry'][0];
+  let poolInfoGetter: Address = providerMulticallResults['poolInfoGetter'][0];
+  let factoryRegistry: Address = providerMulticallResults['factoryRegistry'][0];
+  let cryptoRegistry: Address = providerMulticallResults['cryptoRegistry'][0];
+  
+  // Fetching LP Token Info:
+  let lpMulticallResults = await multicallOneContractQuery(chain, lpToken, lpABI, lpCalls);
+  let symbol: string = lpMulticallResults['symbol'][0];
+  let decimals: number = lpMulticallResults['decimals'][0];
+  let totalSupply = parseBN(lpMulticallResults['totalSupply'][0]) / (10 ** decimals);
+  let balance = rawBalance / (10 ** decimals);
+
+  // Finding Pool Address & Multiplier:
+  poolAddress = await query(chain, baseRegistry, curve.registryABI, 'get_pool_from_lp_token', [lpToken]);
+  if(poolAddress == zero) {
+    poolAddress = await query(chain, cryptoRegistry, curve.registryABI, 'get_pool_from_lp_token', [lpToken]);
+    registry = 'crypto';
+    if(poolAddress == zero) {
+      poolAddress = lpToken;
+      registry = 'factory';
     }
   }
 
-  // No Token Identified:
-  return {
-    type: 'token',
-    chain: chain,
-    location: location,
-    status: 'none',
-    owner: owner,
-    symbol: '???',
-    address: address,
-    balance: 0,
-    price: 0,
-    logo: defaultTokenLogo
+  // Fetching Pool Info From CryptoRegistry:
+  if(registry === 'crypto') {
+    let registryCalls: CallContext[] = [
+      { reference: 'multiplier', methodName: 'get_virtual_price_from_lp_token', methodParameters: [lpToken] },
+      { reference: 'coins', methodName: 'get_coins', methodParameters: [poolAddress] },
+      { reference: 'balances', methodName: 'get_balances', methodParameters: [poolAddress] },
+      { reference: 'decimals', methodName: 'get_decimals', methodParameters: [poolAddress] }
+    ];
+    let registryMulticallResults = await multicallOneContractQuery(chain, cryptoRegistry, curve.cryptoRegistryABI, registryCalls);
+    poolMultiplier = parseBN(registryMulticallResults['multiplier'][0]) / (10 ** decimals);
+    let coins: Address[] = registryMulticallResults['coins'].filter((coin: Address) => coin != zero);
+    let coinBalances: string[] = registryMulticallResults['balances'];
+    let coinDecimals: string[] = registryMulticallResults['decimals'];
+    for(let i = 0; i < coins.length; i++) {
+      poolInfo.push({
+        coin: coins[i],
+        decimals: parseBN(coinDecimals[i]),
+        balance: parseBN(coinBalances[i])
+      });
+    }
+    
+  // Fetching Pool Info From Factory:
+  } else if(registry === 'factory') {
+    let coins: Address[] = (await query(chain, factoryRegistry, curve.factoryABI, 'get_coins', [poolAddress])).filter((coin: Address) => coin != zero);
+    if(coins.length > 0) {
+      poolMultiplier = 1;
+      let isMetaPool: boolean = await query(chain, factoryRegistry, curve.factoryABI, 'is_meta', [poolAddress]);
+      if(isMetaPool) {
+        let factoryCalls: CallContext[] = [
+          { reference: 'underlyingCoins', methodName: 'get_underlying_coins', methodParameters: [poolAddress] },
+          { reference: 'underlyingBalances', methodName: 'get_underlying_balances', methodParameters: [poolAddress] },
+          { reference: 'underlyingDecimals', methodName: 'get_underlying_decimals', methodParameters: [poolAddress] }
+        ];
+        let factoryMulticallResults = await multicallOneContractQuery(chain, factoryRegistry, curve.factoryABI, factoryCalls);
+        let underlyingCoins: Address[] = factoryMulticallResults['underlyingCoins'].filter((coin: Address) => coin != zero);
+        let underlyingBalances: string[] = factoryMulticallResults['underlyingBalances'];
+        let underlyingDecimals: string[] = factoryMulticallResults['underlyingDecimals'];
+        for(let i = 0; i < underlyingCoins.length; i++) {
+          poolInfo.push({
+            coin: underlyingCoins[i],
+            decimals: parseBN(underlyingDecimals[i]),
+            balance: parseBN(underlyingBalances[i])
+          });
+        }
+      } else {
+        let factoryCalls: CallContext[] = [
+          { reference: 'balances', methodName: 'get_balances', methodParameters: [poolAddress] },
+          { reference: 'decimals', methodName: 'get_decimals', methodParameters: [poolAddress] }
+        ];
+        let factoryMulticallResults = await multicallOneContractQuery(chain, factoryRegistry, curve.factoryABI, factoryCalls);
+        let coinBalances: string[] = factoryMulticallResults['balances'];
+        let coinDecimals: string[] = factoryMulticallResults['decimals'];
+        for(let i = 0; i < coins.length; i++) {
+          poolInfo.push({
+            coin: coins[i],
+            decimals: parseBN(coinDecimals[i]),
+            balance: parseBN(coinBalances[i])
+          });
+        }
+      }
+    } else {
+      throw new WeaverError(chain, null, `Unidentified Curve pool found`);
+    }
+
+  // Fetching Pool Info From Registry & PoolInfoGetter:
+  } else {
+    poolMultiplier = parseInt(await query(chain, baseRegistry, curve.registryABI, 'get_virtual_price_from_lp_token', [lpToken])) / (10 ** decimals);
+    let getterCalls: CallContext[] = [
+      { reference: 'coins', methodName: 'get_pool_coins', methodParameters: [poolAddress] },
+      { reference: 'info', methodName: 'get_pool_info', methodParameters: [poolAddress] }
+    ];
+    let getterMulticallResults = await multicallOneContractQuery(chain, poolInfoGetter, curve.poolInfoGetterABI, getterCalls);
+    let coins: Address[] = getterMulticallResults['coins'][0].filter((coin: Address) => coin != zero);
+    let underlyingCoins: Address[] = getterMulticallResults['coins'][1];
+    let coinDecimals: string[] = getterMulticallResults['coins'][2];
+    let underlyingDecimals: string[] = getterMulticallResults['coins'][3];
+    let coinBalances: string[] = getterMulticallResults['info'][0];
+    let underlyingBalances: string[] = getterMulticallResults['info'][1];
+    for(let i = 0; i < coins.length; i++) {
+      poolInfo.push({
+        coin: coins[i],
+        decimals: parseBN(coinDecimals[i]),
+        balance: parseBN(coinBalances[i]),
+        underlyingCoin: underlyingCoins[i],
+        underlyingDecimals: parseBN(underlyingDecimals[i]),
+        underlyingBalance: parseBN(underlyingBalances[i])
+      });
+    }
+  }
+
+  // Standard LP Tokens:
+  if(poolInfo.length === 2) {
+
+    // Initializing Token Values:
+    let type: TokenType = 'lpToken';
+    let address0 = poolInfo[0].underlyingCoin ??= poolInfo[0].coin;
+    let address1 = poolInfo[1].underlyingCoin  ??= poolInfo[1].coin;
+    let supply0 = poolInfo[0].underlyingBalance ??= poolInfo[0].balance;
+    let supply1 = poolInfo[1].underlyingBalance ??= poolInfo[1].balance;
+    let decimals0 = poolInfo[0].underlyingDecimals ??= poolInfo[0].decimals;
+    let decimals1 = poolInfo[1].underlyingDecimals ??= poolInfo[1].decimals;
+
+    // Fetching Underlying Token Symbols:
+    let multicallResults = await multicallOneMethodQuery(chain, [address0, address1], minABI, 'symbol', []);
+    let symbol0: string = multicallResults[address0][0];
+    let symbol1: string = multicallResults[address1][0];
+
+    // First Paired Token:
+    let token0: PricedToken = {
+      symbol: symbol0,
+      address: address0,
+      balance: (supply0 / (10 ** decimals0)) * (balance / totalSupply),
+      price: await getTokenPrice(chain, address0, decimals0),
+      logo: getTokenLogo(chain, symbol0)
+    }
+
+    // Second Paired Token:
+    let token1: PricedToken = {
+      symbol: symbol1,
+      address: address1,
+      balance: (supply1 / (10 ** decimals1)) * (balance / totalSupply),
+      price: await getTokenPrice(chain, address1, decimals1),
+      logo: getTokenLogo(chain, symbol1)
+    }
+
+    return { type, chain, location, status, owner, symbol, address: lpToken, balance, token0, token1 };
+
+  // Other:
+  } else {
+
+    // Initializing Token Values:
+    let type: TokenType = 'token';
+
+    // Fetching Token Logo:
+    let logo = getTokenLogo(chain, symbol);
+
+    // Calculating Token Price:
+    let price = 0;
+    for(let i = 0; i < poolInfo.length; i++) {
+      let address = poolInfo[i].underlyingCoin ??= poolInfo[i].coin;
+      let supply = poolInfo[i].underlyingBalance ??= poolInfo[i].balance;
+      let decimals = poolInfo[i].underlyingDecimals ??= poolInfo[i].decimals;
+      let tokenPrice = await getTokenPrice(chain, address, decimals);
+      price += (supply / (10 ** decimals)) * tokenPrice;
+    }
+    price /= totalSupply;
+    price *= poolMultiplier;
+
+    return { type, chain, location, status, owner, symbol, address: lpToken, balance, price, logo };
   }
 }
 
@@ -609,34 +357,31 @@ export const addBalancerToken = async (chain: EVMChain, location: string, status
 // Function to get Balancer-like LP token info:
 export const addBalancerLikeToken = async (chain: EVMChain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, vault: Address): Promise<Token | LPToken> => {
 
+  // Initializing Multicalls:
+  const tokenCalls: CallContext[] = [
+    { reference: 'poolID', methodName: 'getPoolId', methodParameters: [] },
+    { reference: 'symbol', methodName: 'symbol', methodParameters: [] },
+    { reference: 'decimals', methodName: 'decimals', methodParameters: [] },
+    { reference: 'totalSupply', methodName: 'totalSupply', methodParameters: [] }
+  ];
+  const underlyingCalls: CallContext[] = [
+    { reference: 'symbol', methodName: 'symbol', methodParameters: [] },
+    { reference: 'decimals', methodName: 'decimals', methodParameters: [] }
+  ];
+
   // Generic Token Values:
-  let poolID: Hash = await query(chain, address, balancer.poolABI, 'getPoolId', []);
-  let poolInfo: { tokens: Address[], balances: string[] } = await query(chain, vault, balancer.vaultABI, 'getPoolTokens', [poolID]);
-  let symbol: string = await query(chain, address, minABI, 'symbol', []);
-  let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
+  let multicallResults = await multicallOneContractQuery(chain, address, minABI.concat(balancer.poolABI), tokenCalls);
+  let poolID: Hash = multicallResults['poolID'][0];
+  let symbol: string = multicallResults['symbol'][0];
+  let decimals: number = multicallResults['decimals'][0];
+  let lpTokenSupply = parseBN(multicallResults['totalSupply'][0]);
   let balance = rawBalance / (10 ** decimals);
-  let lpTokenSupply = parseInt(await query(chain, address, minABI, 'totalSupply', []));
 
-  // 3+ Asset Tokens:
-  if(poolInfo.tokens.length > 2) {
-
-    // Initializing Token Values:
-    let type: TokenType = 'token';
-    let logo = getTokenLogo(chain, symbol);
-
-    // Finding Token Price:
-    let priceSum = 0;
-    for(let i = 0; i < poolInfo.tokens.length; i++) {
-      let tokenDecimals = parseInt(await query(chain, poolInfo.tokens[i], minABI, 'decimals', []));
-      let tokenPrice = await getTokenPrice(chain, poolInfo.tokens[i], tokenDecimals);
-      priceSum += (parseInt(poolInfo.balances[i]) / (10 ** tokenDecimals)) * tokenPrice;
-    }
-    let price = priceSum / (lpTokenSupply / (10 ** decimals));
-
-    return { type, chain, location, status, owner, symbol, address, balance, price, logo };
+  // Finding Pool Info:
+  let poolInfo: { tokens: Address[], balances: string[] } = await query(chain, vault, balancer.vaultABI, 'getPoolTokens', [poolID]);
 
   // Standard LP Tokens:
-  } else if(poolInfo.tokens.length === 2) {
+  if(poolInfo.tokens.length === 2) {
 
     // Initializing Token Values:
     let type: TokenType = 'lpToken';
@@ -644,10 +389,12 @@ export const addBalancerLikeToken = async (chain: EVMChain, location: string, st
     // Finding LP Token Info:
     let address0 = poolInfo.tokens[0];
     let address1 = poolInfo.tokens[1];
-    let symbol0: string = await query(chain, address0, minABI, 'symbol', []);
-    let symbol1: string = await query(chain, address1, minABI, 'symbol', []);
-    let decimals0 = parseInt(await query(chain, address0, minABI, 'decimals', []));
-    let decimals1 = parseInt(await query(chain, address1, minABI, 'decimals', []));
+    let token0MulticallResults = await multicallOneContractQuery(chain, address0, minABI, underlyingCalls);
+    let symbol0: string = token0MulticallResults['symbol'][0];
+    let decimals0: number = token0MulticallResults['decimals'][0];
+    let token1MulticallResults = await multicallOneContractQuery(chain, address1, minABI, underlyingCalls);
+    let symbol1: string = token1MulticallResults['symbol'][0];
+    let decimals1: number = token1MulticallResults['decimals'][0];
 
     // First Paired Token:
     let token0: PricedToken = {
@@ -668,20 +415,24 @@ export const addBalancerLikeToken = async (chain: EVMChain, location: string, st
     }
 
     return { type, chain, location, status, owner, symbol, address, balance, token0, token1 };
-  }
 
-  // No Token Identified:
-  return {
-    type: 'token',
-    chain: chain,
-    location: location,
-    status: 'none',
-    owner: owner,
-    symbol: '???',
-    address: address,
-    balance: 0,
-    price: 0,
-    logo: defaultTokenLogo
+  // Others:
+  } else {
+
+    // Initializing Token Values:
+    let type: TokenType = 'token';
+    let logo = getTokenLogo(chain, symbol);
+
+    // Finding Token Price:
+    let priceSum = 0;
+    for(let i = 0; i < poolInfo.tokens.length; i++) {
+      let tokenDecimals = parseInt(await query(chain, poolInfo.tokens[i], minABI, 'decimals', []));
+      let tokenPrice = await getTokenPrice(chain, poolInfo.tokens[i], tokenDecimals);
+      priceSum += (parseInt(poolInfo.balances[i]) / (10 ** tokenDecimals)) * tokenPrice;
+    }
+    let price = priceSum / (lpTokenSupply / (10 ** decimals));
+
+    return { type, chain, location, status, owner, symbol, address, balance, price, logo };
   }
 }
 
