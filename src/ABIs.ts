@@ -26,7 +26,8 @@ export const lpABI: ABI[] = [
 /* ========================================================================================================================================================================= */
 
 // Aave ABIs:
-export const aave: Record<string, ABI[]> = {
+type aaveABIs = 'staking' | 'incentives' | 'lp' | 'lending' | 'uiDataProvider' | 'dataProvider';
+export const aave: Record<`${aaveABIs}ABI`, ABI[]> = {
   stakingABI: [
     { constant: true, inputs: [], name: "STAKED_TOKEN", outputs: [{ name: "", type: "address" }], type: "function" }
   ],
@@ -51,7 +52,8 @@ export const aave: Record<string, ABI[]> = {
 }
 
 // Balancer ABIs:
-export const balancer: Record<string, ABI[]> = {
+type balancerABIs = 'token' | 'vault' | 'pool';
+export const balancer: Record<`${balancerABIs}ABI`, ABI[]> = {
   tokenABI: [
     { constant: true, inputs: [], name: "getCurrentTokens", outputs: [{ name: "", type: "address[]" }], type: "function" },
     { constant: true, inputs: [{ name: "token", type: "address" }], name: "getBalance", outputs: [{ name: "", type: "uint256" }], type: "function" }
@@ -66,7 +68,8 @@ export const balancer: Record<string, ABI[]> = {
 }
 
 // Beethovenx ABIs:
-export const beethovenx: Record<string, ABI[]> = {
+type beethovenxABIs = 'masterChef';
+export const beethovenx: Record<`${beethovenxABIs}ABI`, ABI[]> = {
   masterChefABI: [
     { constant: true, name: "lpTokens", inputs: [{ name: "", type: "uint256" }], outputs: [{ name: "", type: "address" }], type: "function" },
     { constant: true, name: "pendingBeets", inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], outputs: [{ name: "pending", type: "uint256" }], type: "function" },
@@ -76,7 +79,8 @@ export const beethovenx: Record<string, ABI[]> = {
 }
 
 // Snowball ABIs:
-export const snowball: Record<string, ABI[]> = {
+type snowballABIs = 'gauge' | 'farm' | 'staking';
+export const snowball: Record<`${snowballABIs}ABI`, ABI[]> = {
   gaugeABI: [
     { constant: true, inputs: [{ name: "account", type: "address" }], name: "earned", outputs: [{ name: "", type: "uint256" }], type: "function" }
   ],
@@ -90,7 +94,8 @@ export const snowball: Record<string, ABI[]> = {
 }
 
 // Trader Joe ABIs:
-export const traderjoe: Record<string, ABI[]> = {
+type traderjoeABIs = 'masterChef' | 'bankController' | 'market';
+export const traderjoe: Record<`${traderjoeABIs}ABI`, ABI[]> = {
   masterChefABI: [
     { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "", type: "uint256" }, { name: "", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }], type: "function" },
@@ -107,7 +112,8 @@ export const traderjoe: Record<string, ABI[]> = {
 }
 
 // PancakeSwap ABIs:
-export const pancakeswap: Record<string, ABI[]> = {
+type pancakeswapABIs = 'registry' | 'autoCakePool';
+export const pancakeswap: Record<`${pancakeswapABIs}ABI`, ABI[]> = {
   registryABI: [
     { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "", type: "uint256" }, { name: "", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }], type: "function" },
@@ -122,7 +128,8 @@ export const pancakeswap: Record<string, ABI[]> = {
 }
 
 // Lydia ABIs:
-export const lydia: Record<string, ABI[]> = {
+type lydiaABIs = 'registry' | 'lydFarm' | 'maximusFarm';
+export const lydia: Record<`${lydiaABIs}ABI`, ABI[]> = {
   registryABI: [
     { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "", type: "uint256" }, { name: "", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }], type: "function" },
@@ -140,7 +147,8 @@ export const lydia: Record<string, ABI[]> = {
 }
 
 // AutoFarm ABIs:
-export const autofarm: Record<string, ABI[]> = {
+type autofarmABIs = 'registry' | 'pendingRewards' | 'oneRegistry';
+export const autofarm: Record<`${autofarmABIs}ABI`, ABI[]> = {
   registryABI: [
     { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], name: "stakedWantTokens", outputs: [{ name: "", type: "uint256" }], type: "function" },
@@ -157,7 +165,8 @@ export const autofarm: Record<string, ABI[]> = {
 }
 
 // Belt ABIs:
-export const belt: Record<string, ABI[]> = {
+type beltABIs = 'masterBelt' | 'token' | 'staking';
+export const belt: Record<`${beltABIs}ABI`, ABI[]> = {
   masterBeltABI: [
     { constant: true, inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], name: "stakedWantTokens", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], name: "pendingBELT", outputs: [{ name: "", type: "uint256" }], type: "function" }
@@ -173,7 +182,8 @@ export const belt: Record<string, ABI[]> = {
 }
 
 // Alpaca ABIs:
-export const alpaca: Record<string, ABI[]> = {
+type alpacaABIs = 'token';
+export const alpaca: Record<`${alpacaABIs}ABI`, ABI[]> = {
   tokenABI: [
     { constant: true, inputs: [], name: "token", outputs: [{ name: "", type: "address" }], type: "function" },
     { constant: true, inputs: [], name: "totalToken", outputs: [{ name: "", type: "uint256" }], type: "function" }
@@ -224,7 +234,8 @@ export const curve: Record<`${curveABIs}ABI`, ABI[]> = {
 }
 
 // BZX ABIs:
-export const bzx: Record<string, ABI[]> = {
+type bzxABIs = 'token';
+export const bzx: Record<`${bzxABIs}ABI`, ABI[]> = {
   tokenABI: [
     { constant: true, inputs: [], name: "loanTokenAddress", outputs: [{ name: "", type: "address" }], type: "function" },
     { constant: true, inputs: [], name: "tokenPrice", outputs: [{ name: "", type: "uint256" }], type: "function" }
@@ -232,7 +243,8 @@ export const bzx: Record<string, ABI[]> = {
 }
 
 // Compound ABIs:
-export const compound: Record<string, ABI[]> = {
+type compoundABIs = 'controller' | 'market';
+export const compound: Record<`${compoundABIs}ABI`, ABI[]> = {
   controllerABI: [
     { constant: true, inputs: [], name: "getAllMarkets", outputs: [{ name: "", type: "address[]" }], type: "function" }
   ],
@@ -243,7 +255,8 @@ export const compound: Record<string, ABI[]> = {
 }
 
 // Yearn ABIs:
-export const yearn: Record<string, ABI[]> = {
+type yearnABIs = 'deployer' | 'vault' | 'token';
+export const yearn: Record<`${yearnABIs}ABI`, ABI[]> = {
   deployerABI: [
     { constant: true, inputs: [], name: "numTokens", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "arg0", type: "uint256" }], name: "tokens", outputs: [{ name: "", type: "address" }], type: "function" },
@@ -261,7 +274,8 @@ export const yearn: Record<string, ABI[]> = {
 }
 
 // Venus ABIs:
-export const venus: Record<string, ABI[]> = {
+type venusABIs = 'controller' | 'market' | 'vault' | 'xvsVault';
+export const venus: Record<`${venusABIs}ABI`, ABI[]> = {
   controllerABI: [
     { constant: true, inputs: [], name: "getAllMarkets", outputs: [{ name: "", type: "address[]" }], type: "function" },
     { constant: true, inputs: [{ name: "<input>", type: "address" }], name: "venusAccrued", outputs: [{ name: "", type: "uint256" }], type: "function" }
@@ -282,7 +296,8 @@ export const venus: Record<string, ABI[]> = {
 }
 
 // Iron ABIs:
-export const iron: Record<string, ABI[]> = {
+type ironABIs = 'registry' | 'lending' | 'market' | 'staking' | 'token' | 'swap';
+export const iron: Record<`${ironABIs}ABI`, ABI[]> = {
   registryABI: [
     { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "<input>", type: "uint256" }, { name: "<input>", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }], type: "function" },
@@ -309,7 +324,8 @@ export const iron: Record<string, ABI[]> = {
 }
 
 // SpookySwap ABIs:
-export const spookyswap: Record<string, ABI[]> = {
+type spookyswapABIs = 'masterChef';
+export const spookyswap: Record<`${spookyswapABIs}ABI`, ABI[]> = {
   masterChefABI: [
     { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "<input>", type: "uint256" }, { name: "<input>", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }], type: "function" },
@@ -319,7 +335,8 @@ export const spookyswap: Record<string, ABI[]> = {
 }
 
 // Beefy ABIs:
-export const beefy: Record<string, ABI[]> = {
+type beefyABIs = 'vault' | 'staking';
+export const beefy: Record<`${beefyABIs}ABI`, ABI[]> = {
   vaultABI: [
 		{ constant: true, inputs: [], name: "getPricePerFullShare", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [], name: "want", outputs: [{ name: "", type: "address" }], type: "function" }
@@ -330,7 +347,8 @@ export const beefy: Record<string, ABI[]> = {
 }
 
 // Wault ABIs:
-export const wault: Record<string, ABI[]> = {
+type waultABIs = 'master';
+export const wault: Record<`${waultABIs}ABI`, ABI[]> = {
   masterABI: [
     { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
 		{ constant: true, inputs: [{ name: "<input>", type: "uint256" }, { name: "<input>", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }, { name: "pendingRewards", type: "uint256" }], type: "function" },
@@ -339,7 +357,8 @@ export const wault: Record<string, ABI[]> = {
 }
 
 // Quickswap ABIs:
-export const quickswap: Record<string, ABI[]> = {
+type quickswapABIs = 'registry' | 'dualRegistry' | 'farm' | 'dualFarm' | 'staking';
+export const quickswap: Record<`${quickswapABIs}ABI`, ABI[]> = {
   registryABI: [
     { constant: true, inputs: [{ name: "<input>", type: "uint256" }], name: "stakingTokens", outputs: [{ name: "", type: "address" }], type: "function" },
     { constant: true, inputs: [{ name: "<input>", type: "address" }], name: "stakingRewardsInfoByStakingToken", outputs: [{ name: "stakingRewards", type: "address" }, { name: "rewardAmount", type: "uint256" }, { name: "duration", type: "uint256" }], type: "function" }
@@ -363,7 +382,8 @@ export const quickswap: Record<string, ABI[]> = {
 }
 
 // BenQi ABIs:
-export const benqi: Record<string, ABI[]> = {
+type benqiABIs = 'controller' | 'market';
+export const benqi: Record<`${benqiABIs}ABI`, ABI[]> = {
   controllerABI: [
     { constant: true, inputs: [], name: "getAllMarkets", outputs: [{ name: "", type: "address[]" }], type: "function" }
   ],
@@ -374,7 +394,8 @@ export const benqi: Record<string, ABI[]> = {
 }
 
 // Axial ABIs:
-export const axial: Record<string, ABI[]> = {
+type axialABIs = 'masterChef' | 'token' | 'swap';
+export const axial: Record<`${axialABIs}ABI`, ABI[]> = {
   masterChefABI: [
     { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "<input>", type: "uint256" }, { name: "<input>", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }], type: "function" },
@@ -390,7 +411,8 @@ export const axial: Record<string, ABI[]> = {
 }
 
 // mStable ABIs:
-export const mstable: Record<string, ABI[]> = {
+type mstableABIs = 'asset' | 'vault' | 'staking' | 'mbpt' | 'stable';
+export const mstable: Record<`${mstableABIs}ABI`, ABI[]> = {
   assetABI: [
     { constant: true, inputs: [], name: "exchangeRate", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [], name: "underlying", outputs: [{ name: "", type: "address" }], type: "function" }
@@ -414,7 +436,8 @@ export const mstable: Record<string, ABI[]> = {
 }
 
 // Penguin ABIs:
-export const penguin: Record<string, ABI[]> = {
+type penguinABIs = 'master' | 'nest';
+export const penguin: Record<`${penguinABIs}ABI`, ABI[]> = {
   masterABI: [
     { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "", type: "uint256" }, { name: "", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }], type: "function" },
@@ -428,7 +451,8 @@ export const penguin: Record<string, ABI[]> = {
 }
 
 // Scream ABIs:
-export const scream: Record<string, ABI[]> = {
+type screamABIs = 'controller' | 'market' | 'staking';
+export const scream: Record<`${screamABIs}ABI`, ABI[]> = {
   controllerABI: [
     { constant: true, inputs: [], name: "getAllMarkets", outputs: [{ name: "", type: "address[]" }], type: "function" }
   ],
@@ -442,7 +466,8 @@ export const scream: Record<string, ABI[]> = {
 }
 
 // Cycle ABIs:
-export const cycle: Record<string, ABI[]> = {
+type cycleABIs = 'distributor' | 'vault' | 'intermediary' | 'staking';
+export const cycle: Record<`${cycleABIs}ABI`, ABI[]> = {
   distributorABI: [
     { constant: true, inputs: [], name: "getVaultRewardsCount", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "", type: "uint256" }], name: "rewards", outputs: [{ name: "StakingRewards", type: "address" }, { name: "weight", type: "uint256" }], type: "function" }
@@ -463,34 +488,9 @@ export const cycle: Record<string, ABI[]> = {
   ]
 }
 
-// PoolTogether ABIs:
-export const pooltogether: Record<string, ABI[]> = {
-  registryABI: [
-    { constant: true, inputs: [], name: "getAddresses", outputs: [{ name: "", type: "address[]" }], type: "function" }
-  ],
-  strategyABI: [
-    { constant: true, inputs: [], name: "tokenListener", outputs: [{ name: "", type: "address" }], type: "function" }
-  ],
-  listenerABI: [
-    { constant: true, inputs: [], name: "getAddresses", outputs: [{ name: "", type: "address[]" }], type: "function" }
-  ],
-  poolABI: [
-    { constant: true, inputs: [], name: "prizeStrategy", outputs: [{ name: "", type: "address" }], type: "function" },
-    { constant: true, inputs: [], name: "token", outputs: [{ name: "", type: "address" }], type: "function" },
-    { constant: true, inputs: [], name: "tokens", outputs: [{ name: "", type: "address[]" }], type: "function" }
-  ],
-  podABI: [
-    { constant: true, inputs: [{ name: "user", type: "address" }], name: "balanceOfUnderlying", outputs: [{ name: "amount", type: "uint256" }], type: "function" },
-    { constant: true, inputs: [], name: "token", outputs: [{ name: "", type: "address" }], type: "function" }
-  ],
-  faucetABI: [
-    { constant: true, inputs: [], name: "asset", outputs: [{ name: "", type: "address" }], type: "function" },
-    { constant: true, inputs: [{ name: "<input>", type: "address" }], name: "userStates", outputs: [{ name: "lastExchangeRateMantissa", type: "uint128" }, { name: "balance", type: "uint128" }], type: "function" }
-  ]
-}
-
 // Teddy ABIs:
-export const teddy: Record<string, ABI[]> = {
+type teddyABIs = 'trove' | 'stabilityPool' | 'staking';
+export const teddy: Record<`${teddyABIs}ABI`, ABI[]> = {
   troveABI: [
     { constant: true, inputs: [{ name: "", type: "address" }], name: "Troves", outputs: [{ name: "debt", type: "uint256" }, { name: "coll", type: "uint256" }, { name: "stake", type: "uint256" }, { name: "status", type: "uint8" }, { name: "arrayIndex", type: "uint128" }], type: "function" }
   ],
@@ -507,7 +507,8 @@ export const teddy: Record<string, ABI[]> = {
 }
 
 // Everest ABIs:
-export const everest: Record<string, ABI[]> = {
+type everestABIs = 'farm' | 'staking';
+export const everest: Record<`${everestABIs}ABI`, ABI[]> = {
   farmABI: [
     { constant: true, inputs: [{ name: "account", type: "address" }], name: "balanceOf", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [], name: "stakingToken", outputs: [{ name: "", type: "address" }], type: "function" },
@@ -520,7 +521,8 @@ export const everest: Record<string, ABI[]> = {
 }
 
 // ApeSwap ABIs:
-export const apeswap: Record<string, ABI[]> = {
+type apeswapABIs = 'masterApe' | 'polyMasterApe' | 'rewarder' | 'vaultMaster';
+export const apeswap: Record<`${apeswapABIs}ABI`, ABI[]> = {
   masterApeABI: [
     { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "<input>", type: "uint256" }, { name: "<input>", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }], type: "function" },
@@ -546,7 +548,8 @@ export const apeswap: Record<string, ABI[]> = {
 }
 
 // SushiSwap ABIs:
-export const sushiswap: Record<string, ABI[]> = {
+type sushiswapABIs = 'masterChef';
+export const sushiswap: Record<`${sushiswapABIs}ABI`, ABI[]> = {
   masterChefABI: [
     { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "<input>", type: "uint256" }, { name: "<input>", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }], type: "function" },
@@ -557,7 +560,8 @@ export const sushiswap: Record<string, ABI[]> = {
 }
 
 // YieldYak ABIs:
-export const yieldyak: Record<string, ABI[]> = {
+type yieldyakABIs = 'farm' | 'staking';
+export const yieldyak: Record<`${yieldyakABIs}ABI`, ABI[]> = {
   farmABI: [
     { constant: true, inputs: [], name: "depositToken", outputs: [{ name: "", type: "address" }], type: "function" },
     { constant: true, inputs: [], name: "totalDeposits", outputs: [{ name: "", type: "uint256" }], type: "function" }
@@ -568,7 +572,8 @@ export const yieldyak: Record<string, ABI[]> = {
 }
 
 // CREAM ABIs:
-export const cream: Record<string, ABI[]> = {
+type creamABIs = 'controller' | 'token' | 'staking';
+export const cream: Record<`${creamABIs}ABI`, ABI[]> = {
   controllerABI: [
     { constant: true, inputs: [], name: "getAllMarkets", outputs: [{ name: "", type: "address[]" }], type: "function" }
   ],
@@ -583,14 +588,16 @@ export const cream: Record<string, ABI[]> = {
 }
 
 // Wonderland ABIs:
-export const wonderland: Record<string, ABI[]> = {
+type wonderlandABIs = 'memo';
+export const wonderland: Record<`${wonderlandABIs}ABI`, ABI[]> = {
   memoABI: [
     { constant: true, inputs: [{ name: "_amount", type: "uint256" }], name: "wMEMOToMEMO", outputs: [{ name: "", type: "uint256" }], type: "function" }
   ]
 }
 
 // Bouje ABIs:
-export const bouje: Record<string, ABI[]> = {
+type boujeABIs = 'masterChef';
+export const bouje: Record<`${boujeABIs}ABI`, ABI[]> = {
   masterChefABI: [
     { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "<input>", type: "uint256" }, { name: "<input>", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }], type: "function" },
@@ -600,7 +607,8 @@ export const bouje: Record<string, ABI[]> = {
 }
 
 // Pangolin ABIs:
-export const pangolin: Record<string, ABI[]> = {
+type pangolinABIs = 'controller';
+export const pangolin: Record<`${pangolinABIs}ABI`, ABI[]> = {
   controllerABI: [
     { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "<input>", type: "uint256" }, { name: "<input>", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }], type: "function" },
@@ -610,7 +618,8 @@ export const pangolin: Record<string, ABI[]> = {
 }
 
 // Avalaunch ABIs:
-export const avalaunch: Record<string, ABI[]> = {
+type avalaunchABIs = 'staking';
+export const avalaunch: Record<`${avalaunchABIs}ABI`, ABI[]> = {
   stakingABI: [
     { constant: true, inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], name: "deposited", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], name: "pending", outputs: [{ name: "", type: "uint256" }], type: "function" }
@@ -618,14 +627,16 @@ export const avalaunch: Record<string, ABI[]> = {
 }
 
 // Moonpot ABIs:
-export const moonpot: Record<string, ABI[]> = {
+type moonpotABIs = 'pot';
+export const moonpot: Record<`${moonpotABIs}ABI`, ABI[]> = {
   potABI: [
     { constant: true, inputs: [{ name: "user", type: "address" }], name: "userTotalBalance", outputs: [{ name: "", type: "uint256" }], type: "function" }
   ]
 }
 
 // Alligator ABIs:
-export const alligator: Record<string, ABI[]> = {
+type alligatorABIs = 'factory' | 'masterChef';
+export const alligator: Record<`${alligatorABIs}ABI`, ABI[]> = {
   factoryABI: [
     { constant: true, inputs: [], name: "allPairsLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "<input>", type: "uint256" }], name: "allPairs", outputs: [{ name: "", type: "address" }], type: "function" }
@@ -639,7 +650,8 @@ export const alligator: Record<string, ABI[]> = {
 }
 
 // APWine ABIs:
-export const apwine: Record<string, ABI[]> = {
+type apwineABIs = 'registry' | 'future' | 'staking';
+export const apwine: Record<`${apwineABIs}ABI`, ABI[]> = {
   registryABI: [
     { constant: true, inputs: [], name: "futureVaultCount", outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [{ name: "_index", type: "uint256" }], name: "getFutureVaultAt", outputs: [{ name: "", type: "address" }], type: "function" }
@@ -659,14 +671,16 @@ export const apwine: Record<string, ABI[]> = {
 }
 
 // ParaSwap ABIs:
-export const paraswap: Record<string, ABI[]> = {
+type paraswapABIs = 'staking';
+export const paraswap: Record<`${paraswapABIs}ABI`, ABI[]> = {
   stakingABI: [
     { constant: true, inputs: [{ name: "_sPSPAmount", type: "uint256" }], name: "PSPForSPSP", outputs: [{ name: "pspAmount", type: "uint256" }], type: "function" }
   ]
 }
 
 // Paladin ABIs:
-export const paladin: Record<string, ABI[]> = {
+type paladinABIs = 'token' | 'pool';
+export const paladin: Record<`${paladinABIs}ABI`, ABI[]> = {
   tokenABI: [
     { constant: true, inputs: [], name: "palPool", outputs: [{ name: "", type: "address" }], type: "function" }
   ],
@@ -677,7 +691,8 @@ export const paladin: Record<string, ABI[]> = {
 }
 
 // Harvest ABIs:
-export const harvest: Record<string, ABI[]> = {
+type harvestABIs = 'staking';
+export const harvest: Record<`${harvestABIs}ABI`, ABI[]> = {
   stakingABI: [
     { constant: true, inputs: [], name: "underlying", outputs: [{ name: "", type: "address" }], type: "function" },
     { constant: true, inputs: [], name: "getPricePerFullShare", outputs: [{ name: "", type: "uint256" }], type: "function" }
@@ -685,7 +700,8 @@ export const harvest: Record<string, ABI[]> = {
 }
 
 // TrueFi ABIs:
-export const truefi: Record<string, ABI[]> = {
+type truefiABIs = 'pool';
+export const truefi: Record<`${truefiABIs}ABI`, ABI[]> = {
   poolABI: [
     { constant: true, inputs: [], name: "token", outputs: [{ name: "", type: "address" }], type: "function" },
     { constant: true, inputs: [], name: "poolValue", outputs: [{ name: "", type: "uint256" }], type: "function" }
