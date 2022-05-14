@@ -161,7 +161,7 @@ export const multicallComplexQuery = async (chain: Chain, contracts: Address[], 
 /* ========================================================================================================================================================================= */
 
 /**
- * Function to fetch wallet balances.
+ * Function to fetch a wallet's token balances.
  * @param chain - The blockchain to query info from.
  * @param wallet - The wallet to query balances for.
  * @returns All native and token balances for the specified wallet.
@@ -192,6 +192,106 @@ export const getProjectBalance = async (chain: Chain, wallet: Address, project: 
     throw new WeaverError(chain, null, `Unknown project: ${project}`);
   }
   return projectBalance;
+}
+
+/* ========================================================================================================================================================================= */
+
+/**
+ * Function to fetch all project balances for a given wallet.
+ * @param chain - The blockchain to query info from.
+ * @param wallet - The wallet to query balances for.
+ * @returns A wallet's balance on all projects/dapps on the specified chain.
+ */
+export const getAllProjectBalances = async (chain: Chain, wallet: Address) => {
+  let projectBalances: (NativeToken | Token | LPToken | DebtToken | XToken)[] = [];
+  let promises = projects[chain].map(project => (async () => {
+    let projectBalance = await getProjectBalance(chain, wallet, project);
+    projectBalances.push(...projectBalance);
+  })());
+  await Promise.all(promises);
+  return projectBalances;
+}
+
+/* ========================================================================================================================================================================= */
+
+/**
+ * Function to fetch all balances for a given wallet, including in their wallets and in dapps/projects.
+ * @param wallet - The wallet to query balances for.
+ * @returns A wallet's token and project balance.
+ * @see {@link getWalletBalance} and {@link getProjectBalance} for more specific (and faster) queries.
+ */
+export const getAllBalances = async (wallet: Address) => {
+  let balances: (NativeToken | Token | LPToken | DebtToken | XToken)[] = [];
+  let promises = Object.keys(chains).map(stringChain => (async () => {
+    let chain = stringChain as Chain;
+    let nativeTokenBalance = await getWalletNativeTokenBalance(chain, wallet);
+    if(nativeTokenBalance.length > 0) {
+      let tokenBalance = await getWalletTokenBalance(chain, wallet);
+      let projectBalance = await getAllProjectBalances(chain, wallet);
+      balances.push(...nativeTokenBalance, ...tokenBalance, ...projectBalance);
+    }
+  })());
+  await Promise.all(promises);
+  return balances;
+}
+
+/* ========================================================================================================================================================================= */
+
+/**
+ * Function to get a wallet's native token balance.
+ * @param chain - The blockchain to query info from.
+ * @param wallet - The wallet to query native balance for.
+ * @returns An array of NativeToken objects if any balance is found.
+ */
+ export const getWalletNativeTokenBalance = async (chain: Chain, wallet: Address) => {
+  let balance: number | undefined = undefined;
+  let errors = 0;
+  let rpcID = 0;
+  while(balance === undefined && errors < maxQueryRetries) {
+    try {
+      let ethers_provider = new ethers.providers.JsonRpcProvider(chains[chain].rpcs[rpcID]);
+      balance = parseInt((await ethers_provider.getBalance(wallet)).toString());
+    } catch {
+      if(++rpcID >= chains[chain].rpcs.length) {
+        errors++;
+        rpcID = 0;
+      }
+    }
+  }
+  if(balance && balance > 0) {
+    let newToken = await addNativeToken(chain, balance, wallet);
+    return [newToken];
+  }
+  return [];
+}
+
+/* ========================================================================================================================================================================= */
+
+/**
+ * Function to get a wallet's token balance.
+ * @param chain - The blockchain to query info from.
+ * @param wallet - The wallet to query token balances for.
+ * @returns An array of Token objects if any balances are found.
+ */
+export const getWalletTokenBalance = async (chain: Chain, wallet: Address) => {
+  let tokens: Token[] = [];
+  let data = getChainTokenData(chain);
+  if(data) {
+    let addresses: Address[] = data.tokens.map(token => token.address);
+    let multicallResults = await multicallOneMethodQuery(chain, addresses, minABI, 'balanceOf', [wallet]);
+    let promises = data.tokens.map(token => (async () => {
+      let balanceResults = multicallResults[token.address];
+      if(balanceResults) {
+        let rawBalance = parseBN(balanceResults[0]);
+        if(rawBalance > 0) {
+          let newToken = await addTrackedToken(chain, 'wallet', 'none', token, rawBalance, wallet);
+          tokens.push(newToken);
+        }
+      }
+    })());
+    await Promise.all(promises);
+  }
+  return tokens;
 }
 
 /* ========================================================================================================================================================================= */
@@ -603,65 +703,6 @@ export const lookupENS = async (address: Address) => {
  */
 export const parseBN = (bn: any) => {
   return parseInt(ethers.BigNumber.from(bn).toString());
-}
-
-/* ========================================================================================================================================================================= */
-
-/**
- * Function to get a wallet's native token balance.
- * @param chain - The blockchain to query info from.
- * @param wallet - The wallet to query native balance for.
- * @returns An array of NativeToken objects if any balance is found.
- */
-const getWalletNativeTokenBalance = async (chain: Chain, wallet: Address) => {
-  let balance;
-  let errors = 0;
-  let rpcID = 0;
-  while(!balance && errors < maxQueryRetries) {
-    try {
-      let ethers_provider = new ethers.providers.JsonRpcProvider(chains[chain].rpcs[rpcID]);
-      balance = parseInt((await ethers_provider.getBalance(wallet)).toString());
-    } catch {
-      if(++rpcID >= chains[chain].rpcs.length) {
-        errors++;
-        rpcID = 0;
-      }
-    }
-  }
-  if(balance && balance > 0) {
-    let newToken = await addNativeToken(chain, balance, wallet);
-    return [newToken];
-  }
-  return [];
-}
-
-/* ========================================================================================================================================================================= */
-
-/**
- * Function to get a wallet's token balance.
- * @param chain - The blockchain to query info from.
- * @param wallet - The wallet to query token balances for.
- * @returns An array of Token objects if any balances are found.
- */
-const getWalletTokenBalance = async (chain: Chain, wallet: Address) => {
-  let tokens: Token[] = [];
-  let data = getChainTokenData(chain);
-  if(data) {
-    let addresses: Address[] = data.tokens.map(token => token.address);
-    let multicallResults = await multicallOneMethodQuery(chain, addresses, minABI, 'balanceOf', [wallet]);
-    let promises = data.tokens.map(token => (async () => {
-      let balanceResults = multicallResults[token.address];
-      if(balanceResults) {
-        let rawBalance = parseBN(balanceResults[0]);
-        if(rawBalance > 0) {
-          let newToken = await addTrackedToken(chain, 'wallet', 'none', token, rawBalance, wallet);
-          tokens.push(newToken);
-        }
-      }
-    })());
-    await Promise.all(promises);
-  }
-  return tokens;
 }
 
 /* ========================================================================================================================================================================= */

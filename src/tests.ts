@@ -17,8 +17,26 @@ const wallet: Address = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E';
 const tests = async () => {
 
   // Project Balance Tests:
-  let projectBalance = await weaver.POLY.getProjectBalance(wallet, 'pooltogether');
-  console.log('🕷️ ~ projectBalance', projectBalance);
+  // let projectBalance = await weaver.POLY.getProjectBalance(wallet, 'pooltogether');
+  // console.log('🕷️ ~ projectBalance', projectBalance);
+
+  /* ================================================== */
+
+  // Aggregated Project Balance Tests:
+  // let ethAllProjectBalances = await weaver.ETH.getAllProjectBalances(wallet);
+  // console.log('🕷️ ~ ethAllProjectBalances', ethAllProjectBalances);
+  // let bscAllProjectBalances = await weaver.BSC.getAllProjectBalances(wallet);
+  // console.log('🕷️ ~ bscAllProjectBalances', bscAllProjectBalances);
+  // let polyAllProjectBalances = await weaver.POLY.getAllProjectBalances(wallet);
+  // console.log('🕷️ ~ polyAllProjectBalances', polyAllProjectBalances);
+  // let ftmAllProjectBalances = await weaver.FTM.getAllProjectBalances(wallet);
+  // console.log('🕷️ ~ ftmAllProjectBalances', ftmAllProjectBalances);
+  // let avaxAllProjectBalances = await weaver.AVAX.getAllProjectBalances(wallet);
+  // console.log('🕷️ ~ avaxAllProjectBalances', avaxAllProjectBalances);
+  // let oneAllProjectBalances = await weaver.ONE.getAllProjectBalances(wallet);
+  // console.log('🕷️ ~ oneAllProjectBalances', oneAllProjectBalances);
+  // let cronosAllProjectBalances = await weaver.CRONOS.getAllProjectBalances(wallet);
+  // console.log('🕷️ ~ cronosAllProjectBalances', cronosAllProjectBalances);
 
   /* ================================================== */
   
@@ -41,19 +59,19 @@ const tests = async () => {
   /* ================================================== */
 
   // Address Validation Tests:
-  // let ethWalletCheck = await weaver.ETH.isAddress(wallet);
+  // let ethWalletCheck = weaver.ETH.isAddress(wallet);
   // console.log('🕷️ ~ ethWalletCheck', ethWalletCheck);
-  // let bscWalletCheck = await weaver.BSC.isAddress(wallet);
+  // let bscWalletCheck = weaver.BSC.isAddress(wallet);
   // console.log('🕷️ ~ bscWalletCheck', bscWalletCheck);
-  // let polyWalletCheck = await weaver.POLY.isAddress(wallet);
+  // let polyWalletCheck = weaver.POLY.isAddress(wallet);
   // console.log('🕷️ ~ polyWalletCheck', polyWalletCheck);
-  // let ftmWalletCheck = await weaver.FTM.isAddress(wallet);
+  // let ftmWalletCheck = weaver.FTM.isAddress(wallet);
   // console.log('🕷️ ~ ftmWalletCheck', ftmWalletCheck);
-  // let avaxWalletCheck = await weaver.AVAX.isAddress(wallet);
+  // let avaxWalletCheck = weaver.AVAX.isAddress(wallet);
   // console.log('🕷️ ~ avaxWalletCheck', avaxWalletCheck);
-  // let oneWalletCheck = await weaver.ONE.isAddress(wallet);
+  // let oneWalletCheck = weaver.ONE.isAddress(wallet);
   // console.log('🕷️ ~ oneWalletCheck', oneWalletCheck);
-  // let cronosWalletCheck = await weaver.CRONOS.isAddress(wallet);
+  // let cronosWalletCheck = weaver.CRONOS.isAddress(wallet);
   // console.log('🕷️ ~ cronosWalletCheck', cronosWalletCheck);
 
   /* ================================================== */
@@ -127,6 +145,8 @@ const tests = async () => {
   // console.log('🕷️ ~ nativeTokenPrices', nativeTokenPrices);
   // let prices = weaver.fetchPrices();
   // console.log('🕷️ ~ prices', prices);
+  // let allBalances = await weaver.getAllBalances(wallet);
+  // console.log('🕷️ ~ allBalances', allBalances);
 
   /* ================================================== */
 

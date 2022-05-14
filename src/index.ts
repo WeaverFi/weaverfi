@@ -27,6 +27,9 @@ export const WeaverFi = {
     getProjectBalance: (wallet: Address, project: string) => {
       return evm.getProjectBalance('eth', wallet, project);
     },
+    getAllProjectBalances: (wallet: Address) => {
+      return evm.getAllProjectBalances('eth', wallet);
+    },
     getTokens: () => {
       return evm.getTokens('eth');
     },
@@ -70,6 +73,9 @@ export const WeaverFi = {
     getProjectBalance: (wallet: Address, project: string) => {
       return evm.getProjectBalance('bsc', wallet, project);
     },
+    getAllProjectBalances: (wallet: Address) => {
+      return evm.getAllProjectBalances('bsc', wallet);
+    },
     getTokens: () => {
       return evm.getTokens('bsc');
     },
@@ -106,6 +112,9 @@ export const WeaverFi = {
     },
     getProjectBalance: (wallet: Address, project: string) => {
       return evm.getProjectBalance('poly', wallet, project);
+    },
+    getAllProjectBalances: (wallet: Address) => {
+      return evm.getAllProjectBalances('poly', wallet);
     },
     getTokens: () => {
       return evm.getTokens('poly');
@@ -144,6 +153,9 @@ export const WeaverFi = {
     getProjectBalance: (wallet: Address, project: string) => {
       return evm.getProjectBalance('ftm', wallet, project);
     },
+    getAllProjectBalances: (wallet: Address) => {
+      return evm.getAllProjectBalances('ftm', wallet);
+    },
     getTokens: () => {
       return evm.getTokens('ftm');
     },
@@ -180,6 +192,9 @@ export const WeaverFi = {
     },
     getProjectBalance: (wallet: Address, project: string) => {
       return evm.getProjectBalance('avax', wallet, project);
+    },
+    getAllProjectBalances: (wallet: Address) => {
+      return evm.getAllProjectBalances('avax', wallet);
     },
     getTokens: () => {
       return evm.getTokens('avax');
@@ -218,6 +233,9 @@ export const WeaverFi = {
     getProjectBalance: (wallet: Address, project: string) => {
       return evm.getProjectBalance('one', wallet, project);
     },
+    getAllProjectBalances: (wallet: Address) => {
+      return evm.getAllProjectBalances('one', wallet);
+    },
     getTokens: () => {
       return evm.getTokens('one');
     },
@@ -254,6 +272,9 @@ export const WeaverFi = {
     },
     getProjectBalance: (wallet: Address, project: string) => {
       return evm.getProjectBalance('cronos', wallet, project);
+    },
+    getAllProjectBalances: (wallet: Address) => {
+      return evm.getAllProjectBalances('cronos', wallet);
     },
     getTokens: () => {
       return evm.getTokens('cronos');
@@ -322,6 +343,11 @@ export const WeaverFi = {
     } else {
       return $.prices;
     }
+  },
+
+  // Function to fetch all balances from each chain:
+  getAllBalances: (wallet: Address) => {
+    return evm.getAllBalances(wallet);
   }
 }
 

@@ -121,7 +121,8 @@ export const chains: Chains = {
     inch: false,
     paraswap: false,
     rpcs: [
-      'https://evm.cronos.org'
+      'https://evm.cronos.org',
+      'https://rpc.artemisone.org/cronos'
     ],
     coingeckoIDs: {
       chainID: 'cronos',
