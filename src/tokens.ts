@@ -380,7 +380,6 @@ export const poly_data: ChainTokenData = {
     { symbol: 'ENJ', logo: 'https://polygonscan.com/token/images/enjin_28_2.png' },
     { symbol: 'EURT', logo: 'https://assets.coingecko.com/coins/images/17385/small/Tether_full_logo_dm.png?1627537298' },
     { symbol: 'FTM', logo: 'https://polygonscan.com/token/images/fantomtoken_32.png' }
-
   ]
 }
 
@@ -520,7 +519,8 @@ export const avax_data: ChainTokenData = {
     { address: '0x1C20E891Bab6b1727d14Da358FAe2984Ed9B59EB', symbol: 'TUSD', logo: 'https://snowtrace.io/token/images/trueusd_32.png', decimals: 18 },
     { address: '0x1ECd47FF4d9598f89721A2866BFEb99505a413Ed', symbol: 'AVME', logo: 'https://snowtrace.io/token/images/avmeavax_32.png', decimals: 18 },
     { address: '0xb599c3590F42f8F995ECfa0f85D2980B76862fc1', symbol: 'UST', logo: 'https://snowtrace.io/token/images/wormholeust_32.png', decimals: 6 },
-    { address: '0x4f60a160D8C2DDdaAfe16FCC57566dB84D674BD6', symbol: 'JEWEL', logo: 'https://snowtrace.io/token/images/jewel_32.png', decimals: 18 }
+    { address: '0x4f60a160D8C2DDdaAfe16FCC57566dB84D674BD6', symbol: 'JEWEL', logo: 'https://snowtrace.io/token/images/jewel_32.png', decimals: 18 },
+    { address: '0x449674B82F05d498E126Dd6615a1057A9c088f2C', symbol: 'LOST', logo: 'https://snowtrace.io/token/images/lostwords_32.png', decimals: 18 }
   ],
   logos: [
     { symbol: 'AVAX', logo: 'https://bscscan.com/token/images/avax_32.png' },
@@ -568,7 +568,6 @@ export const avax_data: ChainTokenData = {
     { symbol: 'aUST', logo: 'https://snowtrace.io/token/images/wormholeust_32.png' },
     { symbol: 'xSNOB', logo: 'https://snowtrace.io/token/images/snowball_32.png' },
     { symbol: 'GTR', logo: 'https://snowtrace.io/token/images/alligatorexchange2_32.png' }
-
   ]
 }
 
