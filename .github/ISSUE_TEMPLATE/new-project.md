@@ -2,7 +2,7 @@
 name: New Project
 about: Suggestions for supporting new dapps.
 title: ''
-labels: project support
+labels: dapp support, enhancement
 assignees: ''
 
 ---
