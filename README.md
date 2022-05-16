@@ -97,4 +97,4 @@ import type { ChainID, Address, Token } from 'weaverfi/dist/types';
 
 Contribution guidelines can be found [here](CONTRIBUTING.md).
 
-[banner]: /banner.png "WeaverFi"
+[banner]: /Banner.png "WeaverFi"
