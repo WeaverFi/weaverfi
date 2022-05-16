@@ -1,5 +1,4 @@
-![WeaverFi Logo][logo]
-# WeaverFi SDK
+![WeaverFi Banner][banner]
 
 The NPM package to query DeFi.
 
@@ -98,4 +97,4 @@ import type { ChainID, Address, Token } from 'weaverfi/dist/types';
 
 Contribution guidelines can be found [here](CONTRIBUTING.md).
 
-[logo]: /favicon.ico "WeaverFi"
+[banner]: /banner.png "WeaverFi"
