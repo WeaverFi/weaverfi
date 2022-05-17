@@ -191,7 +191,7 @@ export const alpaca: Record<`${alpacaABIs}ABI`, ABI[]> = {
 }
 
 // Curve ABIs:
-type curveABIs = 'provider' | 'registry' | 'cryptoRegistry' | 'factory' | 'poolInfoGetter' | 'gauge';
+type curveABIs = 'provider' | 'registry' | 'cryptoRegistry' | 'factory' | 'poolInfoGetter' | 'gauge' | 'gaugeFactory';
 export const curve: Record<`${curveABIs}ABI`, ABI[]> = {
   providerABI: [
     { constant: true, inputs: [{ name: "_id", type: "uint256" }], name: "get_address", outputs: [{ name: "", type: "address" }], type: "function" }
@@ -230,6 +230,10 @@ export const curve: Record<`${curveABIs}ABI`, ABI[]> = {
     { constant: true, inputs: [], name: "lp_token", outputs: [{ name: "", type: "address" }], type: "function" },
     { constant: true, inputs: [{ name: "arg0", type: "uint256" }], name: "reward_tokens", outputs: [{ name: "", type: "address" }], type: "function" },
     { constant: true, inputs: [{ name: "_addr", type: "address" }, { name: "_token", type: "address" }], name: "claimable_reward", outputs: [{ name: "", type: "uint256" }], type: "function" }
+  ],
+  gaugeFactoryABI: [
+    { constant: true, inputs: [], name: "get_gauge_count", outputs: [{ name: "", type: "uint256" }], type: "function" },
+    { constant: true, inputs: [{ name: "arg0", type: "uint256" }], name: "get_gauge", outputs: [{ name: "", type: "address" }], type: "function" }
   ]
 }
 

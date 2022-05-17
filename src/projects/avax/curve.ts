@@ -14,6 +14,7 @@ const project = 'curve';
 const registry: Address = '0x8474DdbE98F5aA3179B3B3F5942D724aFcdec9f6';
 const cryptoRegistry: Address = '0x90f421832199e93d01b64DaF378b183809EB0988';
 const factory: Address = '0xb17b674D9c5CB2e441F8e196a2f048A81355d031';
+const gaugeFactory: Address = '0xabC000d88f23Bb45525E447528DBF656A9D55bf5';
 
 /* ========================================================================================================================================================================= */
 
@@ -23,6 +24,7 @@ export const get = async (wallet: Address) => {
   balance.push(...(await getPoolBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getPoolBalances()', err) })));
   balance.push(...(await getCryptoPoolBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getCryptoPoolBalances()', err) })));
   balance.push(...(await getFactoryPoolBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getFactoryPoolBalances()', err) })));
+  balance.push(...(await getGaugeFactoryPoolBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getGaugeFactoryPoolBalances()', err) })));
   return balance;
 }
 
@@ -83,7 +85,7 @@ export const getFactoryPoolBalances = async (wallet: Address) => {
 
   // Initializing Multicall:
   let gaugeCalls: CallContext[] = [];
-  poolAddresses.forEach(poolAddress => { gaugeCalls.push({ reference: poolAddress, methodName: 'get_gauge', methodParameters: [poolAddress] }); }); // <TODO> this returns all 0x000000 results - awaiting answer on curve discord
+  poolAddresses.forEach(poolAddress => { gaugeCalls.push({ reference: poolAddress, methodName: 'get_gauge', methodParameters: [poolAddress] }); });
 
   // LP Token Balances (same as pools):
   balances.push(...(await getLPTokenBalances(poolAddresses, wallet)));
@@ -92,6 +94,17 @@ export const getFactoryPoolBalances = async (wallet: Address) => {
   let gaugeMulticallResults = await multicallOneContractQuery(chain, factory, curve.factoryABI, gaugeCalls);
   let gauges = (Object.keys(gaugeMulticallResults).map(pool => gaugeMulticallResults[pool][0]) as Address[]).filter(gauge => gauge != zero);
   balances.push(...(await getGaugeBalances(gauges, wallet)));
+
+  return balances;
+}
+
+// Function to get extra gauge factory pool balances (not on any registry):
+export const getGaugeFactoryPoolBalances = async (wallet: Address) => {
+  let balances: (Token | LPToken)[] = [];
+  let gaugeAddresses = await getGaugeAddresses(gaugeFactory);
+  
+  // Gauge Balances:
+  balances.push(...(await getGaugeBalances(gaugeAddresses, wallet)));
 
   return balances;
 }
@@ -162,4 +175,17 @@ const getGaugeBalances = async (gauges: Address[], wallet: Address) => {
     await Promise.all(promises);
   }
   return balances;
+}
+
+// Function to get gauge addresses from extra gauge factories:
+const getGaugeAddresses = async (factory: Address) => {
+  let gaugeCount = parseInt(await query(chain, gaugeFactory, curve.gaugeFactoryABI, 'get_gauge_count', []));
+  let gaugeIDs = [...Array(gaugeCount).keys()];
+  let gaugeCalls: CallContext[] = [];
+  gaugeIDs.forEach(gaugeID => {
+    gaugeCalls.push({ reference: gaugeID.toString(), methodName: 'get_gauge', methodParameters: [gaugeID] });
+  });
+  let gaugeMulticallResults = await multicallOneContractQuery(chain, factory, curve.gaugeFactoryABI, gaugeCalls);
+  let gaugeAddresses = Object.keys(gaugeMulticallResults).map(gaugeID => gaugeMulticallResults[gaugeID][0]) as Address[];
+  return gaugeAddresses;
 }

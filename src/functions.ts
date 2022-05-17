@@ -37,10 +37,10 @@ export const ignoredErrors: { chain: Chain, address: Address }[] = [
  * @returns Query results.
  */
 export const query = async (chain: Chain, address: Address, abi: ABI[], method: string, args: any[]) => {
-  let result;
+  let result = undefined;
   let errors = 0;
   let rpcID = 0;
-  while(!result && errors < maxQueryRetries) {
+  while(result === undefined && errors < maxQueryRetries) {
     try {
       let ethers_provider = new ethers.providers.JsonRpcProvider(chains[chain].rpcs[rpcID]);
       let contract = new ethers.Contract(address, abi, ethers_provider);

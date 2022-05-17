@@ -17,8 +17,8 @@ const wallet: Address = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E';
 const tests = async () => {
 
   // Project Balance Tests:
-  // let projectBalance = await weaver.POLY.getProjectBalance(wallet, 'pooltogether');
-  // console.log('🕷️ ~ projectBalance', projectBalance);
+  let projectBalance = await weaver.AVAX.getProjectBalance(wallet, 'curve');
+  console.log('🕷️ ~ projectBalance', projectBalance);
 
   /* ================================================== */
 
