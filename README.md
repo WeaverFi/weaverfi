@@ -56,6 +56,7 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 
 - `query(address, abi, method, args)`
 - `isAddress(address)`
+- `getTXCount(address)`
 - `getWalletBalance(wallet)`
 - `getProjectBalance(wallet, project)`
 - `getAllProjectBalances(wallet)`
@@ -78,6 +79,7 @@ The ETH chain also contains the `resolveENS(ensDomain)` and `lookupENS(address)`
 - AVAX (Avalanche)
 - ONE (Harmony)
 - CRONOS (Cronos)
+- OP (Optimism)
 
 ---
 
