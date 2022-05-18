@@ -76,6 +76,24 @@ const tests = async () => {
 
   /* ================================================== */
 
+  // Address Validation Tests:
+  // let ethTXCount = await weaver.ETH.getTXCount(wallet);
+  // console.log('🕷️ ~ ethTXCount', ethTXCount);
+  // let bscTXCount = await weaver.BSC.getTXCount(wallet);
+  // console.log('🕷️ ~ bscTXCount', bscTXCount);
+  // let polyTXCount = await weaver.POLY.getTXCount(wallet);
+  // console.log('🕷️ ~ polyTXCount', polyTXCount);
+  // let ftmTXCount = await weaver.FTM.getTXCount(wallet);
+  // console.log('🕷️ ~ ftmTXCount', ftmTXCount);
+  // let avaxTXCount = await weaver.AVAX.getTXCount(wallet);
+  // console.log('🕷️ ~ avaxTXCount', avaxTXCount);
+  // let oneTXCount = await weaver.ONE.getTXCount(wallet);
+  // console.log('🕷️ ~ oneTXCount', oneTXCount);
+  // let cronosTXCount = await weaver.CRONOS.getTXCount(wallet);
+  // console.log('🕷️ ~ cronosTXCount', cronosTXCount);
+
+  /* ================================================== */
+
   // Project Listing Tests:
   // let ethProjects = weaver.ETH.getProjects();
   // console.log('🕷️ ~ ethProjects', ethProjects);

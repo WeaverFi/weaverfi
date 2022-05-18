@@ -308,6 +308,36 @@ export const isAddress = (address: Address) => {
 /* ========================================================================================================================================================================= */
 
 /**
+ * Function to get a wallet's transaction count.
+ * @param chain - The blockchain to query info from.
+ * @param wallet - The wallet to query transaction count for.
+ * @returns An array of NativeToken objects if any balance is found.
+ */
+ export const getWalletTXCount = async (chain: Chain, wallet: Address) => {
+  let txs: number | undefined = undefined;
+  let errors = 0;
+  let rpcID = 0;
+  while(txs === undefined && errors < maxQueryRetries) {
+    try {
+      let ethers_provider = new ethers.providers.JsonRpcProvider(chains[chain].rpcs[rpcID]);
+      txs = parseInt((await ethers_provider.getTransactionCount(wallet)).toString());
+    } catch {
+      if(++rpcID >= chains[chain].rpcs.length) {
+        errors++;
+        rpcID = 0;
+      }
+    }
+  }
+  if(txs) {
+    return txs;
+  } else {
+    return 0;
+  }
+}
+
+/* ========================================================================================================================================================================= */
+
+/**
  * Function to get all relevant native token info.
  * @param chain - The blockchain to query info from.
  * @param rawBalance - The balance to be assigned to the native token's object, with decimals.

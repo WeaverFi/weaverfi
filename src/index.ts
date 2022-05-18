@@ -21,6 +21,9 @@ export const WeaverFi = {
     isAddress: (address: Address) => {
       return evm.isAddress(address);
     },
+    getTXCount: (wallet: Address) => {
+      return evm.getWalletTXCount('eth', wallet);
+    },
     getWalletBalance: (wallet: Address) => {
       return evm.getWalletBalance('eth', wallet);
     },
@@ -67,6 +70,9 @@ export const WeaverFi = {
     isAddress: (address: Address) => {
       return evm.isAddress(address);
     },
+    getTXCount: (wallet: Address) => {
+      return evm.getWalletTXCount('bsc', wallet);
+    },
     getWalletBalance: (wallet: Address) => {
       return evm.getWalletBalance('bsc', wallet);
     },
@@ -106,6 +112,9 @@ export const WeaverFi = {
     },
     isAddress: (address: Address) => {
       return evm.isAddress(address);
+    },
+    getTXCount: (wallet: Address) => {
+      return evm.getWalletTXCount('poly', wallet);
     },
     getWalletBalance: (wallet: Address) => {
       return evm.getWalletBalance('poly', wallet);
@@ -147,6 +156,9 @@ export const WeaverFi = {
     isAddress: (address: Address) => {
       return evm.isAddress(address);
     },
+    getTXCount: (wallet: Address) => {
+      return evm.getWalletTXCount('ftm', wallet);
+    },
     getWalletBalance: (wallet: Address) => {
       return evm.getWalletBalance('ftm', wallet);
     },
@@ -186,6 +198,9 @@ export const WeaverFi = {
     },
     isAddress: (address: Address) => {
       return evm.isAddress(address);
+    },
+    getTXCount: (wallet: Address) => {
+      return evm.getWalletTXCount('avax', wallet);
     },
     getWalletBalance: (wallet: Address) => {
       return evm.getWalletBalance('avax', wallet);
@@ -227,6 +242,9 @@ export const WeaverFi = {
     isAddress: (address: Address) => {
       return evm.isAddress(address);
     },
+    getTXCount: (wallet: Address) => {
+      return evm.getWalletTXCount('one', wallet);
+    },
     getWalletBalance: (wallet: Address) => {
       return evm.getWalletBalance('one', wallet);
     },
@@ -266,6 +284,9 @@ export const WeaverFi = {
     },
     isAddress: (address: Address) => {
       return evm.isAddress(address);
+    },
+    getTXCount: (wallet: Address) => {
+      return evm.getWalletTXCount('cronos', wallet);
     },
     getWalletBalance: (wallet: Address) => {
       return evm.getWalletBalance('cronos', wallet);
