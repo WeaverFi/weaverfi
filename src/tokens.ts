@@ -45,7 +45,6 @@ export const eth_data: ChainTokenData = {
     { address: '0xb62132e35a6c13ee1ee0f84dc5d40bad8d815206', symbol: 'NEXO', logo: 'https://etherscan.io/token/images/nexo_32.png', decimals: 18 },
     { address: '0x0d8775f648430679a709e98d2b0cb6250d2887ef', symbol: 'BAT', logo: 'https://etherscan.io/token/images/bat.png', decimals: 18 },
     { address: '0xf34960d9d60be18cc1d5afc1a6f012a723a28811', symbol: 'KCS', logo: 'https://etherscan.io/token/images/kucointoken_32.png', decimals: 6 },
-    { address: '0x05f4a42e251f2d52b8ed15e9fedaacfcef1fad27', symbol: 'ZIL', logo: 'https://etherscan.io/token/images/zilliqa_28_2.png', decimals: 12 },
     { address: '0x1f573d6fb3f13d689ff844b4ce37794d79a7ff1c', symbol: 'BNT', logo: 'https://etherscan.io/token/images/bancor_32.png', decimals: 18 },
     { address: '0x799a4202c12ca952cb311598a024c80ed371a41e', symbol: 'ONE', logo: 'https://etherscan.io/token/images/harmonyone_32.png', decimals: 18 },
     { address: '0x467Bccd9d29f223BcE8043b84E8C8B282827790F', symbol: 'TEL', logo: 'https://etherscan.io/token/images/telcoin_28.png', decimals: 2 },
@@ -108,7 +107,8 @@ export const eth_data: ChainTokenData = {
     { symbol: 'stkAAVE', logo: 'https://etherscan.io/token/images/stakedaave_32.png' },
     { symbol: 'UNI-V2', logo: 'https://etherscan.io/token/images/uniswap_32.png' },
     { symbol: 'VEN', logo: 'https://etherscan.io/token/images/vechain_28.png' },
-    { symbol: 'THETA', logo: 'https://etherscan.io/token/images/theta_28.png' }
+    { symbol: 'THETA', logo: 'https://etherscan.io/token/images/theta_28.png' },
+    { symbol: 'ZIL', logo: 'https://etherscan.io/token/images/zilliqa_28_2.png' }
   ]
 }
 
@@ -586,7 +586,6 @@ export const one_data: ChainTokenData = {
     { address: '0xbec775cb42abfa4288de81f387a9b1a3c4bc552a', symbol: '1SUSHI', logo: 'https://etherscan.io/token/images/sushitoken_32.png', decimals: 18 },
     { address: '0x3095c7557bcb296ccc6e363de01b760ba031f2d9', symbol: '1WBTC', logo: 'https://etherscan.io/token/images/wbtc_28.png?v=1', decimals: 8 },
     { address: '0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f', symbol: '1USDT', logo: 'https://etherscan.io/token/images/tether_32.png', decimals: 6 },
-    { address: '0x95ce547d730519a90def30d647f37d9e5359b6ae', symbol: 'LUNA', logo: 'https://assets.coingecko.com/coins/images/8284/small/luna1557227471663.png?1567147072', decimals: 18 },
     { address: '0x218532a12a389a4a92fc0c5fb22901d1c19198aa', symbol: 'LINK', logo: 'https://bscscan.com/token/images/chainlink_32.png?v=2', decimals: 18 },
     { address: '0x582617bd8ca80d22d4432e63fda52d74dcdcee4c', symbol: 'bscADA', logo: 'https://bscscan.com/token/images/cardano_32.png', decimals: 18 },
     { address: '0xef977d2f931c1978db5f6747666fa1eacb0d0339', symbol: '1DAI', logo: 'https://bscscan.com/token/images/dai_32.png', decimals: 18 },
@@ -613,7 +612,8 @@ export const one_data: ChainTokenData = {
     { symbol: 'bscUSDT', logo: 'https://bscscan.com/token/images/busdt_32.png' },
     { symbol: 'bscDOT', logo: 'https://bscscan.com/token/images/polkadot_32.png' },
     { symbol: 'bscMATIC', logo: 'https://bscscan.com/token/images/matic_32.png' },
-    { symbol: 'bscETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' }
+    { symbol: 'bscETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' },
+    { symbol: 'LUNA', logo: 'https://assets.coingecko.com/coins/images/8284/small/luna1557227471663.png?1567147072' }
   ]
 }
 
