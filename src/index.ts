@@ -320,6 +320,49 @@ export const WeaverFi = {
     }
   },
 
+  // Optimism Functions:
+  OP: {
+    query: (address: Address, abi: ABI[], method: string, args: any[]) => {
+      return evm.query('op', address, abi, method, args);
+    },
+    isAddress: (address: Address) => {
+      return evm.isAddress(address);
+    },
+    getTXCount: (wallet: Address) => {
+      return evm.getWalletTXCount('op', wallet);
+    },
+    getWalletBalance: (wallet: Address) => {
+      return evm.getWalletBalance('op', wallet);
+    },
+    getProjectBalance: (wallet: Address, project: string) => {
+      return evm.getProjectBalance('op', wallet, project);
+    },
+    getAllProjectBalances: (wallet: Address) => {
+      return evm.getAllProjectBalances('op', wallet);
+    },
+    getTokens: () => {
+      return evm.getTokens('op');
+    },
+    getTokenLogo: (symbol: string) => {
+      return evm.getTokenLogo('op', symbol);
+    },
+    getInfo: () => {
+      return chains['op'];
+    },
+    getProjects: () => {
+      return projects['op'];
+    },
+    getTokenPrices: () => {
+      return $.getChainTokenPrices('op');
+    },
+    getTokenPrice: (address: Address, decimals?: number) => {
+      return $.getTokenPrice('op', address, decimals);
+    },
+    updateTokenPrice: (priceData: TokenPriceData) => {
+      return $.updatePrices('op', priceData);
+    }
+  },
+
   /* ================================================== */
 
   // Function to get all supported chains:
@@ -339,7 +382,7 @@ export const WeaverFi = {
 
   // Function to get a list of all tracked tokens:
   getAllTokens: () => {
-    let tokens: Record<Chain, TokenData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [] };
+    let tokens: Record<Chain, TokenData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [], op: [] };
     Object.keys(tokens).forEach(stringChain => {
       let chain = stringChain as Chain;
       tokens[chain].push(...evm.getTokens(chain));

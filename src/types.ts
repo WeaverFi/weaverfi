@@ -1,8 +1,8 @@
 
 // Chain Types:
-export type Chain = 'eth' | 'bsc' | 'poly' | 'ftm' | 'avax' | 'one' | 'cronos';
-export type UpperCaseChain = 'ETH' | 'BSC' | 'POLY' | 'FTM' | 'AVAX' | 'ONE' | 'CRONOS';
-export type ChainID = 1 | 56 | 137 | 250 | 43114 | 1666600000 | 25;
+export type Chain = 'eth' | 'bsc' | 'poly' | 'ftm' | 'avax' | 'one' | 'cronos' | 'op';
+export type UpperCaseChain = 'ETH' | 'BSC' | 'POLY' | 'FTM' | 'AVAX' | 'ONE' | 'CRONOS' | 'OP';
+export type ChainID = 1 | 56 | 137 | 250 | 43114 | 1666600000 | 25 | 10;
 
 // Address Types:
 export type Address = `0x${string}`;
@@ -158,15 +158,6 @@ export interface ABITupleIO {
 /* ========================================================================================================================================================================= */
 
 // Chain Data Interfaces:
-export interface Chains {
-    eth: ChainData
-    bsc: ChainData
-    poly: ChainData
-    ftm: ChainData
-    avax: ChainData
-    one: ChainData
-    cronos: ChainData
-}
 export interface ChainData {
     id: ChainID
     token: string

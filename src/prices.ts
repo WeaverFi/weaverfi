@@ -8,7 +8,7 @@ import { getChainTokenData, defaultAddress } from './functions';
 import type { Address, Chain, TokenPriceData, TokenData } from './types';
 
 // Prices Object:
-export let prices: Record<Chain, TokenPriceData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [] };
+export let prices: Record<Chain, TokenPriceData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [], op: [] };
 
 // Initializations:
 const maxPriceAge = 60000 * 20; // 20 Minutes

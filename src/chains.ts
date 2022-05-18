@@ -1,9 +1,9 @@
 
 // Type Imports:
-import type { Chains } from './types';
+import type { Chain, ChainData } from './types';
 
 // Exporting Chain Data:
-export const chains: Chains = {
+export const chains: Record<Chain, ChainData> = {
   eth: {
     id: 1,
     token: 'ETH',
@@ -18,9 +18,9 @@ export const chains: Chains = {
     ],
     coingeckoIDs: {
       chainID: 'ethereum',
-      nativeTokenID: 'ethereum',
+      nativeTokenID: 'ethereum'
     },
-    multicall: '0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696'
+    multicall: '0x5ba1e12693dc8f9c48aad8770482f4739beed696'
   },
   bsc: {
     id: 56,
@@ -36,9 +36,9 @@ export const chains: Chains = {
     ],
     coingeckoIDs: {
       chainID: 'binance-smart-chain',
-      nativeTokenID: 'binancecoin',
+      nativeTokenID: 'binancecoin'
     },
-    multicall: '0xC50F4c1E81c873B2204D7eFf7069Ffec6Fbe136D'
+    multicall: '0xc50f4c1e81c873b2204d7eff7069ffec6fbe136d'
   },
   poly: {
     id: 137,
@@ -54,9 +54,9 @@ export const chains: Chains = {
     ],
     coingeckoIDs: {
       chainID: 'polygon-pos',
-      nativeTokenID: 'matic-network',
+      nativeTokenID: 'matic-network'
     },
-    multicall: '0x275617327c958bD06b5D6b871E7f491D76113dd8'
+    multicall: '0x275617327c958bd06b5d6b871e7f491d76113dd8'
   },
   ftm: {
     id: 250,
@@ -72,9 +72,9 @@ export const chains: Chains = {
     ],
     coingeckoIDs: {
       chainID: 'fantom',
-      nativeTokenID: 'fantom',
+      nativeTokenID: 'fantom'
     },
-    multicall: '0xD98e3dBE5950Ca8Ce5a4b59630a5652110403E5c'
+    multicall: '0xd98e3dbe5950ca8ce5a4b59630a5652110403e5c'
   },
   avax: {
     id: 43114,
@@ -90,9 +90,9 @@ export const chains: Chains = {
     ],
     coingeckoIDs: {
       chainID: 'avalanche',
-      nativeTokenID: 'avalanche-2',
+      nativeTokenID: 'avalanche-2'
     },
-    multicall: '0xed386Fe855C1EFf2f843B910923Dd8846E45C5A4'
+    multicall: '0xed386fe855c1eff2f843b910923dd8846e45c5a4'
   },
   one: {
     id: 1666600000,
@@ -108,7 +108,7 @@ export const chains: Chains = {
     ],
     coingeckoIDs: {
       chainID: 'harmony-shard-0',
-      nativeTokenID: 'harmony',
+      nativeTokenID: 'harmony'
     },
     multicall: '0x5c41f6817feeb65d7b2178b0b9cebfc8fad97969'
   },
@@ -126,8 +126,25 @@ export const chains: Chains = {
     ],
     coingeckoIDs: {
       chainID: 'cronos',
-      nativeTokenID: 'crypto-com-chain',
+      nativeTokenID: 'crypto-com-chain'
     },
-    multicall: '0x5e954f5972EC6BFc7dECd75779F10d848230345F'
+    multicall: '0x5e954f5972ec6bfc7decd75779f10d848230345f'
+  },
+  op: {
+    id: 10,
+    token: 'ETH',
+    wrappedToken: '0x4200000000000000000000000000000000000006',
+    usdc: '0x7f5c764cbc14f9669b88837ca1490cca17c31607',
+    usdcDecimals: 6,
+    inch: true,
+    paraswap: false,
+    rpcs: [
+      'https://mainnet.optimism.io'
+    ],
+    coingeckoIDs: {
+      chainID: 'optimistic-ethereum',
+      nativeTokenID: 'ethereum'
+    },
+    multicall: '0xeaa6877139d436dc6d1f75f3af15b74662617b2c'
   }
 }

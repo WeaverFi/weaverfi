@@ -646,3 +646,21 @@ export const cronos_data: ChainTokenData = {
     { symbol: 'CRO', logo: 'https://cronoscan.com/token/images/cryptocom_32.png' }
   ]
 }
+
+/* ========================================================================================================================================================================= */
+
+// Optimism:
+export const op_data: ChainTokenData = {
+  tokens: [
+    { address: '0x94b008aA00579c1307B0EF2c499aD98a8ce58e58', symbol: 'USDT', logo: 'https://optimistic.etherscan.io/token/images/tether_32.png', decimals: 6 },
+    { address: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607', symbol: 'USDC', logo: 'https://optimistic.etherscan.io/token/images/usdc_32.png', decimals: 6 },
+    { address: '0x68f180fcCe6836688e9084f035309E29Bf0A2095', symbol: 'WBTC', logo: 'https://optimistic.etherscan.io/token/images/wbtc_28.png?v=1', decimals: 8 },
+    { address: '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1', symbol: 'DAI', logo: 'https://optimistic.etherscan.io/token/images/MCDDai_32.png', decimals: 18 },
+    { address: '0x350a791Bfc2C21F9Ed5d10980Dad2e2638ffa7f6', symbol: 'LINK', logo: 'https://optimistic.etherscan.io/token/images/chainlink_32.png', decimals: 18 },
+    { address: '0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4', symbol: 'SNX', logo: 'https://optimistic.etherscan.io/token/images/SynthetixSNX_32.png', decimals: 18 },
+    { address: '0x4200000000000000000000000000000000000006', symbol: 'WETH', logo: 'https://optimistic.etherscan.io/token/images/weth_28.png', decimals: 18 },
+  ],
+  logos: [
+    { symbol: 'ETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' }
+  ]
+}
