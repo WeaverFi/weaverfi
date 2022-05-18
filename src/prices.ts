@@ -8,7 +8,7 @@ import { getChainTokenData, defaultAddress } from './functions';
 import type { Address, Chain, TokenPriceData, TokenData } from './types';
 
 // Prices Object:
-export let prices: Record<Chain, TokenPriceData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [], op: [] };
+export let prices: Record<Chain, TokenPriceData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [], op: [], arb: [] };
 
 // Initializations:
 const maxPriceAge = 60000 * 20; // 20 Minutes
@@ -466,6 +466,15 @@ const redirectTokenPriceFeed = async (chain: Chain, address: Address) => {
           break;
       }
       break;
+    case 'op':
+      switch(address.toLowerCase()) {
+        // None yet.
+      }
+      break;
+    case 'arb':
+      switch(address.toLowerCase()) {
+        // Nont yet.
+      }
   }
 
   // Fetching Proxy Token Price & Updating Token Price:

@@ -80,6 +80,7 @@ The ETH chain also contains the `resolveENS(ensDomain)` and `lookupENS(address)`
 - ONE (Harmony)
 - CRONOS (Cronos)
 - OP (Optimism)
+- ARB (Arbitrum)
 
 ---
 

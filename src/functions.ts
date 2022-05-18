@@ -7,7 +7,7 @@ import { WeaverError } from './error';
 import { minABI, lpABI } from './ABIs';
 import { getTokenPrice } from './prices';
 import { Multicall } from 'ethereum-multicall';
-import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data, cronos_data, op_data } from './tokens';
+import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data, cronos_data, op_data, arb_data } from './tokens';
 
 // Type Imports:
 import type { ContractCallResults, ContractCallContext } from 'ethereum-multicall';
@@ -655,6 +655,8 @@ export const getChainTokenData = (chain: Chain) => {
       return cronos_data;
     case 'op':
       return op_data;
+    case 'arb':
+      return arb_data;
     default:
       return undefined;
   }
@@ -794,8 +796,8 @@ const getNativeTokenSymbol = (chain: Chain) => {
     return 'MATIC';
   } else if(chain === 'cronos') {
     return 'CRO';
-  } else if(chain === 'op') {
-    return 'ETH'
+  } else if(chain === 'op' || chain === 'arb') {
+    return 'ETH';
   } else {
     return chain.toUpperCase();
   }

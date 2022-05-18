@@ -78,5 +78,6 @@ export const projects: Record<Chain, string[]> = {
     'sushiswap'
   ],
   cronos: [],
-  op: []
+  op: [],
+  arb: []
 }

@@ -1,8 +1,8 @@
 
 // Chain Types:
-export type Chain = 'eth' | 'bsc' | 'poly' | 'ftm' | 'avax' | 'one' | 'cronos' | 'op';
-export type UpperCaseChain = 'ETH' | 'BSC' | 'POLY' | 'FTM' | 'AVAX' | 'ONE' | 'CRONOS' | 'OP';
-export type ChainID = 1 | 56 | 137 | 250 | 43114 | 1666600000 | 25 | 10;
+export type Chain = 'eth' | 'bsc' | 'poly' | 'ftm' | 'avax' | 'one' | 'cronos' | 'op' | 'arb';
+export type UpperCaseChain = 'ETH' | 'BSC' | 'POLY' | 'FTM' | 'AVAX' | 'ONE' | 'CRONOS' | 'OP' | 'ARB';
+export type ChainID = 1 | 56 | 137 | 250 | 43114 | 1666600000 | 25 | 10 | 42161;
 
 // Address Types:
 export type Address = `0x${string}`;

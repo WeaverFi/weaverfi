@@ -363,6 +363,49 @@ export const WeaverFi = {
     }
   },
 
+  // Arbitrum Functions:
+  ARB: {
+    query: (address: Address, abi: ABI[], method: string, args: any[]) => {
+      return evm.query('arb', address, abi, method, args);
+    },
+    isAddress: (address: Address) => {
+      return evm.isAddress(address);
+    },
+    getTXCount: (wallet: Address) => {
+      return evm.getWalletTXCount('arb', wallet);
+    },
+    getWalletBalance: (wallet: Address) => {
+      return evm.getWalletBalance('arb', wallet);
+    },
+    getProjectBalance: (wallet: Address, project: string) => {
+      return evm.getProjectBalance('arb', wallet, project);
+    },
+    getAllProjectBalances: (wallet: Address) => {
+      return evm.getAllProjectBalances('arb', wallet);
+    },
+    getTokens: () => {
+      return evm.getTokens('arb');
+    },
+    getTokenLogo: (symbol: string) => {
+      return evm.getTokenLogo('arb', symbol);
+    },
+    getInfo: () => {
+      return chains['arb'];
+    },
+    getProjects: () => {
+      return projects['arb'];
+    },
+    getTokenPrices: () => {
+      return $.getChainTokenPrices('arb');
+    },
+    getTokenPrice: (address: Address, decimals?: number) => {
+      return $.getTokenPrice('arb', address, decimals);
+    },
+    updateTokenPrice: (priceData: TokenPriceData) => {
+      return $.updatePrices('arb', priceData);
+    }
+  },
+
   /* ================================================== */
 
   // Function to get all supported chains:
@@ -382,7 +425,7 @@ export const WeaverFi = {
 
   // Function to get a list of all tracked tokens:
   getAllTokens: () => {
-    let tokens: Record<Chain, TokenData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [], op: [] };
+    let tokens: Record<Chain, TokenData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [], op: [], arb: [] };
     Object.keys(tokens).forEach(stringChain => {
       let chain = stringChain as Chain;
       tokens[chain].push(...evm.getTokens(chain));

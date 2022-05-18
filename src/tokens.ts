@@ -658,7 +658,32 @@ export const op_data: ChainTokenData = {
     { address: '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1', symbol: 'DAI', logo: 'https://optimistic.etherscan.io/token/images/MCDDai_32.png', decimals: 18 },
     { address: '0x350a791Bfc2C21F9Ed5d10980Dad2e2638ffa7f6', symbol: 'LINK', logo: 'https://optimistic.etherscan.io/token/images/chainlink_32.png', decimals: 18 },
     { address: '0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4', symbol: 'SNX', logo: 'https://optimistic.etherscan.io/token/images/SynthetixSNX_32.png', decimals: 18 },
-    { address: '0x4200000000000000000000000000000000000006', symbol: 'WETH', logo: 'https://optimistic.etherscan.io/token/images/weth_28.png', decimals: 18 },
+    { address: '0x4200000000000000000000000000000000000006', symbol: 'WETH', logo: 'https://optimistic.etherscan.io/token/images/weth_28.png', decimals: 18 }
+  ],
+  logos: [
+    { symbol: 'ETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' }
+  ]
+}
+
+/* ========================================================================================================================================================================= */
+
+// Arbitrum:
+export const arb_data: ChainTokenData = {
+  tokens: [
+    { address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9', symbol: 'USDT', logo: 'https://arbiscan.io/token/images/tether_32.png', decimals: 6 },
+    { address: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8', symbol: 'USDC', logo: 'https://arbiscan.io/token/images/centre-usdc_28.png', decimals: 6 },
+    { address: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f', symbol: 'WBTC', logo: 'https://arbiscan.io/token/images/wbtc_28.png', decimals: 8 },
+    { address: '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1', symbol: 'DAI', logo: 'https://arbiscan.io/token/images/MCDDai_32.png', decimals: 18 },
+    { address: '0xf97f4df75117a78c1A5a0DBb814Af92458539FB4', symbol: 'LINK', logo: 'https://arbiscan.io/token/images/chainlink_32.png?v=1', decimals: 18 },
+    { address: '0xFa7F8980b0f1E64A2062791cc3b0871572f1F7f0', symbol: 'UNI', logo: 'https://arbiscan.io/token/images/uniswap_32.png', decimals: 18 },
+    { address: '0xFEa7a6a0B346362BF88A9e4A88416B77a57D6c2A', symbol: 'MIM', logo: 'https://arbiscan.io/token/images/mimstablecoin_32.png', decimals: 18 },
+    { address: '0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F', symbol: 'FRAX', logo: 'https://arbiscan.io/token/images/frax_32.png', decimals: 18 },
+    { address: '0x23A941036Ae778Ac51Ab04CEa08Ed6e2FE103614', symbol: 'GRT', logo: 'https://arbiscan.io/token/images/TheGraph_32.png', decimals: 18 },
+    { address: '0x11cDb42B0EB46D95f990BeDD4695A6e3fA034978', symbol: 'CRV', logo: 'https://arbiscan.io/token/images/Curvefi_32.png', decimals: 18 },
+    { address: '0xd4d42F0b6DEF4CE0383636770eF773390d85c61A', symbol: 'SUSHI', logo: 'https://arbiscan.io/token/images/sushitoken_32.png', decimals: 18 },
+    { address: '0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a', symbol: 'GMX', logo: 'https://arbiscan.io/token/images/gmxarbi_32.png', decimals: 18 },
+    { address: '0x040d1EdC9569d4Bab2D15287Dc5A4F10F56a56B8', symbol: 'BAL', logo: 'https://arbiscan.io/token/images/Balancer_32.png', decimals: 18 },
+    { address: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1', symbol: 'WETH', logo: 'https://arbiscan.io/token/images/weth_28.png', decimals: 18 }
   ],
   logos: [
     { symbol: 'ETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' }

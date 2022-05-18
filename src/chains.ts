@@ -146,5 +146,23 @@ export const chains: Record<Chain, ChainData> = {
       nativeTokenID: 'ethereum'
     },
     multicall: '0xeaa6877139d436dc6d1f75f3af15b74662617b2c'
+  },
+  arb: {
+    id: 42161,
+    token: 'ETH',
+    wrappedToken: '0x82af49447d8a07e3bd95bd0d56f35241523fbab1',
+    usdc: '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8',
+    usdcDecimals: 6,
+    inch: true,
+    paraswap: false,
+    rpcs: [
+      'https://arb1.arbitrum.io/rpc',
+      'https://rpc.ankr.com/arbitrum'
+    ],
+    coingeckoIDs: {
+      chainID: 'arbitrum-one',
+      nativeTokenID: 'ethereum'
+    },
+    multicall: '0x842ec2c7d803033edf55e478f461fc547bc54eb2'
   }
 }
