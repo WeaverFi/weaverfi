@@ -1,6 +1,6 @@
 
 // Type Imports:
-import { Chain } from './types';
+import type { Chain } from './types';
 
 // Class to handle WeaverFi Errors:
 export class WeaverError extends Error {

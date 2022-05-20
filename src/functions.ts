@@ -3,14 +3,14 @@
 import axios from 'axios';
 import { ethers } from 'ethers';
 import { chains } from './chains';
+import { isIPFS } from 'ipfs-core';
+import { getIPFSNode } from './ipfs';
 import { projects } from './projects';
 import { WeaverError } from './error';
 import { getTokenPrice } from './prices';
 import { Multicall } from 'ethereum-multicall';
 import { minABI, lpABI, nftABI } from './ABIs';
 import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data, cronos_data, op_data, arb_data } from './tokens';
-import { IPFSNode } from './ipfs';
-import { isIPFS } from 'ipfs-core';
 
 // Type Imports:
 import type { ContractCallResults, ContractCallContext } from 'ethereum-multicall';
@@ -909,49 +909,46 @@ const getNativeTokenSymbol = (chain: Chain) => {
  * @returns The NFT data in stringified JSON format.
  */
 const resolveNFTData = async (uri: string) => {
+
+  // Initializing Data:
   let data = uri;
+
+  // HTTP Data URIs:
   if(uri.startsWith('http')) {
     data = (await axios.get(uri)).data;
     if(typeof data !== 'string') {
       data = JSON.stringify(data);
     }
-  } else if(uri.match(/^[\/]*ipfs|ipns/)) {
 
+  // IPFS/IPNS Data URIs:
+  } else if(uri.match(/^[\/]*ipfs|ipns/)) {
     let ipfsURI = uri;
     if(uri.match(/^\w{4}:\/\//)) {
       ipfsURI = "/" + uri.replace("://", "/");
     }
 
-    // Some projects might have an accidental search string at the end of the IPFS URI (default ERC721 tokenURI function appends this).
-    // We will attempt to clear that before resolving:
-    const searchPosition = ipfsURI.lastIndexOf('?');
+    // Cleaning IPFS URIs (Accidental '?'s)
+    let searchPosition = ipfsURI.lastIndexOf('?');
     if(searchPosition > 0) {
-      const cleanURI = ipfsURI.slice(0, searchPosition);
+      let cleanURI = ipfsURI.slice(0, searchPosition);
       if(isIPFS.urlOrPath(cleanURI)) {
 
-        // Get the data stream from our local IPFS node
-        const res = (await IPFSNode()).files.read(cleanURI);
-
-        // Read the raw data into a string
-        data = ""
-        for await (const buf of res) {
-          data += Buffer.from(buf).toString('utf-8');
+        // Fetching IPFS Data:
+        let ipfsNode = await getIPFSNode();
+        let fileData = ipfsNode.files.read(cleanURI);
+        data = '';
+        for await (let buffer of fileData) {
+          data += Buffer.from(buffer).toString('utf-8');
         }
-
-        // Clean up JSON formatting if successful
         try {
           data = JSON.stringify(JSON.parse(data));
-        } catch {
-          // nothing... data may be badly formatted
-        }
+        } catch {}
       }
     }
-  } else {
-    data = uri;
   }
 
-  // Decode base64 format:
-  const base64match = data.match(/^(?:rawData|data)\:application\/json;base64(?:\s|,)/);
+  // Decoding Base64 Data:
+  let base64match = data.match(/^(?:rawData|data)\:application\/json;base64(?:\s|,)/);
   if(base64match) {
     data = Buffer.from(uri.slice(base64match[0].length), 'base64').toString();
   }

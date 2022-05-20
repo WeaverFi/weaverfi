@@ -1,28 +1,29 @@
+
+// Imports:
 import { create, IPFS } from 'ipfs-core';
 
-// Variable to store our IPFS node:
+// Initializations:
 let globalNode: Promise<IPFS> | undefined;
 
+/* ========================================================================================================================================================================= */
+
 /**
- * Method to get (and create on first run) a functional IPFS node.
- * We are "lazy" loading the IPFS node so it only starts if the application needs it 
- * and only starts once if needed multiple times.
- * @returns Promise of IPFS node
+ * Function to get (or create on first run) a functional IPFS node.
+ * @returns Promise of an IPFS node.
  */
-export async function IPFSNode() {
+export const getIPFSNode = async () => {
   if(!globalNode) {
-    /**
-     * @warning Assign the promise, NOT THE NODE! (this ensures we don't start the node multiple times on accident):
-     */
     globalNode = create();
   }
   return await globalNode;
 }
 
+/* ========================================================================================================================================================================= */
+
 /**
- * Method to kill the IPFS node.
+ * Method to kill the currently running IPFS node, if any.
  */
-export async function killIPFSNode() {
+export const killIPFSNode = async () => {
   if(globalNode) {
     await (await globalNode).stop();
     globalNode = undefined;

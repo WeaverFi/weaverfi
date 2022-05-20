@@ -1,6 +1,7 @@
 
 // Imports:
 import * as $ from './prices';
+import * as ipfs from './ipfs';
 import * as evm from './functions';
 import { chains } from './chains';
 import { projects } from './projects';
@@ -482,6 +483,16 @@ export const WeaverFi = {
   // Function to fetch all balances from each chain:
   getAllBalances: (wallet: Address) => {
     return evm.getAllBalances(wallet);
+  },
+
+  // Function to start a local IPFS node:
+  getIPFSNode: () => {
+    return ipfs.getIPFSNode();
+  },
+
+  // Function to stop the local IPFS node:
+  stopIPFSNode: () => {
+    return ipfs.killIPFSNode();
   }
 }
 

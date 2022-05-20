@@ -51,6 +51,8 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 - `getNativeTokenPrices()`
 - `fetchPrices()`
 - `getAllBalances(wallet)`
+- `startIPFSNode()`
+- `stopIPFSNode()`
 
 ## Chain Methods Available
 
