@@ -13,7 +13,7 @@ let globalNode: Promise<IPFS> | undefined;
  */
 export const getIPFSNode = async () => {
   if(!globalNode) {
-    globalNode = create();
+    globalNode = create({ silent: true });
   }
   return await globalNode;
 }
