@@ -9,6 +9,8 @@ import { getTokenPrice } from './prices';
 import { Multicall } from 'ethereum-multicall';
 import { minABI, lpABI, nftABI } from './ABIs';
 import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data, cronos_data, op_data, arb_data } from './tokens';
+import { IPFSNode } from './ipfs';
+import { isIPFS } from 'ipfs-core';
 
 // Type Imports:
 import type { ContractCallResults, ContractCallContext } from 'ethereum-multicall';
@@ -849,7 +851,7 @@ const addTrackedNFTs = async (chain: Chain, location: string, status: TokenStatu
     let dataMulticallResults = await multicallOneContractQuery(chain, nft.address, nftABI, dataCalls);
     let promises = Object.keys(dataMulticallResults).map(stringID => (async () => {
       let id = parseInt(stringID);
-      let data = await decodeNFTData(dataMulticallResults[stringID][0]);
+      let data = await resolveNFTData(dataMulticallResults[stringID][0]);
       nfts.push({ type, chain, location, status, owner, name, address, id, data });
     })());
     await Promise.all(promises);
@@ -863,7 +865,7 @@ const addTrackedNFTs = async (chain: Chain, location: string, status: TokenStatu
     let dataMulticallResults = await multicallOneContractQuery(chain, nft.address, nftABI, dataCalls);
     let promises = Object.keys(dataMulticallResults).map(stringID => (async () => {
       let id = parseInt(stringID);
-      let data = await decodeNFTData(dataMulticallResults[stringID][0]);
+      let data = await resolveNFTData(dataMulticallResults[stringID][0]);
       nfts.push({ type, chain, location, status, owner, name, address, id, data });
     })());
     await Promise.all(promises);
@@ -902,18 +904,57 @@ const getNativeTokenSymbol = (chain: Chain) => {
 /* ========================================================================================================================================================================= */
 
 /**
- * Helper function to decode NFT URI data.
- * @param rawData The raw data from the NFT's URI field.
- * @returns The decoded NFT data in stringified JSON format.
+ * Helper function to resolve NFT URI data.
+ * @param uri The NFT's URI string.
+ * @returns The NFT data in stringified JSON format.
  */
-const decodeNFTData = async (rawData: any) => {
-  let data: string = rawData;
-  if(rawData.startsWith('rawData:application/json;base64')) {
-    data = Buffer.from(rawData.slice(29), 'base64').toString();
-  } else if(rawData.startsWith('http')) {
-    data = (await axios.get(rawData)).data;
-  } else if(rawData.startsWith('ipfs')) {
-    // <TODO> IPFS Data Fetching
+const resolveNFTData = async (uri: string) => {
+  let data = uri;
+  if(uri.startsWith('http')) {
+    data = (await axios.get(uri)).data;
+    if(typeof data !== 'string') {
+      data = JSON.stringify(data);
+    }
+  } else if(uri.match(/^[\/]*ipfs|ipns/)) {
+
+    let ipfsURI = uri;
+    if(uri.match(/^\w{4}:\/\//)) {
+      ipfsURI = "/" + uri.replace("://", "/");
+    }
+
+    // Some projects might have an accidental search string at the end of the IPFS URI (default ERC721 tokenURI function appends this).
+    // We will attempt to clear that before resolving:
+    const searchPosition = ipfsURI.lastIndexOf('?');
+    if(searchPosition > 0) {
+      const cleanURI = ipfsURI.slice(0, searchPosition);
+      if(isIPFS.urlOrPath(cleanURI)) {
+
+        // Get the data stream from our local IPFS node
+        const res = (await IPFSNode()).files.read(cleanURI);
+
+        // Read the raw data into a string
+        data = ""
+        for await (const buf of res) {
+          data += Buffer.from(buf).toString('utf-8');
+        }
+
+        // Clean up JSON formatting if successful
+        try {
+          data = JSON.stringify(JSON.parse(data));
+        } catch {
+          // nothing... data may be badly formatted
+        }
+      }
+    }
+  } else {
+    data = uri;
   }
+
+  // Decode base64 format:
+  const base64match = data.match(/^(?:rawData|data)\:application\/json;base64(?:\s|,)/);
+  if(base64match) {
+    data = Buffer.from(uri.slice(base64match[0].length), 'base64').toString();
+  }
+
   return data;
 }
