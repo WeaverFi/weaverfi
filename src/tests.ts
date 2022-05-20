@@ -76,6 +76,11 @@ const tests = async () => {
   // let tokenPrice = await weaver.ETH.getTokenPrice(defaultAddress, 18);
   // console.log('🕷️ ~ tokenPrice', tokenPrice);
 
+  /* ================================================== */
+
+  // Stopping Any Running IPFS Node:
+  await weaver.stopIPFSNode();
+
 }
 
 /* ========================================================================================================================================================================= */

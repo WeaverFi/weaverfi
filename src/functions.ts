@@ -3,6 +3,8 @@
 import axios from 'axios';
 import { ethers } from 'ethers';
 import { chains } from './chains';
+import { isIPFS } from 'ipfs-core';
+import { getIPFSNode } from './ipfs';
 import { projects } from './projects';
 import { WeaverError } from './error';
 import { getTokenPrice } from './prices';
@@ -849,7 +851,7 @@ const addTrackedNFTs = async (chain: Chain, location: string, status: TokenStatu
     let dataMulticallResults = await multicallOneContractQuery(chain, nft.address, nftABI, dataCalls);
     let promises = Object.keys(dataMulticallResults).map(stringID => (async () => {
       let id = parseInt(stringID);
-      let data = await decodeNFTData(dataMulticallResults[stringID][0]);
+      let data = await resolveNFTData(dataMulticallResults[stringID][0]);
       nfts.push({ type, chain, location, status, owner, name, address, id, data });
     })());
     await Promise.all(promises);
@@ -863,7 +865,7 @@ const addTrackedNFTs = async (chain: Chain, location: string, status: TokenStatu
     let dataMulticallResults = await multicallOneContractQuery(chain, nft.address, nftABI, dataCalls);
     let promises = Object.keys(dataMulticallResults).map(stringID => (async () => {
       let id = parseInt(stringID);
-      let data = await decodeNFTData(dataMulticallResults[stringID][0]);
+      let data = await resolveNFTData(dataMulticallResults[stringID][0]);
       nfts.push({ type, chain, location, status, owner, name, address, id, data });
     })());
     await Promise.all(promises);
@@ -902,18 +904,54 @@ const getNativeTokenSymbol = (chain: Chain) => {
 /* ========================================================================================================================================================================= */
 
 /**
- * Helper function to decode NFT URI data.
- * @param rawData The raw data from the NFT's URI field.
- * @returns The decoded NFT data in stringified JSON format.
+ * Helper function to resolve NFT URI data.
+ * @param uri The NFT's URI string.
+ * @returns The NFT data in stringified JSON format.
  */
-const decodeNFTData = async (rawData: any) => {
-  let data: string = rawData;
-  if(rawData.startsWith('rawData:application/json;base64')) {
-    data = Buffer.from(rawData.slice(29), 'base64').toString();
-  } else if(rawData.startsWith('http')) {
-    data = (await axios.get(rawData)).data;
-  } else if(rawData.startsWith('ipfs')) {
-    // <TODO> IPFS Data Fetching
+const resolveNFTData = async (uri: string) => {
+
+  // Initializing Data:
+  let data = uri;
+
+  // HTTP Data URIs:
+  if(uri.startsWith('http')) {
+    data = (await axios.get(uri)).data;
+    if(typeof data !== 'string') {
+      data = JSON.stringify(data);
+    }
+
+  // IPFS/IPNS Data URIs:
+  } else if(uri.match(/^[\/]*ipfs|ipns/)) {
+    let ipfsURI = uri;
+    if(uri.match(/^\w{4}:\/\//)) {
+      ipfsURI = "/" + uri.replace("://", "/");
+    }
+
+    // Cleaning IPFS URIs (Accidental '?'s)
+    let searchPosition = ipfsURI.lastIndexOf('?');
+    if(searchPosition > 0) {
+      let cleanURI = ipfsURI.slice(0, searchPosition);
+      if(isIPFS.urlOrPath(cleanURI)) {
+
+        // Fetching IPFS Data:
+        let ipfsNode = await getIPFSNode();
+        let fileData = ipfsNode.files.read(cleanURI);
+        data = '';
+        for await (let buffer of fileData) {
+          data += Buffer.from(buffer).toString('utf-8');
+        }
+        try {
+          data = JSON.stringify(JSON.parse(data));
+        } catch {}
+      }
+    }
   }
+
+  // Decoding Base64 Data:
+  let base64match = data.match(/^(?:rawData|data)\:application\/json;base64(?:\s|,)/);
+  if(base64match) {
+    data = Buffer.from(uri.slice(base64match[0].length), 'base64').toString();
+  }
+
   return data;
 }
