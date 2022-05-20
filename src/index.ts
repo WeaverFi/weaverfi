@@ -485,7 +485,7 @@ export const WeaverFi = {
     return evm.getAllBalances(wallet);
   },
 
-  // Function to start a local IPFS node:
+  // Function to get a local IPFS node:
   getIPFSNode: () => {
     return ipfs.getIPFSNode();
   },
