@@ -911,7 +911,7 @@ const decodeNFTData = async (rawData: any) => {
   if(rawData.startsWith('rawData:application/json;base64')) {
     data = Buffer.from(rawData.slice(29), 'base64').toString();
   } else if(rawData.startsWith('http')) {
-    data = (await axios.get(rawData)).data as string;
+    data = (await axios.get(rawData)).data;
   } else if(rawData.startsWith('ipfs')) {
     // <TODO> IPFS Data Fetching
   }
