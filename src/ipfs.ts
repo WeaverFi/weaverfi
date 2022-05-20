@@ -18,3 +18,13 @@ export async function IPFSNode() {
   }
   return await globalNode;
 }
+
+/**
+ * Method to kill the IPFS node.
+ */
+export async function killIPFSNode() {
+  if(globalNode) {
+    await (await globalNode).stop();
+    globalNode = undefined;
+  }
+}
