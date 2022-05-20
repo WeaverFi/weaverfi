@@ -9,7 +9,7 @@ export type Address = `0x${string}`;
 export type ENSDomain = `${string}.eth`;
 
 // Token Types:
-export type TokenType = 'nativeToken' | 'token' | 'lpToken' | 'debt' | 'xToken';
+export type TokenType = 'nativeToken' | 'token' | 'lpToken' | 'debt' | 'xToken' | 'nft';
 export type TokenStatus = 'none' | 'staked' | 'liquidity' | 'lent' | 'borrowed' | 'unclaimed';
 
 // Transaction Types:
@@ -83,6 +83,21 @@ export function isDebtToken(token: OwnedToken): token is DebtToken {
 }
 export function isXToken(token: OwnedToken): token is XToken {
     return token.type === 'xToken';
+}
+
+/* ========================================================================================================================================================================= */
+
+// NFT Interfaces:
+export interface NFT {
+    type: TokenType
+    chain: Chain
+    location: string
+    status: TokenStatus
+    owner: Address
+    name: string
+    address: Address
+    id: number
+    data: string
 }
 
 /* ========================================================================================================================================================================= */
@@ -181,6 +196,7 @@ export interface CoinGeckoIDs {
 export interface ChainTokenData {
     tokens: TokenData[]
     logos: LogoData[]
+    nfts: NFTData[]
 }
 export interface TokenData {
     address: Address
@@ -191,6 +207,10 @@ export interface TokenData {
 export interface LogoData {
     symbol: string
     logo: URL
+}
+export interface NFTData {
+    address: Address
+    name: string
 }
 
 /* ========================================================================================================================================================================= */

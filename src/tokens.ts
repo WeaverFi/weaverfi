@@ -109,7 +109,8 @@ export const eth_data: ChainTokenData = {
     { symbol: 'VEN', logo: 'https://etherscan.io/token/images/vechain_28.png' },
     { symbol: 'THETA', logo: 'https://etherscan.io/token/images/theta_28.png' },
     { symbol: 'ZIL', logo: 'https://etherscan.io/token/images/zilliqa_28_2.png' }
-  ]
+  ],
+  nfts: []
 }
 
 /* ========================================================================================================================================================================= */
@@ -278,7 +279,8 @@ export const bsc_data: ChainTokenData = {
     { symbol: 'APE-LP', logo: 'https://bscscan.com/token/images/apeswap_32.png' },
     { symbol: 'WINGS-LP', logo: 'https://bscscan.com/token/images/jetswap_32.png' },
     { symbol: 'INNBC', logo: 'https://bscscan.com/token/images/innbc_32-1.png' }
-  ]
+  ],
+  nfts: []
 }
 
 /* ========================================================================================================================================================================= */
@@ -380,7 +382,8 @@ export const poly_data: ChainTokenData = {
     { symbol: 'ENJ', logo: 'https://polygonscan.com/token/images/enjin_28_2.png' },
     { symbol: 'EURT', logo: 'https://assets.coingecko.com/coins/images/17385/small/Tether_full_logo_dm.png?1627537298' },
     { symbol: 'FTM', logo: 'https://polygonscan.com/token/images/fantomtoken_32.png' }
-  ]
+  ],
+  nfts: []
 }
 
 /* ========================================================================================================================================================================= */
@@ -441,7 +444,8 @@ export const ftm_data: ChainTokenData = {
     { symbol: 'g3CRV', logo: 'https://assets.coingecko.com/coins/images/18832/small/GEIST-token.png?1633560935' },
     { symbol: 'SPIRIT-LP', logo: 'https://ftmscan.com/token/images/spiritswap_32.png' },
     { symbol: 'BHC', logo: 'https://ftmscan.com/token/images/billionhappiness_32.png' }
-  ]
+  ],
+  nfts: []
 }
 
 /* ========================================================================================================================================================================= */
@@ -568,6 +572,9 @@ export const avax_data: ChainTokenData = {
     { symbol: 'aUST', logo: 'https://snowtrace.io/token/images/wormholeust_32.png' },
     { symbol: 'xSNOB', logo: 'https://snowtrace.io/token/images/snowball_32.png' },
     { symbol: 'GTR', logo: 'https://snowtrace.io/token/images/alligatorexchange2_32.png' }
+  ],
+  nfts: [
+    { address: '0x3555cAB4b6628BeEA81d20Cb8a832A16B69671F7', name: 'Snowball NFT Birthday' }
   ]
 }
 
@@ -614,7 +621,8 @@ export const one_data: ChainTokenData = {
     { symbol: 'bscMATIC', logo: 'https://bscscan.com/token/images/matic_32.png' },
     { symbol: 'bscETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' },
     { symbol: 'LUNA', logo: 'https://assets.coingecko.com/coins/images/8284/small/luna1557227471663.png?1567147072' }
-  ]
+  ],
+  nfts: []
 }
 
 /* ========================================================================================================================================================================= */
@@ -644,7 +652,8 @@ export const cronos_data: ChainTokenData = {
   ],
   logos: [
     { symbol: 'CRO', logo: 'https://cronoscan.com/token/images/cryptocom_32.png' }
-  ]
+  ],
+  nfts: []
 }
 
 /* ========================================================================================================================================================================= */
@@ -662,7 +671,8 @@ export const op_data: ChainTokenData = {
   ],
   logos: [
     { symbol: 'ETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' }
-  ]
+  ],
+  nfts: []
 }
 
 /* ========================================================================================================================================================================= */
@@ -687,5 +697,6 @@ export const arb_data: ChainTokenData = {
   ],
   logos: [
     { symbol: 'ETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' }
-  ]
+  ],
+  nfts: []
 }

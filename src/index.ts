@@ -33,6 +33,9 @@ export const WeaverFi = {
     getAllProjectBalances: (wallet: Address) => {
       return evm.getAllProjectBalances('eth', wallet);
     },
+    getNFTBalance: (wallet: Address) => {
+      return evm.getWalletNFTBalance('eth', wallet);
+    },
     getTokens: () => {
       return evm.getTokens('eth');
     },
@@ -82,6 +85,9 @@ export const WeaverFi = {
     getAllProjectBalances: (wallet: Address) => {
       return evm.getAllProjectBalances('bsc', wallet);
     },
+    getNFTBalance: (wallet: Address) => {
+      return evm.getWalletNFTBalance('bsc', wallet);
+    },
     getTokens: () => {
       return evm.getTokens('bsc');
     },
@@ -124,6 +130,9 @@ export const WeaverFi = {
     },
     getAllProjectBalances: (wallet: Address) => {
       return evm.getAllProjectBalances('poly', wallet);
+    },
+    getNFTBalance: (wallet: Address) => {
+      return evm.getWalletNFTBalance('poly', wallet);
     },
     getTokens: () => {
       return evm.getTokens('poly');
@@ -168,6 +177,9 @@ export const WeaverFi = {
     getAllProjectBalances: (wallet: Address) => {
       return evm.getAllProjectBalances('ftm', wallet);
     },
+    getNFTBalance: (wallet: Address) => {
+      return evm.getWalletNFTBalance('ftm', wallet);
+    },
     getTokens: () => {
       return evm.getTokens('ftm');
     },
@@ -210,6 +222,9 @@ export const WeaverFi = {
     },
     getAllProjectBalances: (wallet: Address) => {
       return evm.getAllProjectBalances('avax', wallet);
+    },
+    getNFTBalance: (wallet: Address) => {
+      return evm.getWalletNFTBalance('avax', wallet);
     },
     getTokens: () => {
       return evm.getTokens('avax');
@@ -254,6 +269,9 @@ export const WeaverFi = {
     getAllProjectBalances: (wallet: Address) => {
       return evm.getAllProjectBalances('one', wallet);
     },
+    getNFTBalance: (wallet: Address) => {
+      return evm.getWalletNFTBalance('one', wallet);
+    },
     getTokens: () => {
       return evm.getTokens('one');
     },
@@ -296,6 +314,9 @@ export const WeaverFi = {
     },
     getAllProjectBalances: (wallet: Address) => {
       return evm.getAllProjectBalances('cronos', wallet);
+    },
+    getNFTBalance: (wallet: Address) => {
+      return evm.getWalletNFTBalance('cronos', wallet);
     },
     getTokens: () => {
       return evm.getTokens('cronos');
@@ -340,6 +361,9 @@ export const WeaverFi = {
     getAllProjectBalances: (wallet: Address) => {
       return evm.getAllProjectBalances('op', wallet);
     },
+    getNFTBalance: (wallet: Address) => {
+      return evm.getWalletNFTBalance('op', wallet);
+    },
     getTokens: () => {
       return evm.getTokens('op');
     },
@@ -382,6 +406,9 @@ export const WeaverFi = {
     },
     getAllProjectBalances: (wallet: Address) => {
       return evm.getAllProjectBalances('arb', wallet);
+    },
+    getNFTBalance: (wallet: Address) => {
+      return evm.getWalletNFTBalance('arb', wallet);
     },
     getTokens: () => {
       return evm.getTokens('arb');

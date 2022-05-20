@@ -23,6 +23,13 @@ export const lpABI: ABI[] = [
   { constant: true, inputs: [], name: "totalSupply", outputs: [{ name: "", type: "uint256" }], type: "function" }
 ];
 
+// General-Purpose NFT ABI:
+export const nftABI: ABI[] = [
+  { constant: true, inputs: [{ name: "", type: "address" }], name: "balanceOf", outputs: [{ name: "", type: "uint256" }], type: "function" },
+  { constant: true, inputs: [{ name: "_owner", type: "address" }], name: "tokensOfOwner", outputs: [{ name: "", type: "uint256[]" }], type: "function" },
+  { constant: true, inputs: [{ name: "tokenId", type: "uint256" }], name: "tokenURI", outputs: [{ name: "", type: "string" }], type: "function" }
+];
+
 /* ========================================================================================================================================================================= */
 
 // Aave ABIs:

@@ -4,14 +4,14 @@ import { ethers } from 'ethers';
 import { chains } from './chains';
 import { projects } from './projects';
 import { WeaverError } from './error';
-import { minABI, lpABI } from './ABIs';
 import { getTokenPrice } from './prices';
 import { Multicall } from 'ethereum-multicall';
+import { minABI, lpABI, nftABI } from './ABIs';
 import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data, cronos_data, op_data, arb_data } from './tokens';
 
 // Type Imports:
 import type { ContractCallResults, ContractCallContext } from 'ethereum-multicall';
-import type { Chain, Address, URL, ABI, ENSDomain, TokenData, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken, CallContext } from './types';
+import type { Chain, Address, URL, ABI, ENSDomain, TokenData, NFTData, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken, NFT, CallContext } from './types';
 
 // Initializations:
 export const defaultTokenLogo: URL = 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@d5c68edec1f5eaec59ac77ff2b48144679cebca1/32/icon/generic.png';
@@ -217,18 +217,19 @@ export const getAllProjectBalances = async (chain: Chain, wallet: Address) => {
 /**
  * Function to fetch all balances for a given wallet, including in their wallets and in dapps/projects.
  * @param wallet - The wallet to query balances for.
- * @returns A wallet's token and project balance.
- * @see {@link getWalletBalance} and {@link getProjectBalance} for more specific (and faster) queries.
+ * @returns A wallet's token, project and NFT balances.
+ * @see {@link getWalletBalance}, {@link getProjectBalance} and {@link getWalletNFTBalance} for more specific (and faster) queries.
  */
 export const getAllBalances = async (wallet: Address) => {
-  let balances: (NativeToken | Token | LPToken | DebtToken | XToken)[] = [];
+  let balances: (NativeToken | Token | LPToken | DebtToken | XToken | NFT)[] = [];
   let promises = Object.keys(chains).map(stringChain => (async () => {
     let chain = stringChain as Chain;
     let nativeTokenBalance = await getWalletNativeTokenBalance(chain, wallet);
     if(nativeTokenBalance.length > 0) {
       let tokenBalance = await getWalletTokenBalance(chain, wallet);
       let projectBalance = await getAllProjectBalances(chain, wallet);
-      balances.push(...nativeTokenBalance, ...tokenBalance, ...projectBalance);
+      let nftBalance = await getWalletNFTBalance(chain, wallet);
+      balances.push(...nativeTokenBalance, ...tokenBalance, ...projectBalance, ...nftBalance);
     }
   })());
   await Promise.all(promises);
@@ -243,7 +244,7 @@ export const getAllBalances = async (wallet: Address) => {
  * @param wallet - The wallet to query native balance for.
  * @returns An array of NativeToken objects if any balance is found.
  */
- export const getWalletNativeTokenBalance = async (chain: Chain, wallet: Address) => {
+export const getWalletNativeTokenBalance = async (chain: Chain, wallet: Address) => {
   let balance: number | undefined = undefined;
   let errors = 0;
   let rpcID = 0;
@@ -297,6 +298,35 @@ export const getWalletTokenBalance = async (chain: Chain, wallet: Address) => {
 /* ========================================================================================================================================================================= */
 
 /**
+ * Function to get a wallet's NFT balance.
+ * @param chain - The blockchain to query info from.
+ * @param wallet - The wallet to query NFT balances for.
+ * @returns An array of NFT objects if any balances are found.
+ */
+export const getWalletNFTBalance = async (chain: Chain, wallet: Address) => {
+  let nfts: NFT[] = [];
+  let data = getChainTokenData(chain);
+  if(data) {
+    let addresses: Address[] = data.nfts.map(nft => nft.address);
+    let multicallResults = await multicallOneMethodQuery(chain, addresses, nftABI, 'balanceOf', [wallet]);
+    let promises = data.nfts.map(nft => (async () => {
+      let balanceResults = multicallResults[nft.address];
+      if(balanceResults) {
+        let balance = parseBN(balanceResults[0]);
+        if(balance > 0) {
+          let newNFTs = await addTrackedNFTs(chain, 'wallet', 'none', nft, wallet);
+          nfts.push(...newNFTs);
+        }
+      }
+    })());
+    await Promise.all(promises);
+  }
+  return nfts;
+}
+
+/* ========================================================================================================================================================================= */
+
+/**
  * Function to check if a hash corresponds to a valid wallet/contract address.
  * @param address - The hash to check for validity.
  * @returns True or false, depending on if the hash is a valid address or not.
@@ -313,7 +343,7 @@ export const isAddress = (address: Address) => {
  * @param wallet - The wallet to query transaction count for.
  * @returns An array of NativeToken objects if any balance is found.
  */
- export const getWalletTXCount = async (chain: Chain, wallet: Address) => {
+export const getWalletTXCount = async (chain: Chain, wallet: Address) => {
   let txs: number | undefined = undefined;
   let errors = 0;
   let rpcID = 0;
@@ -763,7 +793,7 @@ const getTrackedTokenInfo = (chain: Chain, address: Address) => {
  * @param chain - The chain to fetch data from.
  * @param location - The current location of the token, either in a wallet or in some project's contract.
  * @param status - The current status of the token.
- * @param token - The token's address.
+ * @param token - The tracked token's information.
  * @param rawBalance - The balance to be assigned to the token's object, with decimals.
  * @param owner - The token owner's wallet address.
  * @returns A Token object with all its information.
@@ -780,6 +810,45 @@ const addTrackedToken = async (chain: Chain, location: string, status: TokenStat
   let price = await getTokenPrice(chain, address, decimals);
 
   return { type, chain, location, status, owner, symbol, address, balance, price, logo };
+}
+
+/* ========================================================================================================================================================================= */
+
+/**
+ * Function to get all relevant info from an already tracked NFT collection.
+ * @param chain - The blockchain to query info from.
+ * @param location - The current location of the NFTs in the collection, either in a wallet or in some project's contract.
+ * @param status - The current status of the NFT collection.
+ * @param nft - The tracked NFT collection's information.
+ * @param owner - The NFT owner's wallet address.
+ * @returns An array of NFT objects with all their information.
+ */
+const addTrackedNFTs = async (chain: Chain, location: string, status: TokenStatus, nft: NFTData, owner: Address): Promise<NFT[]> => {
+
+  // Initializing Wallet NFT Collection:
+  let nfts: NFT[] = [];
+
+  // Initializing NFT Values:
+  let type: TokenType = 'nft';
+  let name = nft.name;
+  let address = nft.address;
+
+  // Finding Collection Info:
+  let dataCalls: CallContext[] = [];
+  let IDs: number[] = (await query(chain, nft.address, nftABI, 'tokensOfOwner', [owner])).map((id: string) => parseInt(id));
+  IDs.forEach(id => {
+    dataCalls.push({ reference: id.toString(), methodName: 'tokenURI', methodParameters: [id] });
+  });
+  let multicallResults = await multicallOneContractQuery(chain, nft.address, nftABI, dataCalls);
+  IDs.forEach(id => {
+    let dataResults = multicallResults[id.toString()];
+    if(dataResults) {
+      let data: string = dataResults[0];
+      nfts.push({ type, chain, location, status, owner, name, address, id, data })
+    }
+  });
+
+  return nfts;
 }
 
 /* ========================================================================================================================================================================= */
