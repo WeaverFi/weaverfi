@@ -1,5 +1,6 @@
 
 // Imports:
+import axios from 'axios';
 import { ethers } from 'ethers';
 import { chains } from './chains';
 import { projects } from './projects';
@@ -314,7 +315,7 @@ export const getWalletNFTBalance = async (chain: Chain, wallet: Address) => {
       if(balanceResults) {
         let balance = parseBN(balanceResults[0]);
         if(balance > 0) {
-          let newNFTs = await addTrackedNFTs(chain, 'wallet', 'none', nft, wallet);
+          let newNFTs = await addTrackedNFTs(chain, 'wallet', 'none', nft, balance, wallet);
           nfts.push(...newNFTs);
         }
       }
@@ -823,10 +824,12 @@ const addTrackedToken = async (chain: Chain, location: string, status: TokenStat
  * @param owner - The NFT owner's wallet address.
  * @returns An array of NFT objects with all their information.
  */
-const addTrackedNFTs = async (chain: Chain, location: string, status: TokenStatus, nft: NFTData, owner: Address): Promise<NFT[]> => {
+const addTrackedNFTs = async (chain: Chain, location: string, status: TokenStatus, nft: NFTData, balance: number, owner: Address): Promise<NFT[]> => {
 
-  // Initializing Wallet NFT Collection:
+  // Initializations:
   let nfts: NFT[] = [];
+  let idCalls: CallContext[] = [];
+  let dataCalls: CallContext[] = [];
 
   // Initializing NFT Values:
   let type: TokenType = 'nft';
@@ -834,19 +837,34 @@ const addTrackedNFTs = async (chain: Chain, location: string, status: TokenStatu
   let address = nft.address;
 
   // Finding Collection Info:
-  let dataCalls: CallContext[] = [];
-  let IDs: number[] = (await query(chain, nft.address, nftABI, 'tokensOfOwner', [owner])).map((id: string) => parseInt(id));
-  IDs.forEach(id => {
-    dataCalls.push({ reference: id.toString(), methodName: 'tokenURI', methodParameters: [id] });
-  });
-  let multicallResults = await multicallOneContractQuery(chain, nft.address, nftABI, dataCalls);
-  IDs.forEach(id => {
-    let dataResults = multicallResults[id.toString()];
-    if(dataResults) {
-      let data: string = dataResults[0];
-      nfts.push({ type, chain, location, status, owner, name, address, id, data })
+  if(nft.dataQuery === 'indexed') {
+    for(let i = 0; i < balance; i++) {
+      idCalls.push({ reference: i.toString(), methodName: 'tokenOfOwnerByIndex', methodParameters: [owner, i] });
     }
-  });
+    let idMulticallResults = await multicallOneContractQuery(chain, nft.address, nftABI, idCalls);
+    Object.keys(idMulticallResults).forEach(index => {
+      let id = parseBN(idMulticallResults[index][0]);
+      dataCalls.push({ reference: id.toString(), methodName: 'tokenURI', methodParameters: [id] });
+    });
+    let dataMulticallResults = await multicallOneContractQuery(chain, nft.address, nftABI, dataCalls);
+    let promises = Object.keys(dataMulticallResults).map(stringID => (async () => {
+      let id = parseInt(stringID);
+      let data: string = dataMulticallResults[stringID][0];
+      if(data.startsWith('data:application/json;base64')) {
+        data = Buffer.from(data.slice(29), 'base64').toString();
+      } else if(data.startsWith('http')) {
+        data = (await axios.get(data)).data;
+      } else if(data.startsWith('ipfs')) {
+        // <TODO> IPFS Data Fetching
+      }
+      nfts.push({ type, chain, location, status, owner, name, address, id, data });
+    })());
+    await Promise.all(promises);
+  } else {
+    for(let i = 0; i < balance; i++) {
+      nfts.push({ type, chain, location, status, owner, name, address });
+    }
+  }
 
   return nfts;
 }

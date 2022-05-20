@@ -110,7 +110,9 @@ export const eth_data: ChainTokenData = {
     { symbol: 'THETA', logo: 'https://etherscan.io/token/images/theta_28.png' },
     { symbol: 'ZIL', logo: 'https://etherscan.io/token/images/zilliqa_28_2.png' }
   ],
-  nfts: []
+  nfts: [
+    { address: '0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85', dataQuery: 'none', name: 'ENS Domain' }
+  ]
 }
 
 /* ========================================================================================================================================================================= */
@@ -574,7 +576,26 @@ export const avax_data: ChainTokenData = {
     { symbol: 'GTR', logo: 'https://snowtrace.io/token/images/alligatorexchange2_32.png' }
   ],
   nfts: [
-    { address: '0x3555cAB4b6628BeEA81d20Cb8a832A16B69671F7', name: 'Snowball NFT Birthday' }
+    { address: '0x3555cAB4b6628BeEA81d20Cb8a832A16B69671F7', dataQuery: 'indexed', name: 'Snowball: Birthday' },
+    { address: '0x9fF1918d212c435AD1F1734E9C4DC2DB835161Af', dataQuery: 'indexed', name: 'Snowball: Holiday Hat' },
+    { address: '0x16437ED3d48315865173B85A81972f42B08732E4', dataQuery: 'indexed', name: 'Snowball: Claimed Holiday Hat' },
+    { address: '0x446363DCe932849A48fF073295bfEAE43d4BbcdD', dataQuery: 'indexed', name: 'Cookie Game: Season 2' },
+    { address: '0xeaca081BBa46dEa92AEEF05C7f420119E2e42660', dataQuery: 'indexed', name: 'Lost Worlds: Summit Mainnet Stage' },
+    { address: '0xb0De7DF258e50EADcB215a7b746Ca82d6Fd1743C', dataQuery: 'indexed', name: 'Lost Worlds: Summit Monastery' },
+    { address: '0xE4333defc6bd27aD6D9961E5151656e9b3276103', dataQuery: 'indexed', name: 'Lost Worlds: Summit Subnet Stage' },
+    { address: '0x483d6101AAD7A20ca710b635484f0950e49F3Fe3', dataQuery: 'indexed', name: 'Lost Worlds: Summit Tent' },
+    { address: '0xC876b169076437DA243324E4975Fa06300bC8f3a', dataQuery: 'indexed', name: 'Lost Worlds: Summit Plaza Aragonesa' },
+    { address: '0xe36031bd96aff29e399668Fe5f347ABdF2783ce4', dataQuery: 'indexed', name: 'Lost Worlds: Summit Trader Joe Booth' },
+    { address: '0xCd9199faFB70C63De5631FF217CeDf4D2358C80C', dataQuery: 'indexed', name: 'Lost Worlds: Summit Colony Booth' },
+    { address: '0x48bf0611d86C0C04bEfcE35cB8fDF42FF135c0F4', dataQuery: 'indexed', name: 'Lost Worlds: Summit Crabada Booth' },
+    { address: '0x71651161b45FF1b6c1C94A544ca1111Af8191292', dataQuery: 'indexed', name: 'Lost Worlds: Summit Garden' },
+    { address: '0x81D2E9dF4E634D44b1750820aD92e84f124Bc851', dataQuery: 'indexed', name: 'Lost Worlds: North America' },
+    { address: '0xDB52860f308CFfE8DA6EB7281f3Bb4C92C21B121', dataQuery: 'indexed', name: 'Lost Worlds: Antarctica' },
+    { address: '0x848697c66a7161ED9C4B9be1f59b83Fd11524BBd', dataQuery: 'indexed', name: 'Lost Worlds: Europe' },
+    { address: '0x8E3e91f8F214d49CBd6EA54B864EA626403B4DFf', dataQuery: 'indexed', name: 'Lost Worlds: Asia' },
+    { address: '0x6C1cBbF47B846CB1989FD6b6cCb3013a624726bE', dataQuery: 'indexed', name: 'Lost Worlds: Africa' },
+    { address: '0xA3c1145e42e78D08c8F9AB2De9C66bb180aD8Bfa', dataQuery: 'indexed', name: 'Lost Worlds: South America' },
+    { address: '0xF7B6c94837d9fA6162EDA75F0909b21eE54534BB', dataQuery: 'none', name: 'Heroes Chained: MayinHara' }
   ]
 }
 

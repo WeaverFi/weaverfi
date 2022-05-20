@@ -18,6 +18,9 @@ export type TXType = 'transfer' | 'approve' | 'revoke';
 // Price Source Types:
 export type PriceSource = 'chain' | 'coingecko' | '1inch' | 'paraswap';
 
+// NFT Data Query Types:
+export type NFTDataQueryType = 'none' | 'indexed';
+
 // Generic Types:
 export type URL = `https://${string}`;
 export type Hash = `0x${string}`;
@@ -96,8 +99,8 @@ export interface NFT {
     owner: Address
     name: string
     address: Address
-    id: number
-    data: string
+    id?: number
+    data?: string
 }
 
 /* ========================================================================================================================================================================= */
@@ -210,6 +213,7 @@ export interface LogoData {
 }
 export interface NFTData {
     address: Address
+    dataQuery: NFTDataQueryType
     name: string
 }
 
