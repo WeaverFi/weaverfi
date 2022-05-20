@@ -1,9 +1,19 @@
 import { create, IPFS } from 'ipfs-core';
 
-// Method to get (and create on first run) a functional IPFS node:
+// Variable to store our IPFS node:
 let globalNode: Promise<IPFS> | undefined;
+
+/**
+ * Method to get (and create on first run) a functional IPFS node.
+ * We are "lazy" loading the IPFS node so it only starts if the application needs it 
+ * and only starts once if needed multiple times.
+ * @returns Promise of IPFS node
+ */
 export async function IPFSNode() {
   if(!globalNode) {
+    /**
+     * @warning Assign the promise, NOT THE NODE! (this ensures we don't start the node multiple times on accident):
+     */
     globalNode = create();
   }
   return await globalNode;
