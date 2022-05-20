@@ -70,6 +70,7 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 - `getTokenPrices()`
 - `getTokenPrice(address)`
 - `updateTokenPrice(priceData)`
+- `fetchPrices()`
 
 The ETH chain also contains the `resolveENS(ensDomain)` and `lookupENS(address)` methods.
 

@@ -71,6 +71,8 @@ const tests = async () => {
   // console.log('🕷️ ~ nativeTokenPrices', nativeTokenPrices);
   // let prices = weaver.fetchPrices();
   // console.log('🕷️ ~ prices', prices);
+  // let chainPrices = weaver.ETH.fetchPrices();
+  // console.log('🕷️ ~ chainPrices', chainPrices);
   // let tokenPrices = await weaver.ETH.getTokenPrices();
   // console.log('🕷️ ~ tokenPrices', tokenPrices);
   // let tokenPrice = await weaver.ETH.getTokenPrice(defaultAddress, 18);

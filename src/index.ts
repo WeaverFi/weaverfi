@@ -5,9 +5,10 @@ import * as ipfs from './ipfs';
 import * as evm from './functions';
 import { chains } from './chains';
 import { projects } from './projects';
+import { chainFunctions } from './chain-functions';
 
 // Type Imports:
-import type { Chain, Address, ENSDomain, TokenData, TokenPriceData, ABI, UpperCaseChain } from './types';
+import type { Address, ENSDomain, UpperCaseChain } from './types';
 
 /* ========================================================================================================================================================================= */
 
@@ -16,48 +17,7 @@ export const WeaverFi = {
 
   // Ethereum Functions:
   ETH: {
-    query: (address: Address, abi: ABI[], method: string, args: any[]) => {
-      return evm.query('eth', address, abi, method, args);
-    },
-    isAddress: (address: Address) => {
-      return evm.isAddress(address);
-    },
-    getTXCount: (wallet: Address) => {
-      return evm.getWalletTXCount('eth', wallet);
-    },
-    getWalletBalance: (wallet: Address) => {
-      return evm.getWalletBalance('eth', wallet);
-    },
-    getProjectBalance: (wallet: Address, project: string) => {
-      return evm.getProjectBalance('eth', wallet, project);
-    },
-    getAllProjectBalances: (wallet: Address) => {
-      return evm.getAllProjectBalances('eth', wallet);
-    },
-    getNFTBalance: (wallet: Address) => {
-      return evm.getWalletNFTBalance('eth', wallet);
-    },
-    getTokens: () => {
-      return evm.getTokens('eth');
-    },
-    getTokenLogo: (symbol: string) => {
-      return evm.getTokenLogo('eth', symbol);
-    },
-    getInfo: () => {
-      return chains['eth'];
-    },    
-    getProjects: () => {
-      return projects['eth'];
-    },
-    getTokenPrices: () => {
-      return $.getChainTokenPrices('eth');
-    },
-    getTokenPrice: (address: Address, decimals?: number) => {
-      return $.getTokenPrice('eth', address, decimals);
-    },
-    updateTokenPrice: (priceData: TokenPriceData) => {
-      return $.updatePrices('eth', priceData);
-    },
+    ...chainFunctions('eth'),
     resolveENS: (address: ENSDomain) => {
       return evm.resolveENS(address);
     },
@@ -67,430 +27,107 @@ export const WeaverFi = {
   },
 
   // Binance Smart Chain Functions:
-  BSC: {
-    query: (address: Address, abi: ABI[], method: string, args: any[]) => {
-      return evm.query('bsc', address, abi, method, args);
-    },
-    isAddress: (address: Address) => {
-      return evm.isAddress(address);
-    },
-    getTXCount: (wallet: Address) => {
-      return evm.getWalletTXCount('bsc', wallet);
-    },
-    getWalletBalance: (wallet: Address) => {
-      return evm.getWalletBalance('bsc', wallet);
-    },
-    getProjectBalance: (wallet: Address, project: string) => {
-      return evm.getProjectBalance('bsc', wallet, project);
-    },
-    getAllProjectBalances: (wallet: Address) => {
-      return evm.getAllProjectBalances('bsc', wallet);
-    },
-    getNFTBalance: (wallet: Address) => {
-      return evm.getWalletNFTBalance('bsc', wallet);
-    },
-    getTokens: () => {
-      return evm.getTokens('bsc');
-    },
-    getTokenLogo: (symbol: string) => {
-      return evm.getTokenLogo('bsc', symbol);
-    },
-    getInfo: () => {
-      return chains['bsc'];
-    },    
-    getProjects: () => {
-      return projects['bsc'];
-    },
-    getTokenPrices: () => {
-      return $.getChainTokenPrices('bsc');
-    },
-    getTokenPrice: (address: Address, decimals?: number) => {
-      return $.getTokenPrice('bsc', address, decimals);
-    },
-    updateTokenPrice: (priceData: TokenPriceData) => {
-      return $.updatePrices('bsc', priceData);
-    }
-  },
+  BSC: chainFunctions('bsc'),
 
   // Polygon Functions:
-  POLY: {
-    query: (address: Address, abi: ABI[], method: string, args: any[]) => {
-      return evm.query('poly', address, abi, method, args);
-    },
-    isAddress: (address: Address) => {
-      return evm.isAddress(address);
-    },
-    getTXCount: (wallet: Address) => {
-      return evm.getWalletTXCount('poly', wallet);
-    },
-    getWalletBalance: (wallet: Address) => {
-      return evm.getWalletBalance('poly', wallet);
-    },
-    getProjectBalance: (wallet: Address, project: string) => {
-      return evm.getProjectBalance('poly', wallet, project);
-    },
-    getAllProjectBalances: (wallet: Address) => {
-      return evm.getAllProjectBalances('poly', wallet);
-    },
-    getNFTBalance: (wallet: Address) => {
-      return evm.getWalletNFTBalance('poly', wallet);
-    },
-    getTokens: () => {
-      return evm.getTokens('poly');
-    },
-    getTokenLogo: (symbol: string) => {
-      return evm.getTokenLogo('poly', symbol);
-    },
-    getInfo: () => {
-      return chains['poly'];
-    },    
-    getProjects: () => {
-      return projects['poly'];
-    },
-    getTokenPrices: () => {
-      return $.getChainTokenPrices('poly');
-    },
-    getTokenPrice: (address: Address, decimals?: number) => {
-      return $.getTokenPrice('poly', address, decimals);
-    },
-    updateTokenPrice: (priceData: TokenPriceData) => {
-      return $.updatePrices('poly', priceData);
-    }
-  },
+  POLY: chainFunctions('poly'),
 
   // Fantom Functions:
-  FTM: {
-    query: (address: Address, abi: ABI[], method: string, args: any[]) => {
-      return evm.query('ftm', address, abi, method, args);
-    },
-    isAddress: (address: Address) => {
-      return evm.isAddress(address);
-    },
-    getTXCount: (wallet: Address) => {
-      return evm.getWalletTXCount('ftm', wallet);
-    },
-    getWalletBalance: (wallet: Address) => {
-      return evm.getWalletBalance('ftm', wallet);
-    },
-    getProjectBalance: (wallet: Address, project: string) => {
-      return evm.getProjectBalance('ftm', wallet, project);
-    },
-    getAllProjectBalances: (wallet: Address) => {
-      return evm.getAllProjectBalances('ftm', wallet);
-    },
-    getNFTBalance: (wallet: Address) => {
-      return evm.getWalletNFTBalance('ftm', wallet);
-    },
-    getTokens: () => {
-      return evm.getTokens('ftm');
-    },
-    getTokenLogo: (symbol: string) => {
-      return evm.getTokenLogo('ftm', symbol);
-    },
-    getInfo: () => {
-      return chains['ftm'];
-    },
-    getProjects: () => {
-      return projects['ftm'];
-    },
-    getTokenPrices: () => {
-      return $.getChainTokenPrices('ftm');
-    },
-    getTokenPrice: (address: Address, decimals?: number) => {
-      return $.getTokenPrice('ftm', address, decimals);
-    },
-    updateTokenPrice: (priceData: TokenPriceData) => {
-      return $.updatePrices('ftm', priceData);
-    }
-  },
+  FTM: chainFunctions('ftm'),
 
   // Avalanche Functions:
-  AVAX: {
-    query: (address: Address, abi: ABI[], method: string, args: any[]) => {
-      return evm.query('avax', address, abi, method, args);
-    },
-    isAddress: (address: Address) => {
-      return evm.isAddress(address);
-    },
-    getTXCount: (wallet: Address) => {
-      return evm.getWalletTXCount('avax', wallet);
-    },
-    getWalletBalance: (wallet: Address) => {
-      return evm.getWalletBalance('avax', wallet);
-    },
-    getProjectBalance: (wallet: Address, project: string) => {
-      return evm.getProjectBalance('avax', wallet, project);
-    },
-    getAllProjectBalances: (wallet: Address) => {
-      return evm.getAllProjectBalances('avax', wallet);
-    },
-    getNFTBalance: (wallet: Address) => {
-      return evm.getWalletNFTBalance('avax', wallet);
-    },
-    getTokens: () => {
-      return evm.getTokens('avax');
-    },
-    getTokenLogo: (symbol: string) => {
-      return evm.getTokenLogo('avax', symbol);
-    },
-    getInfo: () => {
-      return chains['avax'];
-    },
-    getProjects: () => {
-      return projects['avax'];
-    },
-    getTokenPrices: () => {
-      return $.getChainTokenPrices('avax');
-    },
-    getTokenPrice: (address: Address, decimals?: number) => {
-      return $.getTokenPrice('avax', address, decimals);
-    },
-    updateTokenPrice: (priceData: TokenPriceData) => {
-      return $.updatePrices('avax', priceData);
-    }
-  },
+  AVAX: chainFunctions('avax'),
 
   // Harmony Functions:
-  ONE: {
-    query: (address: Address, abi: ABI[], method: string, args: any[]) => {
-      return evm.query('one', address, abi, method, args);
-    },
-    isAddress: (address: Address) => {
-      return evm.isAddress(address);
-    },
-    getTXCount: (wallet: Address) => {
-      return evm.getWalletTXCount('one', wallet);
-    },
-    getWalletBalance: (wallet: Address) => {
-      return evm.getWalletBalance('one', wallet);
-    },
-    getProjectBalance: (wallet: Address, project: string) => {
-      return evm.getProjectBalance('one', wallet, project);
-    },
-    getAllProjectBalances: (wallet: Address) => {
-      return evm.getAllProjectBalances('one', wallet);
-    },
-    getNFTBalance: (wallet: Address) => {
-      return evm.getWalletNFTBalance('one', wallet);
-    },
-    getTokens: () => {
-      return evm.getTokens('one');
-    },
-    getTokenLogo: (symbol: string) => {
-      return evm.getTokenLogo('one', symbol);
-    },
-    getInfo: () => {
-      return chains['one'];
-    },
-    getProjects: () => {
-      return projects['one'];
-    },
-    getTokenPrices: () => {
-      return $.getChainTokenPrices('one');
-    },
-    getTokenPrice: (address: Address, decimals?: number) => {
-      return $.getTokenPrice('one', address, decimals);
-    },
-    updateTokenPrice: (priceData: TokenPriceData) => {
-      return $.updatePrices('one', priceData);
-    }
-  },
+  ONE: chainFunctions('one'),
 
   // Cronos Functions:
-  CRONOS: {
-    query: (address: Address, abi: ABI[], method: string, args: any[]) => {
-      return evm.query('cronos', address, abi, method, args);
-    },
-    isAddress: (address: Address) => {
-      return evm.isAddress(address);
-    },
-    getTXCount: (wallet: Address) => {
-      return evm.getWalletTXCount('cronos', wallet);
-    },
-    getWalletBalance: (wallet: Address) => {
-      return evm.getWalletBalance('cronos', wallet);
-    },
-    getProjectBalance: (wallet: Address, project: string) => {
-      return evm.getProjectBalance('cronos', wallet, project);
-    },
-    getAllProjectBalances: (wallet: Address) => {
-      return evm.getAllProjectBalances('cronos', wallet);
-    },
-    getNFTBalance: (wallet: Address) => {
-      return evm.getWalletNFTBalance('cronos', wallet);
-    },
-    getTokens: () => {
-      return evm.getTokens('cronos');
-    },
-    getTokenLogo: (symbol: string) => {
-      return evm.getTokenLogo('cronos', symbol);
-    },
-    getInfo: () => {
-      return chains['cronos'];
-    },
-    getProjects: () => {
-      return projects['cronos'];
-    },
-    getTokenPrices: () => {
-      return $.getChainTokenPrices('cronos');
-    },
-    getTokenPrice: (address: Address, decimals?: number) => {
-      return $.getTokenPrice('cronos', address, decimals);
-    },
-    updateTokenPrice: (priceData: TokenPriceData) => {
-      return $.updatePrices('cronos', priceData);
-    }
-  },
+  CRONOS: chainFunctions('cronos'),
 
   // Optimism Functions:
-  OP: {
-    query: (address: Address, abi: ABI[], method: string, args: any[]) => {
-      return evm.query('op', address, abi, method, args);
-    },
-    isAddress: (address: Address) => {
-      return evm.isAddress(address);
-    },
-    getTXCount: (wallet: Address) => {
-      return evm.getWalletTXCount('op', wallet);
-    },
-    getWalletBalance: (wallet: Address) => {
-      return evm.getWalletBalance('op', wallet);
-    },
-    getProjectBalance: (wallet: Address, project: string) => {
-      return evm.getProjectBalance('op', wallet, project);
-    },
-    getAllProjectBalances: (wallet: Address) => {
-      return evm.getAllProjectBalances('op', wallet);
-    },
-    getNFTBalance: (wallet: Address) => {
-      return evm.getWalletNFTBalance('op', wallet);
-    },
-    getTokens: () => {
-      return evm.getTokens('op');
-    },
-    getTokenLogo: (symbol: string) => {
-      return evm.getTokenLogo('op', symbol);
-    },
-    getInfo: () => {
-      return chains['op'];
-    },
-    getProjects: () => {
-      return projects['op'];
-    },
-    getTokenPrices: () => {
-      return $.getChainTokenPrices('op');
-    },
-    getTokenPrice: (address: Address, decimals?: number) => {
-      return $.getTokenPrice('op', address, decimals);
-    },
-    updateTokenPrice: (priceData: TokenPriceData) => {
-      return $.updatePrices('op', priceData);
-    }
-  },
+  OP: chainFunctions('op'),
 
   // Arbitrum Functions:
-  ARB: {
-    query: (address: Address, abi: ABI[], method: string, args: any[]) => {
-      return evm.query('arb', address, abi, method, args);
-    },
-    isAddress: (address: Address) => {
-      return evm.isAddress(address);
-    },
-    getTXCount: (wallet: Address) => {
-      return evm.getWalletTXCount('arb', wallet);
-    },
-    getWalletBalance: (wallet: Address) => {
-      return evm.getWalletBalance('arb', wallet);
-    },
-    getProjectBalance: (wallet: Address, project: string) => {
-      return evm.getProjectBalance('arb', wallet, project);
-    },
-    getAllProjectBalances: (wallet: Address) => {
-      return evm.getAllProjectBalances('arb', wallet);
-    },
-    getNFTBalance: (wallet: Address) => {
-      return evm.getWalletNFTBalance('arb', wallet);
-    },
-    getTokens: () => {
-      return evm.getTokens('arb');
-    },
-    getTokenLogo: (symbol: string) => {
-      return evm.getTokenLogo('arb', symbol);
-    },
-    getInfo: () => {
-      return chains['arb'];
-    },
-    getProjects: () => {
-      return projects['arb'];
-    },
-    getTokenPrices: () => {
-      return $.getChainTokenPrices('arb');
-    },
-    getTokenPrice: (address: Address, decimals?: number) => {
-      return $.getTokenPrice('arb', address, decimals);
-    },
-    updateTokenPrice: (priceData: TokenPriceData) => {
-      return $.updatePrices('arb', priceData);
-    }
-  },
+  ARB: chainFunctions('arb'),
 
   /* ================================================== */
 
-  // Function to get all supported chains:
+  /**
+   * Function to get all supported chains.
+   * @returns An array of all supported chain abbreviations.
+   */
   getAllChains: () => {
     return Object.keys(projects).map(chain => chain.toUpperCase() as UpperCaseChain);
   },
 
-  // Function to get info from all supported chains:
+  /**
+   * Function to fetch information from all supported chains.
+   * @returns A record of chain information in JSON format.
+   */
   getAllChainInfo: () => {
     return chains;
   },
 
-  // Function to get all supported projects:
+  /**
+   * Function to get a list of all supported projects.
+   * @returns A record of project name arrays for each chain.
+   */
   getAllProjects: () => {
     return projects;
   },
 
-  // Function to get a list of all tracked tokens:
+  /**
+   * Function to get a list of all tracked tokens on all chains.
+   * @returns A record of arrays of tracked tokens on every chain.
+   */
   getAllTokens: () => {
-    let tokens: Record<Chain, TokenData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [], op: [], arb: [] };
-    Object.keys(tokens).forEach(stringChain => {
-      let chain = stringChain as Chain;
-      tokens[chain].push(...evm.getTokens(chain));
-    });
-    return tokens;
+    return evm.getAllTokens();
   },
 
-  // Function to get all tracked token's prices:
+  /**
+   * Function to populate the `prices` object with all tracked tokens' prices.
+   * @returns Current state of the `prices` object post-update.
+   */
   getAllTokenPrices: () => {
     return $.getAllTokenPrices();
   },
 
-  // Function to get native token prices from each chain:
+  /**
+   * Function to populate the `prices` object with all native tokens' prices.
+   * @returns Current state of the `prices` object post-update.
+   */
   getNativeTokenPrices: () => {
     return $.getNativeTokenPrices();
   },
 
-  // Function to fetch all previously queried token prices:
-  fetchPrices: (chain?: Chain) => {
-    if(chain) {
-      return $.prices[chain];
-    } else {
-      return $.prices;
-    }
+  /**
+   * Function to fetch all previously queried token prices.
+   * @returns Current state of the `prices` object for all chains.
+   */
+  fetchPrices: () => {
+    return $.prices;
   },
 
-  // Function to fetch all balances from each chain:
+  /**
+   * Function to fetch all balances for a given wallet, including in their wallets and in dapps/projects.
+   * @param wallet The wallet to query balances for.
+   * @returns A wallet's token, project and NFT balances.
+   */
   getAllBalances: (wallet: Address) => {
     return evm.getAllBalances(wallet);
   },
 
-  // Function to get a local IPFS node:
+  /**
+   * Function to get (or create on first run) a functional IPFS node.
+   * @returns Promise of an IPFS node.
+   */
   getIPFSNode: () => {
     return ipfs.getIPFSNode();
   },
 
-  // Function to stop the local IPFS node:
+  /**
+   * Method to stop the currently running IPFS node, if any.
+   */
   stopIPFSNode: () => {
     return ipfs.killIPFSNode();
   }

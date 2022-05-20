@@ -650,6 +650,21 @@ export const addXToken = async (chain: Chain, location: string, status: TokenSta
 /* ========================================================================================================================================================================= */
 
 /**
+ * Function to get a list of all tracked tokens on all chains.
+ * @returns A record of arrays of tracked tokens on every chain.
+ */
+export const getAllTokens = () => {
+  let tokens: Record<Chain, TokenData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [], op: [], arb: [] };
+  Object.keys(tokens).forEach(stringChain => {
+    let chain = stringChain as Chain;
+    tokens[chain].push(...getTokens(chain));
+  });
+  return tokens;
+}
+
+/* ========================================================================================================================================================================= */
+
+/**
  * Function to get a list of all tracked tokens on any given chain.
  * @param chain - The chain to fetch tracked tokens from.
  * @returns An array of all tracked tokens in the given chain.

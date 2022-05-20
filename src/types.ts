@@ -90,7 +90,7 @@ export function isXToken(token: OwnedToken): token is XToken {
 
 /* ========================================================================================================================================================================= */
 
-// NFT Interfaces:
+// NFT Interface:
 export interface NFT {
     type: TokenType
     chain: Chain
@@ -219,7 +219,7 @@ export interface NFTData {
 
 /* ========================================================================================================================================================================= */
 
-// Token Price Data Interfaces:
+// Token Price Data Interface:
 export interface TokenPriceData {
     symbol: string | null
     address: Address
@@ -230,7 +230,7 @@ export interface TokenPriceData {
 
 /* ========================================================================================================================================================================= */
 
-// Multicall Interfaces:
+// Multicall Interface:
 export interface CallContext {
     reference: string
     methodName: string
