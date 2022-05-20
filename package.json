@@ -1,6 +1,6 @@
 {
   "name": "weaverfi",
-  "version": "1.20.9",
+  "version": "1.20.10",
   "description": "The NPM package to query DeFi.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -31,6 +31,7 @@
   "author": "WeaverFi",
   "license": "MIT",
   "homepage": "https://github.com/CookieTrack-io/weaverfi#readme",
+  "funding": "https://github.com/CookieTrack-io/weaverfi/blob/main/CONTRIBUTING.md#donations",
   "bugs": {
     "url": "https://github.com/CookieTrack-io/weaverfi/labels/bug"
   },

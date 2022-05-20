@@ -1,9 +1,8 @@
 # Contribution Guidelines
 
-The easiest way to find ways to contribute to WeaverFi's development is to browse the following:
+The `Issues` section of this repository can be sorted by items with the `Help Wanted` label.
 
-- The `Projects` section of this repository will have many issues listed as `To Do`.
-- The `Issues` section of this repository can be sorted by items with the `Help Wanted` label.
+Not a developer? Feel free to reach out to us on [Discord](https://discord.com/invite/DzADcq7y75) with feedback, suggestions, or make a [donation](#donations) to help fund development!
 
 ## Suggesting Support for New Dapp
 
@@ -12,6 +11,16 @@ Want a new dapp to be supported by WeaverFi? Feel free to create a new issue her
 ## Reporting Bugs
 
 Found a bug? You can either choose to report it in our [Discord server](https://discord.com/invite/DzADcq7y75) in the #bug-reports channel, or by creating an issue in this repository. To do so, go to `Issues`, `New Issue`, and you'll see a `Bug Report` template you can use to facilitate your report.
+
+## Donations
+
+Donations can be made to support the development of WeaverFi through the following wallet addresses:
+
+**Ethereum:** ncookie.eth
+
+**BSC/Polygon/Fantom/Avalanche/Harmony/Cronos/Optimism/Arbitrum:** 0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E
+
+We plan to soon change our donation structure to allocate some of the funds towards hosting costs, and the rest distributed among contributors.
 
 ## Adding Support for New Dapp Yourself
 
@@ -30,19 +39,9 @@ If your PR isn't reviewed right away, reach out in our [Discord server](https://
 
 ## Tracking New Token
 
-In order to track a new token, first ensure it has a price feed available either through CoinGecko, ParaSwap or 1Inch.
+In order to track a new token, first ensure it has a price feed available either through CoinGecko, ParaSwap or 1Inch (not necessary for NFTs).
 
-If so, simply add the token's information to `/src/tokens.ts`.
-
-## Donations
-
-Donations can be made to support the development of WeaverFi through the following wallet addresses:
-
-**Ethereum:** ncookie.eth
-
-**BSC/Polygon/Fantom/Avalanche/Harmony/Cronos/Optimism/Arbitrum:** 0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E
-
-We plan to soon change our donation structure to allocate some of the funds towards hosting costs, and the rest distributed among contributors.
+Simply add the token's information to `/src/tokens.ts` under its appropriate chain!
 
 ## Other Contributions
 
