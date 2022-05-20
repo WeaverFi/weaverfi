@@ -111,7 +111,9 @@ export const eth_data: ChainTokenData = {
     { symbol: 'ZIL', logo: 'https://etherscan.io/token/images/zilliqa_28_2.png' }
   ],
   nfts: [
-    { address: '0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85', dataQuery: 'none', name: 'ENS Domain' }
+    { address: '0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85', dataQuery: 'none', name: 'ENS Domain' },
+    { address: '0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB', dataQuery: 'none', name: 'CryptoPunks' },
+    { address: '0x06012c8cf97BEaD5deAe237070F9587f8E7A266d', dataQuery: 'listed', name: 'CryptoKitties' }
   ]
 }
 
@@ -576,9 +578,9 @@ export const avax_data: ChainTokenData = {
     { symbol: 'GTR', logo: 'https://snowtrace.io/token/images/alligatorexchange2_32.png' }
   ],
   nfts: [
-    { address: '0x3555cAB4b6628BeEA81d20Cb8a832A16B69671F7', dataQuery: 'indexed', name: 'Snowball: Birthday' },
-    { address: '0x9fF1918d212c435AD1F1734E9C4DC2DB835161Af', dataQuery: 'indexed', name: 'Snowball: Holiday Hat' },
-    { address: '0x16437ED3d48315865173B85A81972f42B08732E4', dataQuery: 'indexed', name: 'Snowball: Claimed Holiday Hat' },
+    { address: '0x3555cAB4b6628BeEA81d20Cb8a832A16B69671F7', dataQuery: 'listed', name: 'Snowball: Birthday' },
+    { address: '0x9fF1918d212c435AD1F1734E9C4DC2DB835161Af', dataQuery: 'listed', name: 'Snowball: Holiday Hat' },
+    { address: '0x16437ED3d48315865173B85A81972f42B08732E4', dataQuery: 'listed', name: 'Snowball: Claimed Holiday Hat' },
     { address: '0x446363DCe932849A48fF073295bfEAE43d4BbcdD', dataQuery: 'indexed', name: 'Cookie Game: Season 2' },
     { address: '0xeaca081BBa46dEa92AEEF05C7f420119E2e42660', dataQuery: 'indexed', name: 'Lost Worlds: Summit Mainnet Stage' },
     { address: '0xb0De7DF258e50EADcB215a7b746Ca82d6Fd1743C', dataQuery: 'indexed', name: 'Lost Worlds: Summit Monastery' },

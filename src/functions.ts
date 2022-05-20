@@ -836,7 +836,7 @@ const addTrackedNFTs = async (chain: Chain, location: string, status: TokenStatu
   let name = nft.name;
   let address = nft.address;
 
-  // Finding Collection Info:
+  // Finding Indexed Collection Info:
   if(nft.dataQuery === 'indexed') {
     for(let i = 0; i < balance; i++) {
       idCalls.push({ reference: i.toString(), methodName: 'tokenOfOwnerByIndex', methodParameters: [owner, i] });
@@ -849,17 +849,26 @@ const addTrackedNFTs = async (chain: Chain, location: string, status: TokenStatu
     let dataMulticallResults = await multicallOneContractQuery(chain, nft.address, nftABI, dataCalls);
     let promises = Object.keys(dataMulticallResults).map(stringID => (async () => {
       let id = parseInt(stringID);
-      let data: string = dataMulticallResults[stringID][0];
-      if(data.startsWith('data:application/json;base64')) {
-        data = Buffer.from(data.slice(29), 'base64').toString();
-      } else if(data.startsWith('http')) {
-        data = (await axios.get(data)).data;
-      } else if(data.startsWith('ipfs')) {
-        // <TODO> IPFS Data Fetching
-      }
+      let data = await decodeNFTData(dataMulticallResults[stringID][0]);
       nfts.push({ type, chain, location, status, owner, name, address, id, data });
     })());
     await Promise.all(promises);
+
+  // Finding Listed Collection Info:
+  } else if(nft.dataQuery === 'listed') {
+    let IDs: number[] = (await query(chain, nft.address, nftABI, 'tokensOfOwner', [owner])).map((id: string) => parseInt(id));
+    IDs.forEach(id => {
+      dataCalls.push({ reference: id.toString(), methodName: 'tokenURI', methodParameters: [id] });
+    });
+    let dataMulticallResults = await multicallOneContractQuery(chain, nft.address, nftABI, dataCalls);
+    let promises = Object.keys(dataMulticallResults).map(stringID => (async () => {
+      let id = parseInt(stringID);
+      let data = await decodeNFTData(dataMulticallResults[stringID][0]);
+      nfts.push({ type, chain, location, status, owner, name, address, id, data });
+    })());
+    await Promise.all(promises);
+
+  // Unsupported Collection Info Formats:
   } else {
     for(let i = 0; i < balance; i++) {
       nfts.push({ type, chain, location, status, owner, name, address });
@@ -888,4 +897,23 @@ const getNativeTokenSymbol = (chain: Chain) => {
   } else {
     return chain.toUpperCase();
   }
+}
+
+/* ========================================================================================================================================================================= */
+
+/**
+ * Helper function to decode NFT URI data.
+ * @param rawData The raw data from the NFT's URI field.
+ * @returns The decoded NFT data in stringified JSON format.
+ */
+const decodeNFTData = async (rawData: any) => {
+  let data: string = rawData;
+  if(rawData.startsWith('rawData:application/json;base64')) {
+    data = Buffer.from(rawData.slice(29), 'base64').toString();
+  } else if(rawData.startsWith('http')) {
+    data = (await axios.get(rawData)).data as string;
+  } else if(rawData.startsWith('ipfs')) {
+    // <TODO> IPFS Data Fetching
+  }
+  return data;
 }

@@ -27,7 +27,8 @@ export const lpABI: ABI[] = [
 export const nftABI: ABI[] = [
   { constant: true, inputs: [{ name: "", type: "address" }], name: "balanceOf", outputs: [{ name: "", type: "uint256" }], type: "function" },
   { constant: true, inputs: [{ name: "tokenId", type: "uint256" }], name: "tokenURI", outputs: [{ name: "", type: "string" }], type: "function" },
-  { constant: true, inputs: [{ name: "owner", type: "address" }, { name: "index", type: "uint256" }], name: "tokenOfOwnerByIndex", outputs: [{ name: "", type: "uint256" }], type: "function" }
+  { constant: true, inputs: [{ name: "owner", type: "address" }, { name: "index", type: "uint256" }], name: "tokenOfOwnerByIndex", outputs: [{ name: "", type: "uint256" }], type: "function" },
+  { constant: true, inputs: [{ name: "owner", type: "address" }], name: "tokensOfOwner", outputs: [{ name: "", type: "uint256[]" }], type: "function" }
 ];
 
 /* ========================================================================================================================================================================= */
