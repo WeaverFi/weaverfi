@@ -1,11 +1,10 @@
 
 // Imports:
-import axios from 'axios';
 import { chains } from './chains';
-import { getChainTokenData, defaultAddress } from './functions';
+import { getChainTokenData, fetchData, defaultAddress } from './functions';
 
 // Type Imports:
-import type { Address, Chain, TokenPriceData, TokenData } from './types';
+import type { Address, Chain, URL, TokenPriceData, TokenData } from './types';
 
 // Prices Object:
 export let prices: Record<Chain, TokenPriceData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [], op: [], arb: [] };
@@ -120,9 +119,9 @@ export const getNativeTokenPrices = async () => {
   });
 
   // Querying Native Token Prices:
-  let apiQuery = `https://api.coingecko.com/api/v3/simple/price/?ids=${stringNativeTokens.slice(0, -1)}&vs_currencies=usd`;
+  let apiQuery: URL = `https://api.coingecko.com/api/v3/simple/price/?ids=${stringNativeTokens.slice(0, -1)}&vs_currencies=usd`;
   try {
-    let response = (await axios.get(apiQuery)).data;
+    let response = await fetchData(apiQuery);
     nativeTokens.forEach(token => {
       updatePrices(token.chain, {
         symbol: chains[token.chain].token,
@@ -244,9 +243,9 @@ export const queryCoinGeckoPrices = async (chain: Chain, addresses: Address[]) =
 
   // Querying Native Asset Price:
   if(needNativeQuery) {
-    let apiQuery = `https://api.coingecko.com/api/v3/simple/price/?ids=${chains[chain].coingeckoIDs.nativeTokenID}&vs_currencies=usd`;
+    let apiQuery: URL = `https://api.coingecko.com/api/v3/simple/price/?ids=${chains[chain].coingeckoIDs.nativeTokenID}&vs_currencies=usd`;
     try {
-      let response = (await axios.get(apiQuery)).data;
+      let response = await fetchData(apiQuery);
       updatePrices(chain, {
         symbol: chains[chain].token,
         address: defaultAddress,
@@ -260,9 +259,9 @@ export const queryCoinGeckoPrices = async (chain: Chain, addresses: Address[]) =
   // Querying Token Prices:
   if(formattedAddresses.length > 0) {
     formattedAddresses = formattedAddresses.slice(0, -1);
-    let apiQuery = `https://api.coingecko.com/api/v3/simple/token_price/${chains[chain].coingeckoIDs.chainID}?contract_addresses=${formattedAddresses}&vs_currencies=usd`;
+    let apiQuery: URL = `https://api.coingecko.com/api/v3/simple/token_price/${chains[chain].coingeckoIDs.chainID}?contract_addresses=${formattedAddresses}&vs_currencies=usd`;
     try {
-      let response = (await axios.get(apiQuery)).data;
+      let response = await fetchData(apiQuery);
       let tokens = Object.keys(response);
       if(tokens.length != 0) {
         tokens.forEach(token => {
@@ -306,9 +305,9 @@ export const query1InchPrice = async (chain: Chain, address: Address, decimals: 
   
     // Querying Token Price:
     } else {
-      let apiQuery = `https://api.1inch.exchange/v4.0/${chains[chain].id}/quote?fromTokenAddress=${address}&toTokenAddress=${chains[chain].usdc}&amount=${10 ** decimals}`;
+      let apiQuery: URL = `https://api.1inch.exchange/v4.0/${chains[chain].id}/quote?fromTokenAddress=${address}&toTokenAddress=${chains[chain].usdc}&amount=${10 ** decimals}`;
       try {
-        let response = (await axios.get(apiQuery)).data;
+        let response = await fetchData(apiQuery);
         if(response.protocols.length < 4) {
           updatePrices(chain, {
             symbol: response.fromToken.symbol,
@@ -348,9 +347,9 @@ export const queryParaSwapPrice = async (chain: Chain, address: Address, decimal
 
     // Querying Token Price:
     } else {
-      let apiQuery = `https://apiv5.paraswap.io/prices?srcToken=${address}&srcDecimals=${decimals}&destToken=${chains[chain].usdc}&destDecimals=${chains[chain].usdcDecimals}&amount=${10 ** decimals}&side=SELL&network=${chains[chain].id}`;
+      let apiQuery: URL = `https://apiv5.paraswap.io/prices?srcToken=${address}&srcDecimals=${decimals}&destToken=${chains[chain].usdc}&destDecimals=${chains[chain].usdcDecimals}&amount=${10 ** decimals}&side=SELL&network=${chains[chain].id}`;
       try {
-        let response = (await axios.get(apiQuery)).data;
+        let response = await fetchData(apiQuery);
         let results = Object.keys(response);
         if(results.length != 0) {
           updatePrices(chain, {

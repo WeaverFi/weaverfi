@@ -1,10 +1,9 @@
 
 // Imports:
-import axios from 'axios';
 import { WeaverError } from '../../error';
 import { minABI, aave } from '../../ABIs';
 import { addAaveBLPToken } from '../../project-functions';
-import { query, multicallQuery, addToken, addDebtToken, addXToken, parseBN } from '../../functions';
+import { query, multicallQuery, addToken, addDebtToken, addXToken, parseBN, fetchData } from '../../functions';
 
 // Type Imports:
 import type { ContractCallContext } from 'ethereum-multicall';
@@ -25,7 +24,7 @@ const apiURL: URL = 'https://aave-api-v2.aave.com/data/liquidity/v2';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken | DebtToken | XToken)[] = [];
-  let markets: AaveAPIResponse[] = (await axios.get(`${apiURL}?poolId=${addressProvider}`)).data;
+  let markets: AaveAPIResponse[] = await fetchData(`${apiURL}?poolId=${addressProvider}`);
   if(markets.length > 0) {
     balance.push(...(await getMarketBalances(markets, wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketBalances()', err) })));
     balance.push(...(await getIncentives(wallet).catch((err) => { throw new WeaverError(chain, project, 'getIncentives()', err) })));

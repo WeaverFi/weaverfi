@@ -1,17 +1,17 @@
 
 // Imports:
-import axios from 'axios';
 import { moonpot } from '../../ABIs';
 import { WeaverError } from '../../error';
 import { add4BeltToken, addBeltToken, addAlpacaToken } from '../../project-functions';
-import { multicallOneMethodQuery, addToken, addLPToken, parseBN } from '../../functions';
+import { multicallOneMethodQuery, addToken, addLPToken, parseBN, fetchData } from '../../functions';
 
 // Type Imports:
-import type { Chain, Address, Token, LPToken, XToken, MoonPotAPIResponse } from '../../types';
+import type { Chain, Address, URL, Token, LPToken, XToken, MoonPotAPIResponse } from '../../types';
 
 // Initializations:
 const chain: Chain = 'bsc';
 const project = 'moonpot';
+const apiURL: URL = 'https://api.moonpot.com/pots';
 
 /* ========================================================================================================================================================================= */
 
@@ -19,7 +19,7 @@ const project = 'moonpot';
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken | XToken)[] = [];
   let pots: MoonPotAPIResponse[] = [];
-  let potsData: Record<string, MoonPotAPIResponse> = (await axios.get('https://api.moonpot.com/pots')).data.data;
+  let potsData: Record<string, MoonPotAPIResponse> = (await fetchData(apiURL)).data;
   let potsKeys = Object.keys(potsData).filter(pot => potsData[pot].status === 'active');
   potsKeys.forEach(key => {
     pots.push(potsData[key]);

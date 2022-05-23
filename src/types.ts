@@ -24,6 +24,8 @@ export type NFTDataQueryType = 'none' | 'indexed' | 'listed';
 // Generic Types:
 export type URL = `https://${string}`;
 export type Hash = `0x${string}`;
+export type IPFS = `ipfs://${string}`;
+export type IPNS = `ipns://${string}`;
 
 /* ========================================================================================================================================================================= */
 

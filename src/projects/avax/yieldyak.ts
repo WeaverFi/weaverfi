@@ -1,10 +1,9 @@
 
 // Imports:
-import axios from 'axios';
 import { WeaverError } from '../../error';
 import { minABI, yieldyak } from '../../ABIs';
 import { addAxialToken } from '../../project-functions';
-import { query, multicallOneMethodQuery, addToken, addLPToken, parseBN, zero } from '../../functions';
+import { query, multicallOneMethodQuery, addToken, addLPToken, parseBN, fetchData, zero } from '../../functions';
 
 // Type Imports:
 import type { Chain, Address, URL, Token, LPToken, YieldYakAPIResponse } from '../../types';
@@ -24,7 +23,7 @@ const apiURL: URL = 'https://staging-api.yieldyak.com/apys';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
-  let farms: Record<Address, YieldYakAPIResponse> = (await axios.get(apiURL)).data;
+  let farms: Record<Address, YieldYakAPIResponse> = await fetchData(apiURL);
   if(Object.keys(farms).length > 0) {
     balance.push(...(await getFarmBalances(wallet, farms).catch((err) => { throw new WeaverError(chain, project, 'getVaultBalances()', err) })));
     balance.push(...(await getStakedYAK(wallet).catch((err) => { throw new WeaverError(chain, project, 'getVaultBalances()', err) })));

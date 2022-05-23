@@ -3,8 +3,6 @@
 import axios from 'axios';
 import { ethers } from 'ethers';
 import { chains } from './chains';
-import { isIPFS } from 'ipfs-core';
-import { getIPFSNode } from './ipfs';
 import { projects } from './projects';
 import { WeaverError } from './error';
 import { getTokenPrice } from './prices';
@@ -14,7 +12,7 @@ import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data, cronos_da
 
 // Type Imports:
 import type { ContractCallResults, ContractCallContext } from 'ethereum-multicall';
-import type { Chain, Address, URL, ABI, ENSDomain, TokenData, NFTData, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken, NFT, CallContext } from './types';
+import type { Chain, Address, URL, IPFS, IPNS, ABI, ENSDomain, TokenData, NFTData, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken, NFT, CallContext } from './types';
 
 // Initializations:
 export const defaultTokenLogo: URL = 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@d5c68edec1f5eaec59ac77ff2b48144679cebca1/32/icon/generic.png';
@@ -790,6 +788,23 @@ export const parseBN = (bn: any) => {
 /* ========================================================================================================================================================================= */
 
 /**
+ * Helper function to query data with Axios.
+ * @param link The link to fetch data from.
+ * @returns Data or undefined if an invalid link is given.
+ */
+ export const fetchData = async (link: URL | IPFS | IPNS) => {
+  if(link.startsWith('https://')) {
+    return (await axios.get(link)).data;
+  } else if(link.startsWith('ipfs://')) {
+    return (await axios.get(`https://dweb.link/ipfs/${link.slice(7)}`)).data;
+  } else if(link.startsWith('ipns://')) {
+    return (await axios.get(`https://dweb.link/ipns/${link.slice(7)}`)).data;
+  }
+}
+
+/* ========================================================================================================================================================================= */
+
+/**
  * Helper function to get an already tracked token's info.
  * @param chain - The chain to fetch data from.
  * @param address - The token's address.
@@ -930,36 +945,28 @@ const resolveNFTData = async (uri: string) => {
 
   // HTTP Data URIs:
   if(uri.startsWith('http')) {
-    data = (await axios.get(uri)).data;
-    if(typeof data !== 'string') {
-      data = JSON.stringify(data);
-    }
+    data = await fetchData(uri as URL);
 
-  // IPFS/IPNS Data URIs:
-  } else if(uri.match(/^[\/]*ipfs|ipns/)) {
-    let ipfsURI = uri;
-    if(uri.match(/^\w{4}:\/\//)) {
-      ipfsURI = "/" + uri.replace("://", "/");
-    }
-
-    // Cleaning IPFS URIs (Accidental '?'s)
-    let searchPosition = ipfsURI.lastIndexOf('?');
+  // IPFS Data URIs:
+  } else if(uri.startsWith('ipfs')) {
+    let searchPosition = uri.lastIndexOf('?');
     if(searchPosition > 0) {
-      let cleanURI = ipfsURI.slice(0, searchPosition);
-      if(isIPFS.urlOrPath(cleanURI)) {
-
-        // Fetching IPFS Data:
-        let ipfsNode = await getIPFSNode();
-        let fileData = ipfsNode.files.read(cleanURI);
-        data = '';
-        for await (let buffer of fileData) {
-          data += Buffer.from(buffer).toString('utf-8');
-        }
-        try {
-          data = JSON.stringify(JSON.parse(data));
-        } catch {}
-      }
+      let cleanURI = uri.slice(0, searchPosition);
+      data = await fetchData(cleanURI as IPFS);
     }
+
+  // IPNS Data URIs:
+  } else if(uri.startsWith('ipns')) {
+    let searchPosition = uri.lastIndexOf('?');
+    if(searchPosition > 0) {
+      let cleanURI = uri.slice(0, searchPosition);
+      data = await fetchData(cleanURI as IPFS);
+    }
+  }
+
+  // Verifying String Format:
+  if(typeof data !== 'string') {
+    data = JSON.stringify(data);
   }
 
   // Decoding Base64 Data:

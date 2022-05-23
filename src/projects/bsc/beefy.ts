@@ -1,10 +1,9 @@
 
 // Imports:
-import axios from 'axios';
 import { WeaverError } from '../../error';
 import { minABI, beefy } from '../../ABIs';
 import { add4BeltToken, addBeltToken, addAlpacaToken } from '../../project-functions';
-import { query, multicallOneMethodQuery, addToken, addLPToken, parseBN } from '../../functions';
+import { query, multicallOneMethodQuery, addToken, addLPToken, parseBN, fetchData } from '../../functions';
 
 // Type Imports:
 import type { Chain, Address, URL, Token, LPToken, XToken, BeefyAPIResponse } from '../../types';
@@ -22,8 +21,8 @@ const apiURL: URL = 'https://api.beefy.finance';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken | XToken)[] = [];
-  let vaultsData: BeefyAPIResponse[] = (await axios.get(apiURL + '/vaults')).data;
-  let apyData: Record<string, number | null> = (await axios.get(apiURL + '/apy')).data;
+  let vaultsData: BeefyAPIResponse[] = await fetchData(`${apiURL}/vaults`);
+  let apyData: Record<string, number | null> = await fetchData(`${apiURL}/apy`);
   let vaults = vaultsData.filter(vault => vault.chain === 'bsc' && vault.status === 'active');
   if(vaults.length > 0) {
     balance.push(...(await getVaultBalances(wallet, vaults, apyData).catch((err) => { throw new WeaverError(chain, project, 'getVaultBalances()', err) })));

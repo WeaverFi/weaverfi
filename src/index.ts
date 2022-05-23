@@ -1,7 +1,6 @@
 
 // Imports:
 import * as $ from './prices';
-import * as ipfs from './ipfs';
 import * as evm from './functions';
 import { chains } from './chains';
 import { projects } from './projects';
@@ -115,21 +114,6 @@ export const WeaverFi = {
    */
   getAllBalances: (wallet: Address) => {
     return evm.getAllBalances(wallet);
-  },
-
-  /**
-   * Function to get (or create on first run) a functional IPFS node.
-   * @returns Promise of an IPFS node.
-   */
-  getIPFSNode: () => {
-    return ipfs.getIPFSNode();
-  },
-
-  /**
-   * Method to stop the currently running IPFS node, if any.
-   */
-  stopIPFSNode: () => {
-    return ipfs.killIPFSNode();
   }
 }
 
