@@ -1,6 +1,6 @@
 {
   "name": "weaverfi",
-  "version": "1.22.0",
+  "version": "1.22.1",
   "description": "The NPM package to query DeFi.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -31,7 +31,16 @@
   "author": "WeaverFi",
   "license": "MIT",
   "homepage": "https://github.com/CookieTrack-io/weaverfi#readme",
-  "funding": "https://github.com/CookieTrack-io/weaverfi/blob/main/CONTRIBUTING.md#donations",
+  "funding": [
+    {
+      "type" : "gitcoin",
+      "url" : "https://gitcoin.co/grants/5854/weaverfi-the-open-source-multi-chain-defi-portfoli"
+    },
+    {
+      "type" : "other",
+      "url" : "https://github.com/CookieTrack-io/weaverfi/blob/main/CONTRIBUTING.md#donations"
+    }
+  ],
   "bugs": {
     "url": "https://github.com/CookieTrack-io/weaverfi/labels/bug"
   },
