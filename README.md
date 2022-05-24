@@ -70,7 +70,7 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 - `updateTokenPrice(priceData)`
 - `fetchPrices()`
 
-The ETH chain also contains the `resolveENS(ensDomain)` and `lookupENS(address)` methods.
+The ETH chain also contains the `resolveENS(name)`, `lookupENS(address)` and `fetchAvatarENS(name)` methods.
 
 ## Chains Supported
 

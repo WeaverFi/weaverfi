@@ -1,5 +1,6 @@
 
 // Imports:
+import * as ens from './ens';
 import * as $ from './prices';
 import * as evm from './functions';
 import { chains } from './chains';
@@ -17,11 +18,32 @@ export const WeaverFi = {
   // Ethereum Functions:
   ETH: {
     ...chainFunctions('eth'),
-    resolveENS: (address: ENSDomain) => {
-      return evm.resolveENS(address);
+
+    /**
+     * Function to resolve an ENS domain name into an address.
+     * @param name - The ENS domain name to resolve.
+     * @returns An address if resolvable, else null.
+     */
+    resolveENS: (name: ENSDomain) => {
+      return ens.resolveENS(name);
     },
+
+    /**
+     * Function to reverse lookup an ENS domain.
+     * @param address - The address to reverse lookup.
+     * @returns An ENS domain name if resolvable, else null.
+     */
     lookupENS: (address: Address) => {
-      return evm.lookupENS(address);
+      return ens.lookupENS(address);
+    },
+
+    /**
+     * Function to fetch an ENS domain's avatar.
+     * @param name - The ENS domain name to query info from.
+     * @returns An avatar URI if available, else null.
+     */
+    fetchAvatarENS: (name: ENSDomain) => {
+      return ens.fetchAvatarENS(name);
     }
   },
 

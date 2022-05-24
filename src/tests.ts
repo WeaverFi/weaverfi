@@ -61,6 +61,8 @@ const tests = async () => {
   // console.log('🕷️ ~ ensAddress', ensAddress);
   // let ensDomain = await weaver.ETH.lookupENS(wallet);
   // console.log('🕷️ ~ ensDomain', ensDomain);
+  // let ensAvatar = await weaver.ETH.fetchAvatarENS('ncookie.eth');
+  // console.log('🕷️ ~ ensAvatar', ensAvatar);
 
   /* ================================================== */
 
