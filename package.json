@@ -1,6 +1,6 @@
 {
   "name": "weaverfi",
-  "version": "1.22.1",
+  "version": "1.22.2",
   "description": "The NPM package to query DeFi.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -34,7 +34,7 @@
   "funding": [
     {
       "type" : "gitcoin",
-      "url" : "https://gitcoin.co/grants/5854/weaverfi-the-open-source-multi-chain-defi-portfoli"
+      "url" : "https://gitcoin.co/grants/5854/weaverfi-the-open-source-defi-portfolio-tracker"
     },
     {
       "type" : "other",

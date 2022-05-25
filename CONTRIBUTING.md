@@ -14,7 +14,7 @@ Found a bug? You can either choose to report it in our [Discord server](https://
 
 ## Donations
 
-Support us on GitCoin [here](https://gitcoin.co/grants/5854/weaverfi-the-open-source-multi-chain-defi-portfoli)!
+Support us on GitCoin [here](https://gitcoin.co/grants/5854/weaverfi-the-open-source-defi-portfolio-tracker)!
 
 Donations can also be made to support the development of WeaverFi through the following wallet addresses:
 
