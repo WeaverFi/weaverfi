@@ -1,6 +1,7 @@
 
 // Imports:
 import axios from 'axios';
+import projectLibrary from './project-lib';
 import { ethers } from 'ethers';
 import { chains } from './chains';
 import { projects } from './projects';
@@ -186,7 +187,7 @@ export const getWalletBalance = async (chain: Chain, wallet: Address) => {
 export const getProjectBalance = async (chain: Chain, wallet: Address, project: string) => {
   let projectBalance: (NativeToken | Token | LPToken | DebtToken | XToken)[] = [];
   if(projects[chain].includes(project)) {
-    let dapp = require(`./projects/${chain}/${project}`);
+    let dapp = projectLibrary[chain][project];
     let balance = await dapp.get(wallet);
     projectBalance.push(...(balance));
   } else {
