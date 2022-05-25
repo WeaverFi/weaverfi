@@ -3,6 +3,7 @@
 // Type Imports:
 import type { Chain } from './types';
 
+// Projects List:
 export const projects: Record<Chain, string[]> = {
 	arb: [
 	],
@@ -83,4 +84,4 @@ export const projects: Record<Chain, string[]> = {
 		'quickswap',
 		'sushiswap',
 	],
-};
+}

@@ -7,7 +7,7 @@
   "scripts": {
     "build": "node pre-build/projects.js && tsc",
     "prepack": "npm run build",
-    "test": "tsc && node dist/tests.js"
+    "test": "npm run build && node dist/tests.js"
   },
   "repository": {
     "type": "git",
