@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ethers } from 'ethers';
 import { chains } from './chains';
 import { projects } from './projects';
+import ProjectLib from './project-lib';
 import { WeaverError } from './error';
 import { getTokenPrice } from './prices';
 import { Multicall } from 'ethereum-multicall';
@@ -186,7 +187,7 @@ export const getWalletBalance = async (chain: Chain, wallet: Address) => {
 export const getProjectBalance = async (chain: Chain, wallet: Address, project: string) => {
   let projectBalance: (NativeToken | Token | LPToken | DebtToken | XToken)[] = [];
   if(projects[chain].includes(project)) {
-    let dapp = require(`./projects/${chain}/${project}`);
+    let dapp = (<any>ProjectLib[chain])[project];
     let balance = await dapp.get(wallet);
     projectBalance.push(...(balance));
   } else {
