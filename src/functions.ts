@@ -189,7 +189,7 @@ export const getProjectBalance = async (chain: Chain, wallet: Address, project: 
   if(projects[chain].includes(project)) {
     let dapp = projectLibrary[chain][project];
     let balance = await dapp.get(wallet);
-    projectBalance.push(...(balance));
+    projectBalance.push(...balance);
   } else {
     throw new WeaverError(chain, null, `Unknown project: ${project}`);
   }

@@ -2,10 +2,10 @@
 // Imports:
 import { WeaverError } from '../../error';
 import { minABI, quickswap } from '../../ABIs';
-import { query, multicallOneMethodQuery, addToken, addLPToken, addXToken, parseBN, zero } from '../../functions';
+import { query, multicallOneMethodQuery, multicallOneContractQuery, addToken, addLPToken, addXToken, parseBN, zero } from '../../functions';
 
 // Type Imports:
-import type { Chain, Address, Token, LPToken, XToken } from '../../types';
+import type { Chain, Address, Token, LPToken, XToken, CallContext } from '../../types';
 
 // Initializations:
 const chain: Chain = 'poly';
@@ -15,8 +15,8 @@ const dualRegistry: Address = '0x9Dd12421C637689c3Fc6e661C9e2f02C2F61b3Eb';
 const quick: Address = '0x831753dd7087cac61ab5644b308642cc1c33dc13';
 const dquick: Address = '0xf28164a485b0b2c90639e47b0f377b4a438a16b1';
 const wmatic: Address = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270';
-const minFarmCount = 165;
-const minDualFarmCount = 5;
+const farmCount = 188;
+const dualFarmCount = 17;
 
 /* ========================================================================================================================================================================= */
 
@@ -112,58 +112,46 @@ export const getStakedQUICK = async (wallet: Address, ratio: number) => {
 
 // Function to get farms:
 const getFarms = async () => {
-  let farms: Address[] = [];
-  let farmIDs = [...Array(minFarmCount + 1).keys()];
-  let promises = farmIDs.map(id => (async () => {
-    let stakingToken = await query(chain, registry, quickswap.registryABI, 'stakingTokens', [id]);
-    let rewardsInfo = await query(chain, registry, quickswap.registryABI, 'stakingRewardsInfoByStakingToken', [stakingToken]);
-    if(rewardsInfo) {
-      farms.push(rewardsInfo.stakingRewards);
-    }
-  })());
-  await Promise.all(promises);
-  let i = minFarmCount;
-  let maxReached = false;
-  while(!maxReached) {
-    let stakingToken = await query(chain, registry, quickswap.registryABI, 'stakingTokens', [++i]);
-    if(stakingToken) {
-      let rewardsInfo = await query(chain, registry, quickswap.registryABI, 'stakingRewardsInfoByStakingToken', [stakingToken]);
-      if(rewardsInfo) {
-        farms.push(rewardsInfo.stakingRewards);
-      }
-    } else {
-      maxReached = true;
-    }
-  }
-  return farms.filter(farm => farm != zero);
+  let farmIDs = [...Array(farmCount + 1).keys()];
+
+  // Token Multicall Query:
+  let tokenCalls: CallContext[] = [];
+  farmIDs.forEach(id => {
+    tokenCalls.push({ reference: id.toString(), methodName: 'stakingTokens', methodParameters: [id] });
+  });
+  let tokenMulticallResults = await multicallOneContractQuery(chain, registry, quickswap.registryABI, tokenCalls);
+
+  // Farms Multicall Query:
+  let tokens = Object.keys(tokenMulticallResults).map(id => tokenMulticallResults[id][0]) as Address[];
+  let farmCalls: CallContext[] = [];
+  tokens.forEach(token => {
+    farmCalls.push({ reference: token, methodName: 'stakingRewardsInfoByStakingToken', methodParameters: [token] });
+  });
+  let farmMulticallResults = await multicallOneContractQuery(chain, registry, quickswap.registryABI, farmCalls);
+  let farms = (Object.keys(farmMulticallResults).map(token => farmMulticallResults[token][0]) as Address[]).filter(farm => farm != zero);
+  return farms;
 }
 
 // Function to get dual reward farms:
 const getDualFarms = async () => {
-  let dualFarms: Address[] = [];
-  let farmIDs = [...Array(minDualFarmCount + 1).keys()];
-  let promises = farmIDs.map(id => (async () => {
-    let stakingToken = await query(chain, dualRegistry, quickswap.dualRegistryABI, 'stakingTokens', [id]);
-    let rewardsInfo = await query(chain, dualRegistry, quickswap.dualRegistryABI, 'stakingRewardsInfoByStakingToken', [stakingToken]);
-    if(rewardsInfo) {
-      dualFarms.push(rewardsInfo.stakingRewards);
-    }
-  })());
-  await Promise.all(promises);
-  let i = minDualFarmCount;
-  let maxReached = false;
-  while(!maxReached) {
-    let stakingToken = await query(chain, dualRegistry, quickswap.dualRegistryABI, 'stakingTokens', [++i]);
-    if(stakingToken) {
-      let rewardsInfo = await query(chain, dualRegistry, quickswap.dualRegistryABI, 'stakingRewardsInfoByStakingToken', [stakingToken]);
-      if(rewardsInfo) {
-        dualFarms.push(rewardsInfo.stakingRewards);
-      }
-    } else {
-      maxReached = true;
-    }
-  }
-  return dualFarms.filter(farm => farm != zero);
+  let farmIDs = [...Array(dualFarmCount + 1).keys()];
+
+  // Token Multicall Query:
+  let tokenCalls: CallContext[] = [];
+  farmIDs.forEach(id => {
+    tokenCalls.push({ reference: id.toString(), methodName: 'stakingTokens', methodParameters: [id] });
+  });
+  let tokenMulticallResults = await multicallOneContractQuery(chain, dualRegistry, quickswap.dualRegistryABI, tokenCalls);
+
+  // Dual Farms Multicall Query:
+  let tokens = Object.keys(tokenMulticallResults).map(id => tokenMulticallResults[id][0]) as Address[];
+  let dualFarmCalls: CallContext[] = [];
+  tokens.forEach(token => {
+    dualFarmCalls.push({ reference: token, methodName: 'stakingRewardsInfoByStakingToken', methodParameters: [token] });
+  });
+  let dualFarmMulticallResults = await multicallOneContractQuery(chain, dualRegistry, quickswap.dualRegistryABI, dualFarmCalls);
+  let dualFarms = (Object.keys(dualFarmMulticallResults).map(token => dualFarmMulticallResults[token][0]) as Address[]).filter(farm => farm != zero);
+  return dualFarms;
 }
 
 // Function to get dQUICK ratio:

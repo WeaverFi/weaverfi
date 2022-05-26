@@ -1,5 +1,6 @@
 /.github/
 /.vscode/
+/pre-build/
 /src/
 /dist/tests.js
 /dist/tests.d.ts
