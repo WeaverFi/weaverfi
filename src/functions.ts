@@ -44,7 +44,7 @@ export const query = async (chain: Chain, address: Address, abi: ABI[], method: 
   let rpcID = 0;
   while(result === undefined && errors < maxQueryRetries) {
     try {
-      let ethers_provider = new ethers.providers.JsonRpcProvider(chains[chain].rpcs[rpcID]);
+      let ethers_provider = new ethers.providers.StaticJsonRpcProvider(chains[chain].rpcs[rpcID]);
       let contract = new ethers.Contract(address, abi, ethers_provider);
       result = await contract[method](...args);
     } catch {
@@ -73,7 +73,7 @@ export const query = async (chain: Chain, address: Address, abi: ABI[], method: 
  */
 export const multicallQuery = async (chain: Chain, queries: ContractCallContext[]) => {
   try {
-    let ethers_provider = new ethers.providers.JsonRpcProvider(chains[chain].rpcs[0]);
+    let ethers_provider = new ethers.providers.StaticJsonRpcProvider(chains[chain].rpcs[0]);
     let multicall = new Multicall({ ethersProvider: ethers_provider, tryAggregate: true, multicallCustomContractAddress: chains[chain].multicall });
     let results: ContractCallResults = await multicall.call(queries);
     return results;
@@ -252,7 +252,7 @@ export const getWalletNativeTokenBalance = async (chain: Chain, wallet: Address)
   let rpcID = 0;
   while(balance === undefined && errors < maxQueryRetries) {
     try {
-      let ethers_provider = new ethers.providers.JsonRpcProvider(chains[chain].rpcs[rpcID]);
+      let ethers_provider = new ethers.providers.StaticJsonRpcProvider(chains[chain].rpcs[rpcID]);
       balance = parseInt((await ethers_provider.getBalance(wallet)).toString());
     } catch {
       if(++rpcID >= chains[chain].rpcs.length) {
@@ -351,7 +351,7 @@ export const getWalletTXCount = async (chain: Chain, wallet: Address) => {
   let rpcID = 0;
   while(txs === undefined && errors < maxQueryRetries) {
     try {
-      let ethers_provider = new ethers.providers.JsonRpcProvider(chains[chain].rpcs[rpcID]);
+      let ethers_provider = new ethers.providers.StaticJsonRpcProvider(chains[chain].rpcs[rpcID]);
       txs = parseInt((await ethers_provider.getTransactionCount(wallet)).toString());
     } catch {
       if(++rpcID >= chains[chain].rpcs.length) {
