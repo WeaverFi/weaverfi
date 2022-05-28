@@ -113,7 +113,10 @@ export const eth_data: ChainTokenData = {
   nfts: [
     { address: '0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85', dataQuery: 'none', name: 'ENS Domain' },
     { address: '0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB', dataQuery: 'none', name: 'CryptoPunks' },
-    { address: '0x06012c8cf97BEaD5deAe237070F9587f8E7A266d', dataQuery: 'listed', name: 'CryptoKitties' }
+    { address: '0x06012c8cf97BEaD5deAe237070F9587f8E7A266d', dataQuery: 'listed', name: 'CryptoKitties' },
+    { address: '0x90B3832e2F2aDe2FE382a911805B6933C056D6ed', dataQuery: 'none', name: 'PoolTogether: Pooly Supporter' },
+    { address: '0x3545192b340F50d77403DC0A64cf2b32F03d00A9', dataQuery: 'none', name: 'PoolTogether: Pooly Lawyer' },
+    { address: '0x5663e3E096f1743e77B8F71b5DE0CF9Dfd058523', dataQuery: 'none', name: 'PoolTogether: Pooly Judge' }
   ]
 }
 
