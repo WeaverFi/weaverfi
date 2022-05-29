@@ -25,7 +25,7 @@ export const chains: Record<Chain, ChainData> = {
   },
   bsc: {
     id: 56,
-    name: 'Binance Smart Chain',
+    name: 'BNB Chain',
     token: 'BNB',
     wrappedToken: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
     usdc: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
