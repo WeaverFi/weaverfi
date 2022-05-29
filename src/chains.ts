@@ -6,6 +6,7 @@ import type { Chain, ChainData } from './types';
 export const chains: Record<Chain, ChainData> = {
   eth: {
     id: 1,
+    name: 'Ethereum',
     token: 'ETH',
     wrappedToken: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
     usdc: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
@@ -24,6 +25,7 @@ export const chains: Record<Chain, ChainData> = {
   },
   bsc: {
     id: 56,
+    name: 'Binance Smart Chain',
     token: 'BNB',
     wrappedToken: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
     usdc: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
@@ -42,6 +44,7 @@ export const chains: Record<Chain, ChainData> = {
   },
   poly: {
     id: 137,
+    name: 'Polygon',
     token: 'MATIC',
     wrappedToken: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
     usdc: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
@@ -60,6 +63,7 @@ export const chains: Record<Chain, ChainData> = {
   },
   ftm: {
     id: 250,
+    name: 'Fantom',
     token: 'FTM',
     wrappedToken: '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
     usdc: '0x04068da6c83afcfa0e13ba15a6696662335d5b75',
@@ -78,6 +82,7 @@ export const chains: Record<Chain, ChainData> = {
   },
   avax: {
     id: 43114,
+    name: 'Avalanche',
     token: 'AVAX',
     wrappedToken: '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
     usdc: '0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e',
@@ -96,6 +101,7 @@ export const chains: Record<Chain, ChainData> = {
   },
   one: {
     id: 1666600000,
+    name: 'Harmony',
     token: 'ONE',
     wrappedToken: '0xcf664087a5bb0237a0bad6742852ec6c8d69a27a',
     usdc: '0x985458e523db3d53125813ed68c274899e9dfab4',
@@ -114,6 +120,7 @@ export const chains: Record<Chain, ChainData> = {
   },
   cronos: {
     id: 25,
+    name: 'Cronos',
     token: 'CRO',
     wrappedToken: '0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23',
     usdc: '0xc21223249ca28397b4b6541dffaecc539bff0c59',
@@ -132,6 +139,7 @@ export const chains: Record<Chain, ChainData> = {
   },
   op: {
     id: 10,
+    name: 'Optimism',
     token: 'ETH',
     wrappedToken: '0x4200000000000000000000000000000000000006',
     usdc: '0x7f5c764cbc14f9669b88837ca1490cca17c31607',
@@ -149,6 +157,7 @@ export const chains: Record<Chain, ChainData> = {
   },
   arb: {
     id: 42161,
+    name: 'Arbitrum',
     token: 'ETH',
     wrappedToken: '0x82af49447d8a07e3bd95bd0d56f35241523fbab1',
     usdc: '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8',

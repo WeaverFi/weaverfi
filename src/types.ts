@@ -180,6 +180,7 @@ export interface ABITupleIO {
 // Chain Data Interfaces:
 export interface ChainData {
     id: ChainID
+    name: string
     token: string
     wrappedToken: Address
     usdc: Address
