@@ -36,9 +36,10 @@ export const ignoredErrors: { chain: Chain, address: Address }[] = [
  * @param abi - The contract's ABI from 'ABIs.ts'.
  * @param method - The method to be called from the contract.
  * @param args - Any arguments to pass to the method called.
+ * @param block - The block height from which to query info from. (Optional)
  * @returns Query results.
  */
-export const query = async (chain: Chain, address: Address, abi: ABI[], method: string, args: any[]) => {
+export const query = async (chain: Chain, address: Address, abi: ABI[], method: string, args: any[], block?: number) => {
   let result = undefined;
   let errors = 0;
   let rpcID = 0;
@@ -46,7 +47,11 @@ export const query = async (chain: Chain, address: Address, abi: ABI[], method: 
     try {
       let ethers_provider = new ethers.providers.StaticJsonRpcProvider(chains[chain].rpcs[rpcID]);
       let contract = new ethers.Contract(address, abi, ethers_provider);
-      result = await contract[method](...args);
+      if(block) {
+        result = await contract[method](...args, { blockTag: block });
+      } else {
+        result = await contract[method](...args);
+      }
     } catch {
       if(++rpcID >= chains[chain].rpcs.length) {
         if(++errors >= maxQueryRetries) {

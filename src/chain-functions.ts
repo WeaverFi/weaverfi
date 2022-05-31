@@ -20,10 +20,11 @@ export const chainFunctions = (chain: Chain) => {
      * @param abi The contract's ABI.
      * @param method The method to be called from the contract.
      * @param args Any arguments to pass to the method called.
+     * @param block - The block height from which to query info from. (Optional)
      * @returns Query results.
      */
-    query: (address: Address, abi: ABI[], method: string, args: any[]) => {
-      return evm.query(chain, address, abi, method, args);
+    query: (address: Address, abi: ABI[], method: string, args: any[], block?: number) => {
+      return evm.query(chain, address, abi, method, args, block);
     },
 
     /**
