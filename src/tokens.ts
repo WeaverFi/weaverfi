@@ -391,7 +391,8 @@ export const poly_data: ChainTokenData = {
     { symbol: 'FTM', logo: 'https://polygonscan.com/token/images/fantomtoken_32.png' }
   ],
   nfts: [
-    { address: '0x841918849E6784d7e643837Ad59571eA1fc5000B', dataQuery: 'indexed', name: 'PoolTogether: Season 1' }
+    { address: '0x841918849E6784d7e643837Ad59571eA1fc5000B', dataQuery: 'indexed', name: 'PoolTogether: Season 1' },
+    { address: '0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d', dataQuery: 'indexed', name: 'Lens: Profile' }
   ]
 }
 
