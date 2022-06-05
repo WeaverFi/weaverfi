@@ -1,10 +1,14 @@
 
 // Imports:
+import axios from 'axios';
 import { ethers } from 'ethers';
 import { chains } from './chains';
 
 // Type Imports:
-import type { Address, ENSDomain } from './types';
+import type { URL, Address, ENSDomain } from './types';
+
+// Initializations:
+const ensSubgraphURL: URL = 'https://api.thegraph.com/subgraphs/name/ensdomains/ens';
 
 /* ========================================================================================================================================================================= */
 
@@ -55,4 +59,25 @@ export const fetchAvatarENS = async (name: ENSDomain) => {
     }
   }
   return null;
+}
+
+/* ========================================================================================================================================================================= */
+
+/**
+ * Function to fetch ENS domains from subgraph.
+ * @param address - The address to lookup domains for.
+ * @returns An array of found ENS domains.
+ */
+export const getSubgraphDomains = async (address: Address) => {
+  let ensDomains: { name: ENSDomain, expiry: number }[] = [];
+  let subgraphQuery = { query: `{ account(id: "${address.toLowerCase()}") { registrations { domain { name }, expiryDate } } }` };
+  let subgraphResults: { registrations: { domain: { name: ENSDomain }, expiryDate: string }[] } | null = (await axios.post(ensSubgraphURL, subgraphQuery)).data.data.account;
+  if(subgraphResults) {
+    subgraphResults.registrations.forEach(registration => {
+      let name = registration.domain.name;
+      let expiry = parseInt(registration.expiryDate);
+      ensDomains.push({ name, expiry });
+    });
+  }
+  return ensDomains;
 }

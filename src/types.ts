@@ -19,7 +19,7 @@ export type TXType = 'transfer' | 'approve' | 'revoke';
 export type PriceSource = 'chain' | 'coingecko' | '1inch' | 'paraswap';
 
 // NFT Data Query Types:
-export type NFTDataQueryType = 'none' | 'indexed' | 'listed';
+export type NFTDataQueryType = 'none' | 'indexed' | 'listed' | 'ens';
 
 // Generic Types:
 export type URL = `https://${string}`;

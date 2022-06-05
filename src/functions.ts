@@ -7,6 +7,7 @@ import { chains } from './chains';
 import { projects } from './projects';
 import { WeaverError } from './error';
 import { getTokenPrice } from './prices';
+import { getSubgraphDomains } from './ens';
 import { Multicall } from 'ethereum-multicall';
 import { minABI, lpABI, nftABI } from './ABIs';
 import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data, cronos_data, op_data, arb_data } from './tokens';
@@ -871,6 +872,14 @@ const addTrackedNFTs = async (chain: Chain, location: string, status: TokenStatu
       nfts.push({ type, chain, location, status, owner, name, address, id, data });
     })());
     await Promise.all(promises);
+
+  // Finding ENS Collection Info:
+  } else if(nft.dataQuery === 'ens') {
+    let domains = await getSubgraphDomains(owner);
+    domains.forEach(domain => {
+      let data = JSON.stringify(domain);
+      nfts.push({ type, chain, location, status, owner, name, address, data });
+    });
 
   // Unsupported Collection Info Formats:
   } else {
