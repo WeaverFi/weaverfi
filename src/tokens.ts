@@ -247,7 +247,6 @@ export const bsc_data: ChainTokenData = {
     { address: '0xB0B924C4a31b7d4581a7F78F57ceE1E65736Be1D', symbol: 'HAPPY', logo: 'https://bscscan.com/token/images/happycoin_32.png', decimals: 9 },
     { address: '0x009cF7bC57584b7998236eff51b98A168DceA9B0', symbol: 'SYRUP', logo: 'https://bscscan.com/token/images/syrup_32.png?=v1', decimals: 18 },
     { address: '0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5', symbol: 'PSP', logo: 'https://bscscan.com/token/images/paraswaptoken_32.png', decimals: 18 },
-    { address: '0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5', symbol: 'PSP', logo: 'https://bscscan.com/token/images/paraswaptoken_32.png', decimals: 18 },
     { address: '0x4e3cABD3AD77420FF9031d19899594041C420aeE', symbol: 'TITANO', logo: 'https://bscscan.com/token/images/titanofinance_32.png', decimals: 18 },
     { address: '0x84952dd90cdC57170b13D2291A8afCEdC8F97c71', symbol: 'SAFTI', logo: 'https://assets.coingecko.com/coins/images/24535/small/vHQ6BpuO_400x400.jpg?1648050874', decimals: 5 },
     { address: '0x26d3163b165BE95137CEe97241E716b2791a7572', symbol: 'DSHARE', logo: 'https://bscscan.com/token/images/dibsmoney_32.png', decimals: 18 },
