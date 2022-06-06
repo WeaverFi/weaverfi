@@ -37,7 +37,7 @@ export const get = async (wallet: Address) => {
 export const getStakedJOE = async (wallet: Address) => {
   let balance = parseInt(await query(chain, xjoe, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
-    let newToken = await addTraderJoeToken(chain, project, 'staked', balance, wallet);
+    let newToken = await addTraderJoeToken(chain, project, 'staked', balance, wallet, xjoe);
     return [newToken];
   } else {
     return [];
@@ -65,12 +65,12 @@ export const getFarmV2Balances = async (wallet: Address) => {
 
         // xJOE Farm:
         if(token === xjoe) {
-          let newToken = await addTraderJoeToken(chain, project, 'staked', balance, wallet);
+          let newToken = await addTraderJoeToken(chain, project, 'staked', balance, wallet, masterChefV2);
           balances.push(newToken);
   
         // LP Farms:
         } else {
-          let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
+          let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet, masterChefV2);
           balances.push(newToken);
         }
   
@@ -78,14 +78,14 @@ export const getFarmV2Balances = async (wallet: Address) => {
         let rewards = await query(chain, masterChefV2, traderjoe.masterChefABI, 'pendingTokens', [farmID, wallet]);
         let pendingJoe = parseInt(rewards.pendingJoe);
         if(pendingJoe > 0) {
-          let newToken = await addToken(chain, project, 'unclaimed', joe, pendingJoe, wallet);
+          let newToken = await addToken(chain, project, 'unclaimed', joe, pendingJoe, wallet, masterChefV2);
           balances.push(newToken);
         }
   
         // Bonus Rewards:
         let pendingBonus = parseInt(rewards.pendingBonusToken);
         if(pendingBonus > 0) {
-          let newToken = await addToken(chain, project, 'unclaimed', rewards.bonusTokenAddress, pendingBonus, wallet);
+          let newToken = await addToken(chain, project, 'unclaimed', rewards.bonusTokenAddress, pendingBonus, wallet, masterChefV2);
           balances.push(newToken);
         }
       }
@@ -116,12 +116,12 @@ export const getFarmV3Balances = async (wallet: Address) => {
 
         // xJOE Farm:
         if(token === xjoe) {
-          let newToken = await addTraderJoeToken(chain, project, 'staked', balance, wallet);
+          let newToken = await addTraderJoeToken(chain, project, 'staked', balance, wallet, masterChefV3);
           balances.push(newToken);
 
         // LP Farms:
         } else {
-          let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
+          let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet, masterChefV3);
           balances.push(newToken);
         }
 
@@ -129,14 +129,14 @@ export const getFarmV3Balances = async (wallet: Address) => {
         let rewards = await query(chain, masterChefV3, traderjoe.masterChefABI, 'pendingTokens', [farmID, wallet]);
         let pendingJoe = parseInt(rewards.pendingJoe);
         if(pendingJoe > 0) {
-          let newToken = await addToken(chain, project, 'unclaimed', joe, pendingJoe, wallet);
+          let newToken = await addToken(chain, project, 'unclaimed', joe, pendingJoe, wallet, masterChefV3);
           balances.push(newToken);
         }
 
         // Bonus Rewards:
         let pendingBonus = parseInt(rewards.pendingBonusToken);
         if(pendingBonus > 0) {
-          let newToken = await addToken(chain, project, 'unclaimed', rewards.bonusTokenAddress, pendingBonus, wallet);
+          let newToken = await addToken(chain, project, 'unclaimed', rewards.bonusTokenAddress, pendingBonus, wallet, masterChefV3);
           balances.push(newToken);
         }
       }
@@ -167,12 +167,12 @@ export const getBoostedFarmBalances = async (wallet: Address) => {
 
         // xJOE Farm:
         if(token === xjoe) {
-          let newToken = await addTraderJoeToken(chain, project, 'staked', balance, wallet);
+          let newToken = await addTraderJoeToken(chain, project, 'staked', balance, wallet, boostedMasterChef);
           balances.push(newToken);
 
         // LP Farms:
         } else {
-          let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
+          let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet, boostedMasterChef);
           balances.push(newToken);
         }
 
@@ -180,14 +180,14 @@ export const getBoostedFarmBalances = async (wallet: Address) => {
         let rewards = await query(chain, boostedMasterChef, traderjoe.masterChefABI, 'pendingTokens', [farmID, wallet]);
         let pendingJoe = parseInt(rewards.pendingJoe);
         if(pendingJoe > 0) {
-          let newToken = await addToken(chain, project, 'unclaimed', joe, pendingJoe, wallet);
+          let newToken = await addToken(chain, project, 'unclaimed', joe, pendingJoe, wallet, boostedMasterChef);
           balances.push(newToken);
         }
 
         // Bonus Rewards:
         let pendingBonus = parseInt(rewards.pendingBonusToken);
         if(pendingBonus > 0) {
-          let newToken = await addToken(chain, project, 'unclaimed', rewards.bonusTokenAddress, pendingBonus, wallet);
+          let newToken = await addToken(chain, project, 'unclaimed', rewards.bonusTokenAddress, pendingBonus, wallet, boostedMasterChef);
           balances.push(newToken);
         }
       }
@@ -224,13 +224,13 @@ export const getMarketBalances = async (wallet: Address) => {
           // Lending Balances:
           if(balance > 0) {
             let underlyingBalance = balance * (exchangeRate / (10 ** 18));
-            let newToken = await addToken(chain, project, 'lent', token, underlyingBalance, wallet);
+            let newToken = await addToken(chain, project, 'lent', token, underlyingBalance, wallet, market);
             balances.push(newToken);
           }
     
           // Borrowing Balances:
           if(debt > 0) {
-            let newToken = await addDebtToken(chain, project, token, debt, wallet);
+            let newToken = await addDebtToken(chain, project, token, debt, wallet, market);
             balances.push(newToken);
           }
         }

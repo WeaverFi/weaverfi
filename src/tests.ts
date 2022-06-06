@@ -27,8 +27,8 @@ const tests = async () => {
   // console.log('🕷️ ~ allProjectBalances', allProjectBalances);
   // let walletBalance = await weaver.ETH.getWalletBalance(wallet);
   // console.log('🕷️ ~ walletBalance', walletBalance);
-  let nftBalance = await weaver.ETH.getNFTBalance(wallet);
-  console.log('🕷️ ~ nftBalance', nftBalance);
+  // let nftBalance = await weaver.ETH.getNFTBalance(wallet);
+  // console.log('🕷️ ~ nftBalance', nftBalance);
   // let walletCheck = weaver.ETH.isAddress(wallet);
   // console.log('🕷️ ~ walletCheck', walletCheck);
   // let txCount = await weaver.ETH.getTXCount(wallet);

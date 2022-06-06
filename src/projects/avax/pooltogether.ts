@@ -10,7 +10,8 @@ import type { Chain, Address, Token } from '../../types';
 // Initializations:
 const chain: Chain = 'avax';
 const project = 'pooltogether';
-const poolV4: Address = '0xB27f379C050f6eD0973A01667458af6eCeBc1d90';
+const poolTicketV4: Address = '0xB27f379C050f6eD0973A01667458af6eCeBc1d90';
+const poolDepositV4: Address = '0xF830F5Cb2422d555EC34178E27094a816c8F95EC';
 const usdc: Address = '0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664';
 
 /* ========================================================================================================================================================================= */
@@ -26,9 +27,9 @@ export const get = async (wallet: Address) => {
 
 // Function to get V4 pool balance:
 export const getPoolBalanceV4 = async (wallet: Address) => {
-  let balance = parseInt(await query(chain, poolV4, minABI, 'balanceOf', [wallet]));
+  let balance = parseInt(await query(chain, poolTicketV4, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
-    let newToken = await addToken(chain, project, 'staked', usdc, balance, wallet);
+    let newToken = await addToken(chain, project, 'staked', usdc, balance, wallet, poolDepositV4);
     return [newToken];
   } else {
     return [];

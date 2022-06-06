@@ -80,7 +80,7 @@ export const getMarketBalances = async (markets: AaveAPIResponse[], wallet: Addr
     if(marketLendingResults.success) {
       let balance = parseBN(marketLendingResults.returnValues[0]);
       if(balance > 0) {
-        let newToken = await addToken(chain, project, 'lent', market.underlyingAsset, balance, wallet);
+        let newToken = await addToken(chain, project, 'lent', market.underlyingAsset, balance, wallet, market.aTokenAddress);
         newToken.info = {
           apy: market.avg7DaysLiquidityRate * 100,
           deprecated: !market.isActive
@@ -95,7 +95,7 @@ export const getMarketBalances = async (markets: AaveAPIResponse[], wallet: Addr
       if(marketVariableBorrowingResults.success) {
         let balance = parseBN(marketVariableBorrowingResults.returnValues[0]);
         if(balance > 0) {
-          let newToken = await addDebtToken(chain, project, market.underlyingAsset, balance, wallet);
+          let newToken = await addDebtToken(chain, project, market.underlyingAsset, balance, wallet, market.aTokenAddress);
           newToken.info = {
             apy: market.avg7DaysVariableBorrowRate * 100,
           }
@@ -110,7 +110,7 @@ export const getMarketBalances = async (markets: AaveAPIResponse[], wallet: Addr
       if(marketStableBorrowingResults.success) {
         let balance = parseBN(marketStableBorrowingResults.returnValues[0]);
         if(balance > 0) {
-          let newToken = await addDebtToken(chain, project, market.underlyingAsset, balance, wallet);
+          let newToken = await addDebtToken(chain, project, market.underlyingAsset, balance, wallet, market.aTokenAddress);
           newToken.info = {
             apy: market.stableBorrowRate * 100,
           }
@@ -138,7 +138,7 @@ export const getIncentives = async (wallet: Address) => {
 export const getStakedAAVE = async (wallet: Address) => {
   let balance = parseInt(await query(chain, stakedAave, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
-    let newToken = await addXToken(chain, project, 'staked', stakedAave, balance, wallet, aaveToken, balance);
+    let newToken = await addXToken(chain, project, 'staked', stakedAave, balance, wallet, aaveToken, balance, stakedAave);
     return [newToken];
   } else {
     return [];
@@ -150,7 +150,7 @@ export const getStakedLP = async (wallet: Address) => {
   let balance = parseInt(await query(chain, lpStaking, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
     let tokenAddress = await query(chain, lpStaking, aave.stakingABI, 'STAKED_TOKEN', []);
-    let newToken = await addAaveBLPToken(chain, project, 'staked', tokenAddress, balance, wallet);
+    let newToken = await addAaveBLPToken(chain, project, 'staked', tokenAddress, balance, wallet, lpStaking);
     return [newToken];
   } else {
     return [];

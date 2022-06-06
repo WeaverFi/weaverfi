@@ -410,9 +410,10 @@ export const addNativeToken = async (chain: Chain, rawBalance: number, owner: Ad
  * @param address - The token's address.
  * @param rawBalance - The balance to be assigned to the token's object, with decimals.
  * @param owner - The token owner's wallet address.
+ * @param contract - The contract interacted with to generate this deposit, stake, etc. (Optional)
  * @returns A Token object with all its information.
  */
-export const addToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, contract?: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -448,7 +449,7 @@ export const addToken = async (chain: Chain, location: string, status: TokenStat
   let balance = rawBalance / (10 ** decimals);
   let price = await getTokenPrice(chain, address, decimals);
 
-  return { type, chain, location, status, owner, symbol, address, balance, price, logo };
+  return { type, chain, location, status, owner, symbol, address, balance, price, logo, contract };
 }
 
 /* ========================================================================================================================================================================= */
@@ -461,9 +462,10 @@ export const addToken = async (chain: Chain, location: string, status: TokenStat
  * @param address - The token's address.
  * @param rawBalance - The balance to be assigned to the token's object, with decimals.
  * @param owner - The token owner's wallet address.
+ * @param contract - The contract interacted with to generate this deposit, liquidity, etc. (Optional)
  * @returns A LPToken object with all its information.
  */
-export const addLPToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<LPToken> => {
+export const addLPToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, contract?: Address): Promise<LPToken> => {
 
   // Initializing Token Values:
   let type: TokenType = 'lpToken';
@@ -536,7 +538,7 @@ export const addLPToken = async (chain: Chain, location: string, status: TokenSt
     logo: getTokenLogo(chain, symbol1)
   }
 
-  return { type, chain, location, status, owner, symbol, address, balance, token0, token1 };
+  return { type, chain, location, status, owner, symbol, address, balance, token0, token1, contract };
 }
 
 /* ========================================================================================================================================================================= */
@@ -548,9 +550,10 @@ export const addLPToken = async (chain: Chain, location: string, status: TokenSt
  * @param address - The token's address.
  * @param rawBalance - The balance to be assigned to the token's object, with decimals.
  * @param owner - The token owner's wallet address.
+ * @param contract - The contract interacted with to generate this debt. (Optional)
  * @returns A DebtToken object with all its information.
  */
-export const addDebtToken = async (chain: Chain, location: string, address: Address, rawBalance: number, owner: Address): Promise<DebtToken> => {
+export const addDebtToken = async (chain: Chain, location: string, address: Address, rawBalance: number, owner: Address, contract?: Address): Promise<DebtToken> => {
 
   // Initializing Token Values:
   let type: TokenType = 'debt';
@@ -587,7 +590,7 @@ export const addDebtToken = async (chain: Chain, location: string, address: Addr
   let balance = rawBalance / (10 ** decimals);
   let price = await getTokenPrice(chain, address, decimals);
 
-  return { type, chain, location, status, owner, symbol, address, balance, price, logo };
+  return { type, chain, location, status, owner, symbol, address, balance, price, logo, contract };
 }
 
 /* ========================================================================================================================================================================= */
@@ -602,9 +605,10 @@ export const addDebtToken = async (chain: Chain, location: string, address: Addr
  * @param owner - The token owner's wallet address.
  * @param underlyingAddress - The underlying token's address (the token this token is built upon).
  * @param underlyingRawBalance - The equivalent balance of the underlying token this xToken represents.
+ * @param contract - The contract interacted with to generate this deposit, stake, etc. (Optional)
  * @returns A XToken object with all its information.
  */
-export const addXToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, underlyingAddress: Address, underlyingRawBalance: number): Promise<XToken> => {
+export const addXToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, underlyingAddress: Address, underlyingRawBalance: number, contract?: Address): Promise<XToken> => {
 
   // Initializing Token Values:
   let type: TokenType = 'xToken';
@@ -649,7 +653,7 @@ export const addXToken = async (chain: Chain, location: string, status: TokenSta
     logo: underlyingLogo
   }
 
-  return { type, chain, location, status, owner, symbol, address, balance, logo, underlyingToken };
+  return { type, chain, location, status, owner, symbol, address, balance, logo, underlyingToken, contract };
 }
 
 /* ========================================================================================================================================================================= */

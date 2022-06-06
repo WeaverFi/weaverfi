@@ -11,41 +11,41 @@ import type { Chain, Address, Hash, TokenStatus, TokenType, Token, LPToken, Pric
 /* ========================================================================================================================================================================= */
 
 // Function to get Trader Joe token info (xJOE):
-export const addTraderJoeToken = async (chain: Chain, location: string, status: TokenStatus, rawBalance: number, owner: Address) => {
+export const addTraderJoeToken = async (chain: Chain, location: string, status: TokenStatus, rawBalance: number, owner: Address, contract?: Address) => {
   const xjoe: Address = '0x57319d41F71E81F3c65F2a47CA4e001EbAFd4F33';
   const joe: Address = '0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd';
   let joeStaked = parseInt(await query(chain, joe, minABI, 'balanceOf', [xjoe]));
   let xjoeSupply = parseInt(await query(chain, xjoe, minABI, 'totalSupply', []));
-  let newToken = await addXToken(chain, location, status, xjoe, rawBalance, owner, joe, rawBalance * (joeStaked / xjoeSupply));
+  let newToken = await addXToken(chain, location, status, xjoe, rawBalance, owner, joe, rawBalance * (joeStaked / xjoeSupply), contract);
   return newToken;
 }
 
 /* ========================================================================================================================================================================= */
 
 // Function to get Belt token info (beltBTC, beltETH, etc.):
-export const addBeltToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address) => {
+export const addBeltToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, contract?: Address) => {
   let exchangeRate = parseInt(await query(chain, address, belt.tokenABI, 'getPricePerFullShare', [])) / (10 ** 18);
   let underlyingToken: Address = await query(chain, address, belt.tokenABI, 'token', []);
-  let newToken = await addXToken(chain, location, status, address, rawBalance, owner, underlyingToken, rawBalance * exchangeRate);
+  let newToken = await addXToken(chain, location, status, address, rawBalance, owner, underlyingToken, rawBalance * exchangeRate, contract);
   return newToken;
 }
 
 /* ========================================================================================================================================================================= */
 
 // Function to get SpookySwap token info (xBOO):
-export const addSpookyToken = async (chain: Chain, location: string, status: TokenStatus, rawBalance: number, owner: Address) => {
+export const addSpookyToken = async (chain: Chain, location: string, status: TokenStatus, rawBalance: number, owner: Address, contract?: Address) => {
   const xboo: Address = '0xa48d959AE2E88f1dAA7D5F611E01908106dE7598';
   const boo: Address = '0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE';
   let booStaked = parseInt(await query(chain, boo, minABI, 'balanceOf', [xboo]));
   let xbooSupply = parseInt(await query(chain, xboo, minABI, 'totalSupply', []));
-  let newToken = await addXToken(chain, location, status, xboo, rawBalance, owner, boo, rawBalance * (booStaked / xbooSupply));
+  let newToken = await addXToken(chain, location, status, xboo, rawBalance, owner, boo, rawBalance * (booStaked / xbooSupply), contract);
   return newToken;
 }
 
 /* ========================================================================================================================================================================= */
 
 // Function to get Aave BLP token info:
-export const addAaveBLPToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<LPToken> => {
+export const addAaveBLPToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, contract?: Address): Promise<LPToken> => {
 
   // Initializing Token Values:
   let type: TokenType = 'lpToken';
@@ -84,13 +84,13 @@ export const addAaveBLPToken = async (chain: Chain, location: string, status: To
     logo: getTokenLogo(chain, symbol1)
   }
 
-  return { type, chain, location, status, owner, symbol, address, balance, token0, token1 };
+  return { type, chain, location, status, owner, symbol, address, balance, token0, token1, contract };
 }
 
 /* ========================================================================================================================================================================= */
 
 // Function to get 4Belt token info:
-export const add4BeltToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const add4BeltToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, contract?: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -100,13 +100,13 @@ export const add4BeltToken = async (chain: Chain, location: string, status: Toke
   let logo = getTokenLogo(chain, symbol);
   let price = 1;
 
-  return { type, chain, location, status, owner, symbol, address, balance, price, logo };
+  return { type, chain, location, status, owner, symbol, address, balance, price, logo, contract };
 }
 
 /* ========================================================================================================================================================================= */
 
 // Function to get Alpaca token info:
-export const addAlpacaToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addAlpacaToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, contract?: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -122,13 +122,13 @@ export const addAlpacaToken = async (chain: Chain, location: string, status: Tok
   let underlyingToken: Address = await query(chain, address, alpaca.tokenABI, 'token', []);
   let price = multiplier * (await getTokenPrice(chain, underlyingToken, decimals));
 
-  return { type, chain, location, status, owner, symbol, address, balance, price, logo };
+  return { type, chain, location, status, owner, symbol, address, balance, price, logo, contract };
 }
 
 /* ========================================================================================================================================================================= */
 
 // Function to get Curve token info:
-export const addCurveToken = async (chain: Chain, location: string, status: TokenStatus, lpToken: Address, rawBalance: number, owner: Address): Promise<Token | LPToken> => {
+export const addCurveToken = async (chain: Chain, location: string, status: TokenStatus, lpToken: Address, rawBalance: number, owner: Address, contract?: Address): Promise<Token | LPToken> => {
 
   // Initializations:
   const addressProvider: Address = '0x0000000022D53366457F9d5E68Ec105046FC4383';
@@ -300,7 +300,7 @@ export const addCurveToken = async (chain: Chain, location: string, status: Toke
       logo: getTokenLogo(chain, symbol1)
     }
 
-    return { type, chain, location, status, owner, symbol, address: lpToken, balance, token0, token1 };
+    return { type, chain, location, status, owner, symbol, address: lpToken, balance, token0, token1, contract };
 
   // Other:
   } else {
@@ -323,14 +323,14 @@ export const addCurveToken = async (chain: Chain, location: string, status: Toke
     price /= totalSupply;
     price *= poolMultiplier;
 
-    return { type, chain, location, status, owner, symbol, address: lpToken, balance, price, logo };
+    return { type, chain, location, status, owner, symbol, address: lpToken, balance, price, logo, contract };
   }
 }
 
 /* ========================================================================================================================================================================= */
 
 // Function to get BZX token info:
-export const addBZXToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addBZXToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, contract?: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -344,18 +344,18 @@ export const addBZXToken = async (chain: Chain, location: string, status: TokenS
   let underlyingToken: Address = await query(chain, address, bzx.tokenABI, 'loanTokenAddress', []);
   let price = multiplier * (await getTokenPrice(chain, underlyingToken, decimals));
 
-  return { type, chain, location, status, owner, symbol, address, balance, price, logo };
+  return { type, chain, location, status, owner, symbol, address, balance, price, logo, contract };
 }
 
 /* ========================================================================================================================================================================= */
 
 // Function to get Balancer LP token info:
-export const addBalancerToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address) => {
-  return await addBalancerLikeToken(chain, location, status, address, rawBalance, owner, '0xBA12222222228d8Ba445958a75a0704d566BF2C8');
+export const addBalancerToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, contract?: Address) => {
+  return await addBalancerLikeToken(chain, location, status, address, rawBalance, owner, '0xBA12222222228d8Ba445958a75a0704d566BF2C8', contract);
 }
 
 // Function to get Balancer-like LP token info:
-export const addBalancerLikeToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, vault: Address): Promise<Token | LPToken> => {
+export const addBalancerLikeToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, vault: Address, contract?: Address): Promise<Token | LPToken> => {
 
   // Initializing Multicalls:
   const tokenCalls: CallContext[] = [
@@ -414,7 +414,7 @@ export const addBalancerLikeToken = async (chain: Chain, location: string, statu
       logo: getTokenLogo(chain, symbol1)
     }
 
-    return { type, chain, location, status, owner, symbol, address, balance, token0, token1 };
+    return { type, chain, location, status, owner, symbol, address, balance, token0, token1, contract };
 
   // Others:
   } else {
@@ -432,14 +432,14 @@ export const addBalancerLikeToken = async (chain: Chain, location: string, statu
     }
     let price = priceSum / (lpTokenSupply / (10 ** decimals));
 
-    return { type, chain, location, status, owner, symbol, address, balance, price, logo };
+    return { type, chain, location, status, owner, symbol, address, balance, price, logo, contract };
   }
 }
 
 /* ========================================================================================================================================================================= */
 
 // Function to get Iron token info:
-export const addIronToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addIronToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, contract?: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -452,13 +452,13 @@ export const addIronToken = async (chain: Chain, location: string, status: Token
   let swapAddress: Address = await query(chain, address, iron.tokenABI, 'swap', []);
   let price = parseInt(await query(chain, swapAddress, iron.swapABI, 'getVirtualPrice', [])) / (10 ** decimals);
 
-  return { type, chain, location, status, owner, symbol, address, balance, price, logo };
+  return { type, chain, location, status, owner, symbol, address, balance, price, logo, contract };
 }
 
 /* ========================================================================================================================================================================= */
 
 // Function to get Axial token info:
-export const addAxialToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addAxialToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, contract?: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -471,13 +471,13 @@ export const addAxialToken = async (chain: Chain, location: string, status: Toke
   let swapAddress: Address = await query(chain, address, axial.tokenABI, 'owner', []);
   let price = parseInt(await query(chain, swapAddress, axial.swapABI, 'getVirtualPrice', [])) / (10 ** decimals);
 
-  return { type, chain, location, status, owner, symbol, address, balance, price, logo };
+  return { type, chain, location, status, owner, symbol, address, balance, price, logo, contract };
 }
 
 /* ========================================================================================================================================================================= */
 
 // Function to get mStable token info:
-export const addStableToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address): Promise<Token> => {
+export const addStableToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, contract?: Address): Promise<Token> => {
 
   // Initializing Token Values:
   let type: TokenType = 'token';
@@ -492,5 +492,5 @@ export const addStableToken = async (chain: Chain, location: string, status: Tok
   // Finding Token Symbol:
   logo = price > 1000 ? getTokenLogo(chain, 'mBTC') : getTokenLogo(chain, 'mUSD');
 
-  return { type, chain, location, status, owner, symbol, address, balance, price, logo };
+  return { type, chain, location, status, owner, symbol, address, balance, price, logo, contract };
 }

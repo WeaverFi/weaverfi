@@ -45,6 +45,7 @@ export interface OwnedToken extends BaseToken {
     location: string
     status: TokenStatus
     owner: Address
+    contract?: Address
     info?: TokenInfo
 }
 export interface NativeToken extends OwnedToken, PricedToken {
