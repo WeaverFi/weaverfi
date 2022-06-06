@@ -12,9 +12,6 @@ export type ENSDomain = `${string}.eth`;
 export type TokenType = 'nativeToken' | 'token' | 'lpToken' | 'debt' | 'xToken' | 'nft';
 export type TokenStatus = 'none' | 'staked' | 'liquidity' | 'lent' | 'borrowed' | 'unclaimed';
 
-// Transaction Types:
-export type TXType = 'transfer' | 'approve' | 'revoke';
-
 // Price Source Types:
 export type PriceSource = 'chain' | 'coingecko' | '1inch' | 'paraswap';
 
@@ -104,57 +101,6 @@ export interface NFT {
     address: Address
     id?: number
     data?: string
-}
-
-/* ========================================================================================================================================================================= */
-
-// Transaction Interfaces:
-export interface SimpleTX {
-    wallet: Address
-    chain: Chain
-    hash: Hash
-    block: number
-    time: number
-    direction: 'in' | 'out'
-    fee: number
-}
-export interface DetailedTX extends SimpleTX {
-    type: TXType
-    token: TXToken
-    nativeToken: string
-}
-export interface ApprovalTX extends DetailedTX {
-    type: 'approve' | 'revoke'
-}
-export interface TransferTX extends DetailedTX {
-    type: 'transfer'
-    from: Address
-    to: Address
-    value: number
-}
-export interface TaxApprovalTX extends ApprovalTX {
-    token: TXToken
-    nativeTokenPrice: number
-}
-export interface TaxTransferTX extends TransferTX {
-    token: TaxTXToken
-    nativeTokenPrice: number
-}
-export interface TXToken {
-    address: Address
-    symbol: string
-    logo: URL
-}
-export interface TaxTXToken extends TXToken {
-    price: number
-}
-
-// Transaction Type Guards:
-export function isApprovalTX(tx: DetailedTX): tx is ApprovalTX {
-    return (tx.type === 'approve' || tx.type === 'revoke');
-}
-export function isTransferTX(tx: DetailedTX): tx is TransferTX {
-    return tx.type === 'transfer';
 }
 
 /* ========================================================================================================================================================================= */
