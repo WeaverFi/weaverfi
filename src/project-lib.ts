@@ -76,7 +76,6 @@ import * as poly_balancer from './projects/poly/balancer';
 import * as poly_beefy from './projects/poly/beefy';
 import * as poly_cream from './projects/poly/cream';
 import * as poly_curve from './projects/poly/curve';
-import * as poly_iron from './projects/poly/iron';
 import * as poly_mstable from './projects/poly/mstable';
 import * as poly_pooltogether from './projects/poly/pooltogether';
 import * as poly_quickswap from './projects/poly/quickswap';
@@ -157,7 +156,6 @@ const projects: Record<Chain, Record<string, any>> = {
 		beefy: poly_beefy,
 		cream: poly_cream,
 		curve: poly_curve,
-		iron: poly_iron,
 		mstable: poly_mstable,
 		pooltogether: poly_pooltogether,
 		quickswap: poly_quickswap,

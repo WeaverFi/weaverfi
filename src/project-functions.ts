@@ -3,7 +3,7 @@
 import { WeaverError } from './error';
 import { getTokenPrice } from './prices';
 import { query, multicallOneContractQuery, multicallOneMethodQuery, addXToken, getTokenLogo, defaultTokenLogo, parseBN, zero } from './functions';
-import { minABI, lpABI, aave, balancer, belt, alpaca, curve, bzx, iron, axial, mstable } from './ABIs';
+import { minABI, lpABI, aave, balancer, belt, alpaca, curve, bzx, axial, mstable } from './ABIs';
 
 // Type Imports:
 import type { Chain, Address, Hash, TokenStatus, TokenType, Token, LPToken, PricedToken, CallContext } from './types';
@@ -434,25 +434,6 @@ export const addBalancerLikeToken = async (chain: Chain, location: string, statu
 
     return { type, chain, location, status, owner, symbol, address, balance, price, logo, contract };
   }
-}
-
-/* ========================================================================================================================================================================= */
-
-// Function to get Iron token info:
-export const addIronToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, contract?: Address): Promise<Token> => {
-
-  // Initializing Token Values:
-  let type: TokenType = 'token';
-  let symbol: string = await query(chain, address, minABI, 'symbol', []);
-  let decimals = parseInt(await query(chain, address, minABI, 'decimals', []));
-  let balance = rawBalance / (10 ** decimals);
-  let logo = getTokenLogo(chain, symbol);
-
-  // Finding Token Price:
-  let swapAddress: Address = await query(chain, address, iron.tokenABI, 'swap', []);
-  let price = parseInt(await query(chain, swapAddress, iron.swapABI, 'getVirtualPrice', [])) / (10 ** decimals);
-
-  return { type, chain, location, status, owner, symbol, address, balance, price, logo, contract };
 }
 
 /* ========================================================================================================================================================================= */

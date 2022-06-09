@@ -2,7 +2,7 @@
 // Imports:
 import { WeaverError } from '../../error';
 import { minABI, beefy } from '../../ABIs';
-import { addCurveToken, addIronToken } from '../../project-functions';
+import { addCurveToken } from '../../project-functions';
 import { query, multicallOneMethodQuery, addToken, addLPToken, parseBN, fetchData } from '../../functions';
 
 // Type Imports:
@@ -75,19 +75,6 @@ export const getVaultBalances = async (wallet: Address, vaults: BeefyAPIResponse
               }
             }
             balances.push(newToken);
-  
-          // Unique Vaults (3+ Assets):
-          } else if(vault.assets.length > 2) {
-            if(vault.platform === 'IronFinance') {
-              let newToken = await addIronToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
-              let vaultAPY = apys[vault.id];
-              if(vaultAPY) {
-                newToken.info = {
-                  apy: vaultAPY
-                }
-              }
-              balances.push(newToken);
-            }
     
           // LP Token Vaults:
           } else if(vault.assets.length === 2 && vault.platform != 'Kyber' && !vault.id.includes('jarvis')) {

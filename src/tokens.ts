@@ -336,8 +336,6 @@ export const poly_data: ChainTokenData = {
     { address: '0x104592a158490a9228070e0a8e5343b499e125d0', symbol: 'FRAX', logo: 'https://polygonscan.com/token/images/fraxpos_32.png', decimals: 18 },
     { address: '0xf501dd45a1198c2e1b5aef5314a68b9006d842e0', symbol: 'MTA', logo: 'https://polygonscan.com/token/images/meta_32.png', decimals: 18 },
     { address: '0xc8bcb58caef1be972c0b638b1dd8b0748fdc8a44', symbol: 'PEAR', logo: 'https://polygonscan.com/token/images/peartoken_32.png', decimals: 18 },
-    { address: '0x4A81f8796e0c6Ad4877A51C86693B0dE8093F2ef', symbol: 'ICE', logo: 'https://polygonscan.com/token/images/ironfinanceicetoken_32.png', decimals: 18 },
-    { address: '0xD86b5923F3AD7b585eD81B448170ae026c65ae9a', symbol: 'IRON', logo: 'https://polygonscan.com/token/images/iron_32.png', decimals: 18 },
     { address: '0x80244C2441779361F35803b8C711C6c8fC6054a3', symbol: 'BONE', logo: 'https://polygonscan.com/token/images/boneswap_32.png', decimals: 18 },
     { address: '0xaa9654becca45b5bdfa5ac646c939c62b527d394', symbol: 'DINO', logo: 'https://polygonscan.com/token/images/dinoswap_32.png', decimals: 18 },
     { address: '0x3a3df212b7aa91aa0402b9035b098891d276572b', symbol: 'FISH', logo: 'https://polygonscan.com/token/images/polycat_32.png', decimals: 18 },
@@ -387,7 +385,9 @@ export const poly_data: ChainTokenData = {
     { symbol: 'THETA', logo: 'https://polygonscan.com/token/images/theta_28.png' },
     { symbol: 'ENJ', logo: 'https://polygonscan.com/token/images/enjin_28_2.png' },
     { symbol: 'EURT', logo: 'https://assets.coingecko.com/coins/images/17385/small/Tether_full_logo_dm.png?1627537298' },
-    { symbol: 'FTM', logo: 'https://polygonscan.com/token/images/fantomtoken_32.png' }
+    { symbol: 'FTM', logo: 'https://polygonscan.com/token/images/fantomtoken_32.png' },
+    { symbol: 'ICE', logo: 'https://polygonscan.com/token/images/ironfinanceicetoken_32.png' },
+    { symbol: 'IRON', logo: 'https://polygonscan.com/token/images/iron_32.png' }
   ],
   nfts: [
     { address: '0x841918849E6784d7e643837Ad59571eA1fc5000B', dataQuery: 'indexed', name: 'PoolTogether: Season 1' },
@@ -432,7 +432,6 @@ export const ftm_data: ChainTokenData = {
     { address: '0xf16e81dce15B08F326220742020379B855B87DF9', symbol: 'ICE', logo: 'https://assets.coingecko.com/coins/images/14586/small/ice.png?1617188825', decimals: 18 },
     { address: '0x3D8f1ACCEe8e263F837138829B6C4517473d0688', symbol: 'fWINGS', logo: 'https://ftmscan.com/token/images/fwings_32.png', decimals: 18 },
     { address: '0x82f0B8B456c1A451378467398982d4834b6829c1', symbol: 'MIM', logo: 'https://ftmscan.com/token/images/mimstablecoin_32.png', decimals: 18 },
-    { address: '0x260b3E40c714Ce8196465Ec824Cd8Bb915081812', symbol: 'IronICE', logo: 'https://polygonscan.com/token/images/ironfinanceicetoken_32.png', decimals: 18 },
     { address: '0xd8321aa83fb0a4ecd6348d4577431310a6e0814d', symbol: 'GEIST', logo: 'https://ftmscan.com/token/images/geist_32.png', decimals: 18 },
     { address: '0x468003b688943977e6130f4f68f23aad939a1040', symbol: 'SPELL', logo: 'https://ftmscan.com/token/images/spelltoken_32.png', decimals: 18 },
     { address: '0x6c021Ae822BEa943b2E66552bDe1D2696a53fbB7', symbol: 'TOMB', logo: 'https://ftmscan.com/token/images/tomb_32.png', decimals: 18 },
@@ -452,7 +451,9 @@ export const ftm_data: ChainTokenData = {
     { symbol: 'IS3USD', logo: 'https://polygonscan.com/token/images/iron_32.png' },
     { symbol: 'g3CRV', logo: 'https://assets.coingecko.com/coins/images/18832/small/GEIST-token.png?1633560935' },
     { symbol: 'SPIRIT-LP', logo: 'https://ftmscan.com/token/images/spiritswap_32.png' },
-    { symbol: 'BHC', logo: 'https://ftmscan.com/token/images/billionhappiness_32.png' }
+    { symbol: 'BHC', logo: 'https://ftmscan.com/token/images/billionhappiness_32.png' },
+    { symbol: 'IronICE', logo: 'https://polygonscan.com/token/images/ironfinanceicetoken_32.png' }
+
   ],
   nfts: []
 }
