@@ -3,7 +3,7 @@
 import { WeaverError } from '../../error';
 import { minABI, axial } from '../../ABIs';
 import { addAxialToken } from '../../project-functions';
-import { query, multicallOneContractQuery, addToken, addLPToken, parseBN } from '../../functions';
+import { query, multicallOneContractQuery, multicallOneMethodQuery, addToken, addLPToken, parseBN } from '../../functions';
 
 // Type Imports:
 import type { Chain, Address, Token, LPToken, CallContext } from '../../types';
@@ -12,6 +12,7 @@ import type { Chain, Address, Token, LPToken, CallContext } from '../../types';
 const chain: Chain = 'avax';
 const project = 'axial';
 const masterChef: Address = '0x958C0d0baA8F220846d3966742D4Fb5edc5493D3';
+const gaugeProxy: Address = '0x3d09A80369071E6AC91634e0Bf889EE54Dd510C6';
 const axialToken: Address = '0xcF8419A615c57511807236751c0AF38Db4ba3351';
 
 /* ========================================================================================================================================================================= */
@@ -20,6 +21,7 @@ const axialToken: Address = '0xcF8419A615c57511807236751c0AF38Db4ba3351';
 export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
   balance.push(...(await getPoolBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getPoolBalances()', err) })));
+  balance.push(...(await getPoolBalancesV2(wallet).catch((err) => { throw new WeaverError(chain, project, 'getPoolBalancesV2()', err) })));
   return balance;
 }
 
@@ -48,11 +50,13 @@ export const getPoolBalances = async (wallet: Address) => {
         // Standard LPs:
         if(symbol === 'JLP' || symbol === 'PGL') {
           let newToken = await addLPToken(chain, project, 'staked', token, balance, wallet);
+          newToken.info = { deprecated: true };
           balances.push(newToken);
   
         // Axial LPs:
         } else {
           let newToken = await addAxialToken(chain, project, 'staked', token, balance, wallet);
+          newToken.info = { deprecated: true };
           balances.push(newToken);
         }
   
@@ -70,5 +74,33 @@ export const getPoolBalances = async (wallet: Address) => {
     }
   })());
   await Promise.all(promises);
+  return balances;
+}
+
+// Function to get all pool V2 balances:
+export const getPoolBalancesV2 = async (wallet: Address) => {
+  let balances: Token[] = [];
+  let tokens: Address[] = await query(chain, gaugeProxy, axial.gaugeProxyABI, 'tokens', []);
+
+  // Gauge Multicall Query:
+  let gaugeCalls: CallContext[] = [];
+  tokens.forEach(token => {
+    gaugeCalls.push({ reference: token, methodName: 'getGauge', methodParameters: [token] });
+  });
+  let gaugeMulticallResults = await multicallOneContractQuery(chain, gaugeProxy, axial.gaugeProxyABI, gaugeCalls);
+
+  // Balance Multicall Query:
+  let gaugeAddresses: Address[] = Object.keys(gaugeMulticallResults).map(token => gaugeMulticallResults[token][0]);
+  let balanceMulticallResults = await multicallOneMethodQuery(chain, gaugeAddresses, minABI, 'balanceOf', [wallet]);
+  for(let token in gaugeMulticallResults) {
+    let gauge: Address = gaugeMulticallResults[token][0];
+    if(balanceMulticallResults[gauge]) {
+      let balance = parseBN(balanceMulticallResults[gauge][0]);
+      if(balance > 0) {
+        let newToken = await addAxialToken(chain, project, 'staked', token as Address, balance, wallet, gauge);
+        balances.push(newToken);
+      }
+    }
+  }
   return balances;
 }

@@ -378,7 +378,7 @@ export const benqi: Record<`${benqiABIs}ABI`, ABI[]> = {
 }
 
 // Axial ABIs:
-type axialABIs = 'masterChef' | 'token' | 'swap';
+type axialABIs = 'masterChef' | 'token' | 'swap' | 'gaugeProxy';
 export const axial: Record<`${axialABIs}ABI`, ABI[]> = {
   masterChefABI: [
     { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
@@ -391,6 +391,10 @@ export const axial: Record<`${axialABIs}ABI`, ABI[]> = {
   ],
   swapABI: [
     { constant: true, inputs: [], name: "getVirtualPrice", outputs: [{ name: "", type: "uint256" }], type: "function" }
+  ],
+  gaugeProxyABI: [
+    { constant: true, inputs: [], name: "tokens", outputs: [{ name: "", type: "address[]" }], type: "function" },
+    { constant: true, inputs: [{ name: "_token", type: "address" }], name: "getGauge", outputs: [{ name: "", type: "address" }], type: "function" }
   ]
 }
 
