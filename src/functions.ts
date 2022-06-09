@@ -627,7 +627,7 @@ export const addXToken = async (chain: Chain, location: string, status: TokenSta
   // Finding Token Info:
   let multicallResults = await multicallOneContractQuery(chain, address, minABI, calls);
   symbol = multicallResults['symbol'][0];
-  decimals = multicallResults['decimals'][0];
+  decimals = multicallResults['decimals'] ? multicallResults['decimals'][0] : 18;
   let balance = rawBalance / (10 ** decimals);
   let logo = getTokenLogo(chain, symbol);
 

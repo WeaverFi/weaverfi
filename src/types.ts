@@ -18,6 +18,9 @@ export type PriceSource = 'chain' | 'coingecko' | '1inch' | 'paraswap';
 // NFT Data Query Types:
 export type NFTDataQueryType = 'none' | 'indexed' | 'listed' | 'ens';
 
+// ABI IO Types:
+export type ABIIOType = `int${number}` | `int${number}[${number | ''}]` | `uint${number}` | `uint${number}[${number | ''}]` | `bytes${number}` | `bytes${number}[${number | ''}]` | 'address' | `address[${number | ''}]` | 'bool' | `bool[${number | ''}]` | 'tuple' | `tuple[${number | ''}]` | 'string' | `string[${number | ''}]`;
+
 // Generic Types:
 export type URL = `https://${string}`;
 export type Hash = `0x${string}`;
@@ -115,10 +118,10 @@ export interface ABI {
 }
 export interface ABIIO {
     name: string
-    type: string
+    type: ABIIOType
 }
 export interface ABITupleIO {
-    type: 'tuple[]'
+    type: 'tuple' | 'tuple[]'
     components: ABIIO[]
 }
 

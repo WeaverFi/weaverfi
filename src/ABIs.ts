@@ -378,7 +378,7 @@ export const benqi: Record<`${benqiABIs}ABI`, ABI[]> = {
 }
 
 // Axial ABIs:
-type axialABIs = 'masterChef' | 'token' | 'swap' | 'gaugeProxy';
+type axialABIs = 'masterChef' | 'token' | 'swap' | 'gaugeProxy' | 'sAxial' | 'veAxial';
 export const axial: Record<`${axialABIs}ABI`, ABI[]> = {
   masterChefABI: [
     { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
@@ -395,6 +395,15 @@ export const axial: Record<`${axialABIs}ABI`, ABI[]> = {
   gaugeProxyABI: [
     { constant: true, inputs: [], name: "tokens", outputs: [{ name: "", type: "address[]" }], type: "function" },
     { constant: true, inputs: [{ name: "_token", type: "address" }], name: "getGauge", outputs: [{ name: "", type: "address" }], type: "function" }
+  ],
+  sAxialABI: [
+    { constant: true, inputs: [{ name: "_userAddr", type: "address" }], name: "getBalance", outputs: [{ name: "", type: "uint256" }], type: "function" },
+    { constant: true, inputs: [{ name: "_userAddr", type: "address" }], name: "getLock", outputs: [{ name: "", type: "tuple", components: [{ name: "startBlockTime", type: "uint256" }, { name: "endBlockTime", type: "uint256" }, { name: "startingAmountLocked", type: "uint256" }, { name: "initialized", type: "bool" }] }], type: "function" },
+    { constant: true, inputs: [{ name: "_userAddr", type: "address" }], name: "getUnclaimed", outputs: [{ name: "", type: "uint256" }], type: "function" }
+  ],
+  veAxialABI: [
+    { constant: true, inputs: [{ name: "_userAddr", type: "address" }], name: "getAccrued", outputs: [{ name: "", type: "uint256" }], type: "function" },
+    { constant: true, inputs: [{ name: "_userAddr", type: "address" }], name: "getStaked", outputs: [{ name: "", type: "uint256" }], type: "function" }
   ]
 }
 

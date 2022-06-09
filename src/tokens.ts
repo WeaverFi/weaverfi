@@ -581,7 +581,11 @@ export const avax_data: ChainTokenData = {
     { symbol: 'YRT', logo: 'https://snowtrace.io/token/images/yieldyak_32.png' },
     { symbol: 'aUST', logo: 'https://snowtrace.io/token/images/wormholeust_32.png' },
     { symbol: 'xSNOB', logo: 'https://snowtrace.io/token/images/snowball_32.png' },
-    { symbol: 'GTR', logo: 'https://snowtrace.io/token/images/alligatorexchange2_32.png' }
+    { symbol: 'GTR', logo: 'https://snowtrace.io/token/images/alligatorexchange2_32.png' },
+    { symbol: 'SCALES', logo: 'https://assets.coingecko.com/coins/images/20502/small/E5nD9pPv_400x400.jpg?1637139692' },
+    { symbol: 'HERO', logo: 'https://assets.coingecko.com/coins/images/20502/small/E5nD9pPv_400x400.jpg?1637139692' },
+    { symbol: 'sAXIAL', logo: 'https://assets.coingecko.com/coins/images/20502/small/E5nD9pPv_400x400.jpg?1637139692' },
+    { symbol: 'veAXIAL', logo: 'https://assets.coingecko.com/coins/images/20502/small/E5nD9pPv_400x400.jpg?1637139692' }
   ],
   nfts: [
     { address: '0x3555cAB4b6628BeEA81d20Cb8a832A16B69671F7', dataQuery: 'listed', name: 'Snowball: Birthday' },
