@@ -39,6 +39,8 @@ const tests = async () => {
   // console.log('🕷️ ~ tokens', tokens);
   // let queryResult = parseInt(await weaver.ETH.query(chains['eth'].usdc, minABI, 'balanceOf', [wallet]));
   // console.log('🕷️ ~ queryResult', queryResult);
+  // let gasResult = await weaver.ETH.getGasEstimates();
+  // console.log('🕷️ ~ gasResult', gasResult);
 
   /* ================================================== */
 

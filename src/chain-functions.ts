@@ -39,7 +39,7 @@ export const chainFunctions = (chain: Chain) => {
     /**
      * Function to get a wallet's transaction count.
      * @param wallet The wallet to query transaction count for.
-     * @returns An array of NativeToken objects if any balance is found.
+     * @returns A number of transactions.
      */
     getTXCount: (wallet: Address) => {
       return evm.getWalletTXCount(chain, wallet);
@@ -97,6 +97,14 @@ export const chainFunctions = (chain: Chain) => {
      */
     getTokenLogo: (symbol: string) => {
       return evm.getTokenLogo(chain, symbol);
+    },
+
+    /**
+     * Function to get gas estimates for TXs.
+     * @returns The gas price, token price and gas estimates for various TX types.
+     */
+    getGasEstimates: () => {
+      return evm.getGasEstimates(chain);
     },
 
     /**

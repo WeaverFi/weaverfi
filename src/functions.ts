@@ -21,6 +21,13 @@ export const defaultTokenLogo: URL = 'https://cdn.jsdelivr.net/gh/atomiclabs/cry
 export const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 export const zero: Address = '0x0000000000000000000000000000000000000000';
 const maxQueryRetries = 3;
+const estimatedL1RollupGas = 5000;
+const gasAmountEstimates: { type: string, gas: number }[] = [
+  { type: 'nativeTransfer', gas: 21000 },
+  { type: 'tokenTransfer', gas: 65000 },
+  { type: 'tokenSwap', gas: 150000 },
+  { type: 'nftSwap', gas: 85000 }
+];
 
 // Ignored Errors On Blockchain Queries:
 export const ignoredErrors: { chain: Chain, address: Address }[] = [
@@ -349,7 +356,7 @@ export const isAddress = (address: Address) => {
  * Function to get a wallet's transaction count.
  * @param chain - The blockchain to query info from.
  * @param wallet - The wallet to query transaction count for.
- * @returns An array of NativeToken objects if any balance is found.
+ * @returns A number of transactions.
  */
 export const getWalletTXCount = async (chain: Chain, wallet: Address) => {
   let txs: number | undefined = undefined;
@@ -749,6 +756,40 @@ export const getTokenLogo = (chain: Chain, symbol: string) => {
   }
 
   return logo;
+}
+
+/* ========================================================================================================================================================================= */
+
+/**
+ * Function to get gas estimates for TXs on any given chain.
+ * @param chain - The chain to fetch data from.
+ * @returns The gas price, token price and gas estimates for various TX types.
+ */
+export const getGasEstimates = async (chain: Chain) => {
+  let ethers_provider = new ethers.providers.StaticJsonRpcProvider(chains[chain].rpcs[0]);
+  let gasPrice = parseBN((await ethers_provider.getFeeData()).gasPrice) / (10 ** 9);
+  let tokenPrice = await getTokenPrice(chain, defaultAddress, 18);
+  let estimates: Record<string, { gas: number, cost: number }> =  {};
+  if(chain === 'op' || chain === 'arb') {
+    let eth_ethers_provider = new ethers.providers.StaticJsonRpcProvider(chains['eth'].rpcs[0]);
+    let ethGasPrice = parseBN((await eth_ethers_provider.getFeeData()).gasPrice) / (10 ** 9);
+    let ethTokenPrice = await getTokenPrice('eth', defaultAddress, 18);
+    gasAmountEstimates.forEach(tx => {
+      estimates[tx.type] = {
+        gas: tx.gas,
+        cost: ((tx.gas / (10 ** 9)) * gasPrice * tokenPrice) + ((estimatedL1RollupGas / (10 ** 9)) * ethGasPrice * ethTokenPrice)
+      }
+    });
+    return { gasPrice, ethGasPrice, tokenPrice, ethTokenPrice, estimates };
+  } else {
+    gasAmountEstimates.forEach(tx => {
+      estimates[tx.type] = {
+        gas: tx.gas,
+        cost: (tx.gas / (10 ** 9)) * gasPrice * tokenPrice
+      }
+    });
+    return { gasPrice, tokenPrice, estimates };
+  }
 }
 
 /* ========================================================================================================================================================================= */
