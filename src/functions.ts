@@ -765,7 +765,7 @@ export const getTokenLogo = (chain: Chain, symbol: string) => {
  * @param chain - The chain to fetch data from.
  * @returns The gas price, token price and gas estimates for various TX types.
  */
-export const getGasEstimates = async (chain: Chain) => {
+export const getGasEstimates = async (chain: Chain): Promise<{ gasPrice: number, tokenPrice: number, estimates: Record<string, { gas: number, cost: number }>, ethGasPrice?: number, ethTokenPrice?: number }> => {
   let ethers_provider = new ethers.providers.StaticJsonRpcProvider(chains[chain].rpcs[0]);
   let gasPrice = parseBN((await ethers_provider.getFeeData()).gasPrice) / (10 ** 9);
   let tokenPrice = await getTokenPrice(chain, defaultAddress, 18);
@@ -780,7 +780,7 @@ export const getGasEstimates = async (chain: Chain) => {
         cost: ((tx.gas / (10 ** 9)) * gasPrice * tokenPrice) + ((estimatedL1RollupGas / (10 ** 9)) * ethGasPrice * ethTokenPrice)
       }
     });
-    return { gasPrice, ethGasPrice, tokenPrice, ethTokenPrice, estimates };
+    return { gasPrice, tokenPrice, estimates, ethGasPrice, ethTokenPrice };
   } else {
     gasAmountEstimates.forEach(tx => {
       estimates[tx.type] = {

@@ -1,75 +1,29 @@
 
 // Imports:
-import * as ens from './ens';
 import * as $ from './prices';
 import * as evm from './functions';
 import { chains } from './chains';
 import { projects } from './projects';
-import { chainFunctions } from './chain-functions';
+import { ChainFunctions, ETHChainFunctions } from './chain-functions';
 
 // Type Imports:
-import type { Address, ENSDomain, UpperCaseChain } from './types';
+import type { Address, UpperCaseChain } from './types';
 
 /* ========================================================================================================================================================================= */
 
 // WeaverFi Functionality:
 export const WeaverFi = {
 
-  // Ethereum Functions:
-  ETH: {
-    ...chainFunctions('eth'),
-
-    /**
-     * Function to resolve an ENS domain name into an address.
-     * @param name - The ENS domain name to resolve.
-     * @returns An address if resolvable, else null.
-     */
-    resolveENS: (name: ENSDomain) => {
-      return ens.resolveENS(name);
-    },
-
-    /**
-     * Function to reverse lookup an ENS domain.
-     * @param address - The address to reverse lookup.
-     * @returns An ENS domain name if resolvable, else null.
-     */
-    lookupENS: (address: Address) => {
-      return ens.lookupENS(address);
-    },
-
-    /**
-     * Function to fetch an ENS domain's avatar.
-     * @param name - The ENS domain name to query info from.
-     * @returns An avatar URI if available, else null.
-     */
-    fetchAvatarENS: (name: ENSDomain) => {
-      return ens.fetchAvatarENS(name);
-    }
-  },
-
-  // Binance Smart Chain Functions:
-  BSC: chainFunctions('bsc'),
-
-  // Polygon Functions:
-  POLY: chainFunctions('poly'),
-
-  // Fantom Functions:
-  FTM: chainFunctions('ftm'),
-
-  // Avalanche Functions:
-  AVAX: chainFunctions('avax'),
-
-  // Harmony Functions:
-  ONE: chainFunctions('one'),
-
-  // Cronos Functions:
-  CRONOS: chainFunctions('cronos'),
-
-  // Optimism Functions:
-  OP: chainFunctions('op'),
-
-  // Arbitrum Functions:
-  ARB: chainFunctions('arb'),
+  // Chain-Specific Functions:
+  ETH: new ETHChainFunctions('eth'),
+  BSC: new ChainFunctions('bsc'),
+  POLY: new ChainFunctions('poly'),
+  FTM: new ChainFunctions('ftm'),
+  AVAX: new ChainFunctions('avax'),
+  ONE: new ChainFunctions('one'),
+  CRONOS: new ChainFunctions('cronos'),
+  OP: new ChainFunctions('op'),
+  ARB: new ChainFunctions('arb'),
 
   /* ================================================== */
 
