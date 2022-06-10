@@ -38,6 +38,26 @@ export const ignoredErrors: { chain: Chain, address: Address }[] = [
 /* ========================================================================================================================================================================= */
 
 /**
+ * Function to initialize ethers providers for every chain.
+ * @returns A `providers` object with chain-specific ethers providers.
+ */
+const initProviders = () => {
+  let providers: Record<Chain, ethers.providers.StaticJsonRpcProvider[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [], op: [], arb: [] };
+  for(let stringChain in providers) {
+    let chain = stringChain as Chain;
+    for(let i = 0; i < chains[chain].rpcs.length; i++) {
+      providers[chain].push(new ethers.providers.StaticJsonRpcProvider(chains[chain].rpcs[i]));
+    }
+  }
+  return providers;
+}
+
+// Initializing Ethers Providers:
+const providers = initProviders();
+
+/* ========================================================================================================================================================================= */
+
+/**
  * Function to make blockchain queries.
  * @param chain - The blockchain to target for this query.
  * @param address - The contract's address to query.
@@ -53,8 +73,7 @@ export const query = async (chain: Chain, address: Address, abi: ABI[], method: 
   let rpcID = 0;
   while(result === undefined && errors < maxQueryRetries) {
     try {
-      let ethers_provider = new ethers.providers.StaticJsonRpcProvider(chains[chain].rpcs[rpcID]);
-      let contract = new ethers.Contract(address, abi, ethers_provider);
+      let contract = new ethers.Contract(address, abi, providers[chain][rpcID]);
       if(block) {
         result = await contract[method](...args, { blockTag: block });
       } else {
@@ -86,8 +105,7 @@ export const query = async (chain: Chain, address: Address, abi: ABI[], method: 
  */
 export const multicallQuery = async (chain: Chain, queries: ContractCallContext[]) => {
   try {
-    let ethers_provider = new ethers.providers.StaticJsonRpcProvider(chains[chain].rpcs[0]);
-    let multicall = new Multicall({ ethersProvider: ethers_provider, tryAggregate: true, multicallCustomContractAddress: chains[chain].multicall });
+    let multicall = new Multicall({ ethersProvider: providers[chain][0], tryAggregate: true, multicallCustomContractAddress: chains[chain].multicall });
     let results: ContractCallResults = await multicall.call(queries);
     return results;
   } catch(err) {
@@ -265,8 +283,7 @@ export const getWalletNativeTokenBalance = async (chain: Chain, wallet: Address)
   let rpcID = 0;
   while(balance === undefined && errors < maxQueryRetries) {
     try {
-      let ethers_provider = new ethers.providers.StaticJsonRpcProvider(chains[chain].rpcs[rpcID]);
-      balance = parseInt((await ethers_provider.getBalance(wallet)).toString());
+      balance = parseInt((await providers[chain][rpcID].getBalance(wallet)).toString());
     } catch {
       if(++rpcID >= chains[chain].rpcs.length) {
         errors++;
@@ -364,8 +381,7 @@ export const getWalletTXCount = async (chain: Chain, wallet: Address) => {
   let rpcID = 0;
   while(txs === undefined && errors < maxQueryRetries) {
     try {
-      let ethers_provider = new ethers.providers.StaticJsonRpcProvider(chains[chain].rpcs[rpcID]);
-      txs = parseInt((await ethers_provider.getTransactionCount(wallet)).toString());
+      txs = parseInt((await providers[chain][rpcID].getTransactionCount(wallet)).toString());
     } catch {
       if(++rpcID >= chains[chain].rpcs.length) {
         errors++;
@@ -766,13 +782,11 @@ export const getTokenLogo = (chain: Chain, symbol: string) => {
  * @returns The gas price, token price and gas estimates for various TX types.
  */
 export const getGasEstimates = async (chain: Chain): Promise<{ gasPrice: number, tokenPrice: number, estimates: Record<string, { gas: number, cost: number }>, ethGasPrice?: number, ethTokenPrice?: number }> => {
-  let ethers_provider = new ethers.providers.StaticJsonRpcProvider(chains[chain].rpcs[0]);
-  let gasPrice = parseBN((await ethers_provider.getFeeData()).gasPrice) / (10 ** 9);
+  let gasPrice = parseBN((await providers[chain][0].getFeeData()).gasPrice) / (10 ** 9);
   let tokenPrice = await getTokenPrice(chain, defaultAddress, 18);
   let estimates: Record<string, { gas: number, cost: number }> =  {};
   if(chain === 'op' || chain === 'arb') {
-    let eth_ethers_provider = new ethers.providers.StaticJsonRpcProvider(chains['eth'].rpcs[0]);
-    let ethGasPrice = parseBN((await eth_ethers_provider.getFeeData()).gasPrice) / (10 ** 9);
+    let ethGasPrice = parseBN((await providers.eth[0].getFeeData()).gasPrice) / (10 ** 9);
     let ethTokenPrice = await getTokenPrice('eth', defaultAddress, 18);
     gasAmountEstimates.forEach(tx => {
       estimates[tx.type] = {

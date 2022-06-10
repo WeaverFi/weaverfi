@@ -9,6 +9,7 @@ import type { URL, Address, ENSDomain } from './types';
 
 // Initializations:
 const ensSubgraphURL: URL = 'https://api.thegraph.com/subgraphs/name/ensdomains/ens';
+const ethProvider = new ethers.providers.StaticJsonRpcProvider(chains.eth.rpcs[0]);
 
 /* ========================================================================================================================================================================= */
 
@@ -18,8 +19,7 @@ const ensSubgraphURL: URL = 'https://api.thegraph.com/subgraphs/name/ensdomains/
  * @returns An address if resolvable, else null.
  */
 export const resolveENS = async (name: ENSDomain) => {
-  let ethers_provider = new ethers.providers.StaticJsonRpcProvider(chains['eth'].rpcs[0]);
-  let address = await ethers_provider.resolveName(name);
+  let address = await ethProvider.resolveName(name);
   if(address) {
     return address as Address;
   }
@@ -34,8 +34,7 @@ export const resolveENS = async (name: ENSDomain) => {
  * @returns An ENS domain name if resolvable, else null.
  */
 export const lookupENS = async (address: Address) => {
-  let ethers_provider = new ethers.providers.StaticJsonRpcProvider(chains['eth'].rpcs[0]);
-  let ensAddress = await ethers_provider.lookupAddress(address);
+  let ensAddress = await ethProvider.lookupAddress(address);
   if(ensAddress) {
     return ensAddress as ENSDomain;
   }
@@ -50,8 +49,7 @@ export const lookupENS = async (address: Address) => {
  * @returns An avatar URI if available, else null.
  */
 export const fetchAvatarENS = async (name: ENSDomain) => {
-  let ethers_provider = new ethers.providers.StaticJsonRpcProvider(chains['eth'].rpcs[0]);
-  let resolver = await ethers_provider.getResolver(name);
+  let resolver = await ethProvider.getResolver(name);
   if(resolver) {
     let avatar = await resolver.getText('avatar');
     if(avatar) {
