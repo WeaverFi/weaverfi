@@ -63,6 +63,7 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 - `getNFTBalance(wallet)`
 - `getTokens()`
 - `getTokenLogo(symbol)`
+- `getGasEstimates()`
 - `getInfo()`
 - `getProjects()`
 - `getTokenPrices()`
