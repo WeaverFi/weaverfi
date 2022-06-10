@@ -128,8 +128,8 @@ export const chains: Record<Chain, ChainData> = {
     inch: false,
     paraswap: false,
     rpcs: [
-      'https://evm.cronos.org',
-      'https://rpc.artemisone.org/cronos'
+      'https://evm-cronos.crypto.org',
+      'https://rpc.vvs.finance'
     ],
     coingeckoIDs: {
       chainID: 'cronos',
