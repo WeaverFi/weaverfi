@@ -26,7 +26,7 @@ const gasAmountEstimates: { type: string, gas: number }[] = [
   { type: 'nativeTransfer', gas: 21000 },
   { type: 'tokenTransfer', gas: 65000 },
   { type: 'tokenSwap', gas: 150000 },
-  { type: 'nftSwap', gas: 85000 }
+  { type: 'nftTransfer', gas: 85000 }
 ];
 
 // Ignored Errors On Blockchain Queries:
