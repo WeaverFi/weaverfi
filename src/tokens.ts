@@ -675,7 +675,7 @@ export const cronos_data: ChainTokenData = {
     { address: '0xbED48612BC69fA1CaB67052b42a95FB30C1bcFee', symbol: 'SHIB', logo: 'https://cronoscan.com/token/images/shibatoken_32.png', decimals: 18 },
     { address: '0x2D03bECE6747ADC00E1a131BBA1469C15fD11e03', symbol: 'VVS', logo: 'https://cronoscan.com/token/images/vvsfinance_32.png', decimals: 18 },
     { address: '0xadbd1231fb360047525BEdF962581F3eee7b49fe', symbol: 'CRONA', logo: 'https://cronoscan.com/token/images/cronaswap_32.png', decimals: 18 },
-    { address: '0x66e428c3f67a68878562e79A0234c1F83c208770', symbol: 'USDT', logo: 'https://cronoscan.com/token/images/mmfinance_32.png', decimals: 6 },
+    { address: '0x66e428c3f67a68878562e79A0234c1F83c208770', symbol: 'USDT', logo: 'https://cronoscan.com/token/images/tetherusdt_32.png', decimals: 6 },
     { address: '0xc21223249CA28397B4B6541dfFaEcC539BfF0c59', symbol: 'USDC', logo: 'https://cronoscan.com/token/images/usdcbttc_32.png', decimals: 6 },
     { address: '0x062E66477Faf219F25D27dCED647BF57C3107d52', symbol: 'WBTC', logo: 'https://cronoscan.com/token/images/wbtc_32.png', decimals: 8 },
     { address: '0xe44Fd7fCb2b1581822D0c862B68222998a0c299a', symbol: 'WETH', logo: 'https://cronoscan.com/token/images/weth_32.png', decimals: 18 },
