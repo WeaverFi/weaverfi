@@ -9,7 +9,7 @@ import { defaultAddress } from './functions';
 import type { Address } from './types';
 
 // Initializations:
-const wallet: Address = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E';
+const wallet: Address = '0x1ccd8ff59612d4108d9bbe5f16add545efc6fdbe';
 
 /* ========================================================================================================================================================================= */
 
@@ -17,7 +17,7 @@ const wallet: Address = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E';
 const tests = async () => {
 
   // Project Test:
-  // let projectBalance = await weaver.POLY.getProjectBalance(wallet, 'pooltogether');
+  // let projectBalance = await weaver.AVAX.getProjectBalance(wallet, 'platypus');
   // console.log('🕷️ ~ projectBalance', projectBalance);
 
   /* ================================================== */

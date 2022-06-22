@@ -704,3 +704,26 @@ export const truefi: Record<`${truefiABIs}ABI`, ABI[]> = {
     { constant: true, inputs: [], name: "poolValue", outputs: [{ name: "", type: "uint256" }], type: "function" }
   ]
 }
+
+// Platypus ABIs:
+type platypusABIs = 'staking' | 'masterChef' | 'factoryChef' | 'token';
+export const platypus: Record<`${platypusABIs}ABI`, ABI[]> = {
+  stakingABI: [
+    { constant: true, inputs: [{ name: "_addr", type: "address" }], name: "getStakedPtp", outputs: [{ name: "", type: "uint256" }], type: "function" }
+  ],
+  masterChefABI: [
+    { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
+    { constant: true, inputs: [{ name: "<input>", type: "uint256" }, { name: "<input>", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }, { name: "factor", type: "uint256" }], type: "function" },
+    { constant: true, inputs: [{ name: "<input>", type: "uint256" }], name: "poolInfo", outputs: [{ name: "lpToken", type: "address" }, { name: "allocPoint", type: "uint256" }, { name: "lastRewardTimestamp", type: "uint256" }, { name: "accPtpPerShare", type: "uint256" }, { name: "rewarder", type: "address" }, { name: "sumOfFactors", type: "uint256" }, { name: "accPtpPerFactorShare", type: "uint256" }, { name: "adjustedAllocPoint", type: "uint256" }], type: "function" },
+    { constant: true, inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], name: "pendingTokens", outputs: [{ name: "pendingPtp", type: "uint256" }, { name: "bonusTokenAddress", type: "address" }, { name: "bonusTokenSymbol", type: "string" }, { name: "pendingBonusToken", type: "uint256" }], type: "function" }
+  ],
+  factoryChefABI: [
+    { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
+    { constant: true, inputs: [{ name: "<input>", type: "uint256" }, { name: "<input>", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }], type: "function" },
+    { constant: true, inputs: [{ name: "<input>", type: "uint256" }], name: "poolInfo", outputs: [{ name: "lpToken", type: "address" }, { name: "baseAllocPoint", type: "uint256" }, { name: "lastRewardTimestamp", type: "uint256" }, { name: "accPtpPerShare", type: "uint256" }, { name: "rewarder", type: "address" }], type: "function" },
+    { constant: true, inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], name: "pendingTokens", outputs: [{ name: "pendingPtp", type: "uint256" }, { name: "bonusTokenAddress", type: "address" }, { name: "bonusTokenSymbol", type: "string" }, { name: "pendingBonusToken", type: "uint256" }], type: "function" }
+  ],
+  tokenABI: [
+    { constant: true, inputs: [], name: "underlyingToken", outputs: [{ name: "", type: "address" }], type: "function" }
+  ]
+}

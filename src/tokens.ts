@@ -586,7 +586,8 @@ export const avax_data: ChainTokenData = {
     { symbol: 'SCALES', logo: 'https://assets.coingecko.com/coins/images/20502/small/E5nD9pPv_400x400.jpg?1637139692' },
     { symbol: 'HERO', logo: 'https://assets.coingecko.com/coins/images/20502/small/E5nD9pPv_400x400.jpg?1637139692' },
     { symbol: 'sAXIAL', logo: 'https://assets.coingecko.com/coins/images/20502/small/E5nD9pPv_400x400.jpg?1637139692' },
-    { symbol: 'veAXIAL', logo: 'https://assets.coingecko.com/coins/images/20502/small/E5nD9pPv_400x400.jpg?1637139692' }
+    { symbol: 'veAXIAL', logo: 'https://assets.coingecko.com/coins/images/20502/small/E5nD9pPv_400x400.jpg?1637139692' },
+    { symbol: 'vePTP', logo: 'https://snowtrace.io/token/images/platypusfinance_32.png' }
   ],
   nfts: [
     { address: '0x3555cAB4b6628BeEA81d20Cb8a832A16B69671F7', dataQuery: 'listed', name: 'Snowball: Birthday' },

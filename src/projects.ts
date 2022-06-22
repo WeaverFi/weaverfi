@@ -21,6 +21,7 @@ export const projects: Record<Chain, string[]> = {
 		'lydia',
 		'pangolin',
 		'penguin',
+		'platypus',
 		'pooltogether',
 		'snowball',
 		'teddy',

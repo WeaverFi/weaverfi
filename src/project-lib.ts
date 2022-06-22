@@ -19,6 +19,7 @@ import * as avax_cycle from './projects/avax/cycle';
 import * as avax_lydia from './projects/avax/lydia';
 import * as avax_pangolin from './projects/avax/pangolin';
 import * as avax_penguin from './projects/avax/penguin';
+import * as avax_platypus from './projects/avax/platypus';
 import * as avax_pooltogether from './projects/avax/pooltogether';
 import * as avax_snowball from './projects/avax/snowball';
 import * as avax_teddy from './projects/avax/teddy';
@@ -99,6 +100,7 @@ const projects: Record<Chain, Record<string, any>> = {
 		lydia: avax_lydia,
 		pangolin: avax_pangolin,
 		penguin: avax_penguin,
+		platypus: avax_platypus,
 		pooltogether: avax_pooltogether,
 		snowball: avax_snowball,
 		teddy: avax_teddy,
