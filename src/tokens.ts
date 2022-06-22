@@ -534,7 +534,8 @@ export const avax_data: ChainTokenData = {
     { address: '0x1ECd47FF4d9598f89721A2866BFEb99505a413Ed', symbol: 'AVME', logo: 'https://snowtrace.io/token/images/avmeavax_32.png', decimals: 18 },
     { address: '0xb599c3590F42f8F995ECfa0f85D2980B76862fc1', symbol: 'UST', logo: 'https://snowtrace.io/token/images/wormholeust_32.png', decimals: 6 },
     { address: '0x4f60a160D8C2DDdaAfe16FCC57566dB84D674BD6', symbol: 'JEWEL', logo: 'https://snowtrace.io/token/images/jewel_32.png', decimals: 18 },
-    { address: '0x449674B82F05d498E126Dd6615a1057A9c088f2C', symbol: 'LOST', logo: 'https://snowtrace.io/token/images/lostwords_32.png', decimals: 18 }
+    { address: '0x449674B82F05d498E126Dd6615a1057A9c088f2C', symbol: 'LOST', logo: 'https://snowtrace.io/token/images/lostwords_32.png', decimals: 18 },
+    { address: '0x152b9d0FdC40C096757F570A51E494bd4b943E50', symbol: 'BTC.b', logo: 'https://bscscan.com/token/images/btcb_32.png', decimals: 8 }
   ],
   logos: [
     { symbol: 'AVAX', logo: 'https://bscscan.com/token/images/avax_32.png' },
