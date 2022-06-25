@@ -324,7 +324,7 @@ export const poly_data: ChainTokenData = {
     { address: '0x6f3b3286fd86d8b47ec737ceb3d0d354cc657b3e', symbol: 'PAX', logo: 'https://polygonscan.com/token/images/paxos_28_2.png', decimals: 18 },
     { address: '0x172370d5cd63279efa6d502dab29171933a610af', symbol: 'CRV', logo: 'https://polygonscan.com/token/images/curvefi-crv_32.png', decimals: 18 },
     { address: '0x9c2c5fd7b07e95ee044ddeba0e97a665f142394f', symbol: '1INCH', logo: 'https://polygonscan.com/token/images/1inch_32.png', decimals: 18 },
-    { address: '0x7f426F6Dc648e50464a0392E60E1BB465a67E9cf', symbol: 'pAUTO,', logo: 'https://polygonscan.com/token/images/pauto_32.png', decimals: 18 },
+    { address: '0x7f426F6Dc648e50464a0392E60E1BB465a67E9cf', symbol: 'pAUTO', logo: 'https://polygonscan.com/token/images/pauto_32.png', decimals: 18 },
     { address: '0x845E76A8691423fbc4ECb8Dd77556Cb61c09eE25', symbol: 'pWINGS', logo: 'https://polygonscan.com/token/images/jetswappoly_32.png', decimals: 18 },
     { address: '0x831753DD7087CaC61aB5644b308642cc1c33Dc13', symbol: 'QUICK', logo: 'https://polygonscan.com/token/images/quickswap_32.png', decimals: 18 },
     { address: '0x9aF3b7DC29D3C4B1A5731408B6A9656fA7aC3b72', symbol: 'PUSD', logo: 'https://polygonscan.com/token/images/polyquity-pusd_32.png', decimals: 18 },
