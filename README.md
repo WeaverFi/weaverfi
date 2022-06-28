@@ -13,7 +13,11 @@ The NPM package to query DeFi.
 
 [<img width="150px" src="https://user-images.githubusercontent.com/3408362/174302052-6757cf66-f454-4298-b150-2df023ab69e8.png" />](https://discord.com/invite/DzADcq7y75)
 
----
+## Contributing
+
+Contribution guidelines can be found [here](CONTRIBUTING.md).
+
+[banner]: /Banner.png "WeaverFi"
 
 ## Usage
 
@@ -40,8 +44,6 @@ const weaver = require('weaverfi').default
 The `WeaverFi` object (or `weaver` if you prefer to import it that way) contains some global methods such as `WeaverFi.getAllProjects()`, `WeaverFi.getAllTokens()` or `WeaverFi.getAllTokenPrices()`.
 
 Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWalletBalance(wallet)`, for example.
-
----
 
 ## Global Methods Available
 
@@ -87,8 +89,6 @@ The ETH chain also contains the `resolveENS(name)`, `lookupENS(address)` and `fe
 - OP (Optimism)
 - ARB (Arbitrum)
 
----
-
 ## Types
 
 Any extra types used within the SDK are located in the `types.ts` file.
@@ -98,11 +98,3 @@ If needed, these can be imported from `weaverfi/dist/types`. Example:
 ```ts
 import type { ChainID, Address, Token } from 'weaverfi/dist/types';
 ```
-
----
-
-## Contributing
-
-Contribution guidelines can be found [here](CONTRIBUTING.md).
-
-[banner]: /Banner.png "WeaverFi"
