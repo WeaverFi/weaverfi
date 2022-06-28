@@ -4,6 +4,8 @@ The `Issues` section of this repository can be sorted by items with the `Help Wa
 
 Not a developer? Feel free to reach out to us on [Discord](https://discord.com/invite/DzADcq7y75) with feedback, suggestions, or make a [donation](#donations) to help fund development!
 
+[<img width="150px" src="https://user-images.githubusercontent.com/3408362/174302052-6757cf66-f454-4298-b150-2df023ab69e8.png" />](https://discord.com/invite/DzADcq7y75)
+
 ## Suggesting Support for New Dapp
 
 Want a new dapp to be supported by WeaverFi? Feel free to create a new issue here by going to `Issues`, `New Issue` and selecting the `New Project` template to make it easier for all involved to see what you are suggesting.

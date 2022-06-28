@@ -11,6 +11,8 @@ The NPM package to query DeFi.
 
 ![Twitter Shield](https://img.shields.io/twitter/follow/cookietrack_io?style=social)
 
+[<img width="150px" src="https://user-images.githubusercontent.com/3408362/174302052-6757cf66-f454-4298-b150-2df023ab69e8.png" />](https://discord.com/invite/DzADcq7y75)
+
 ---
 
 ## Usage
