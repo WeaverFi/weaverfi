@@ -733,5 +733,7 @@ export const arb_data: ChainTokenData = {
   logos: [
     { symbol: 'ETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' }
   ],
-  nfts: []
+  nfts: [
+    { address: '0xfAe39eC09730CA0F14262A636D2d7C5539353752', dataQuery: 'indexed', name: 'Arbitrum Oddysey' }
+  ]
 }
