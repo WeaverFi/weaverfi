@@ -727,3 +727,12 @@ export const platypus: Record<`${platypusABIs}ABI`, ABI[]> = {
     { constant: true, inputs: [], name: "underlyingToken", outputs: [{ name: "", type: "address" }], type: "function" }
   ]
 }
+
+// Lost Worlds ABIs:
+type lostworldsABIs = 'staking';
+export const lostworlds: Record<`${lostworldsABIs}ABI`, ABI[]> = {
+  stakingABI: [
+    { constant: true, inputs: [{ name: "<input>", type: "address" }], name: "deposits", outputs: [{ name: "", type: "uint256" }], type: "function" },
+    { constant: true, inputs: [{ name: "account", type: "address" }], name: "getPendingReward", outputs: [{ name: "", type: "uint256" }], type: "function" }
+  ]
+}

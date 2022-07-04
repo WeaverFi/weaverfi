@@ -16,6 +16,7 @@ import * as avax_benqi from './projects/avax/benqi';
 import * as avax_cream from './projects/avax/cream';
 import * as avax_curve from './projects/avax/curve';
 import * as avax_cycle from './projects/avax/cycle';
+import * as avax_lostworlds from './projects/avax/lostworlds';
 import * as avax_lydia from './projects/avax/lydia';
 import * as avax_pangolin from './projects/avax/pangolin';
 import * as avax_penguin from './projects/avax/penguin';
@@ -97,6 +98,7 @@ const projects: Record<Chain, Record<string, any>> = {
 		cream: avax_cream,
 		curve: avax_curve,
 		cycle: avax_cycle,
+		lostworlds: avax_lostworlds,
 		lydia: avax_lydia,
 		pangolin: avax_pangolin,
 		penguin: avax_penguin,

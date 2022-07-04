@@ -18,6 +18,7 @@ export const projects: Record<Chain, string[]> = {
 		'cream',
 		'curve',
 		'cycle',
+		'lostworlds',
 		'lydia',
 		'pangolin',
 		'penguin',
