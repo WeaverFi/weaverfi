@@ -59,6 +59,7 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 ## Chain Methods Available
 
 - `query(address, abi, method, args)`
+- `queryBlocks(address, abi, event, querySize, args, start, end)`
 - `isAddress(address)`
 - `getTXCount(address)`
 - `getWalletBalance(wallet)`
@@ -71,7 +72,7 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 - `getInfo()`
 - `getProjects()`
 - `getTokenPrices()`
-- `getTokenPrice(address)`
+- `getTokenPrice(address, decimals)`
 - `updateTokenPrice(priceData)`
 - `fetchPrices()`
 

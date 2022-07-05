@@ -28,8 +28,23 @@ export class ChainFunctions {
    * @param block - The block height from which to query info from. (Optional)
    * @returns Query results.
    */
-  query(address: Address, abi: ABI[], method: string, args: any[], block?: number) {
+  query(address: Address, abi: ABI, method: string, args: any[], block?: number) {
     return evm.query(this.chain, address, abi, method, args, block);
+  }
+
+  /**
+   * Function to query blocks for events on a given contract.
+   * @param address - The contract's address to query.
+   * @param abi - The contract's ABI.
+   * @param event - The event name to query for.
+   * @param querySize - The limit to how many blocks should be queried in each batch.
+   * @param args - Any arguments to pass to the event filter.
+   * @param startBlock - The block to start querying from. (Optional)
+   * @param endBlock - The block to stop querying at. (Optional)
+   * @returns Array of events.
+   */
+  queryBlocks(address: Address, abi: ABI, event: string, querySize: number, args: any[], startBlock?: number, endBlock?: number) {
+    return evm.queryBlocks(this.chain, address, abi, event, querySize, args, startBlock, endBlock);
   }
   
   /**

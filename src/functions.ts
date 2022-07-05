@@ -61,13 +61,13 @@ const providers = initProviders();
  * Function to make blockchain queries.
  * @param chain - The blockchain to target for this query.
  * @param address - The contract's address to query.
- * @param abi - The contract's ABI from 'ABIs.ts'.
+ * @param abi - The contract's ABI.
  * @param method - The method to be called from the contract.
  * @param args - Any arguments to pass to the method called.
  * @param block - The block height from which to query info from. (Optional)
  * @returns Query results.
  */
-export const query = async (chain: Chain, address: Address, abi: ABI[], method: string, args: any[], block?: number) => {
+export const query = async (chain: Chain, address: Address, abi: ABI, method: string, args: any[], block?: number) => {
   let result = undefined;
   let errors = 0;
   let rpcID = 0;
@@ -92,6 +92,57 @@ export const query = async (chain: Chain, address: Address, abi: ABI[], method: 
     }
   }
   return result;
+}
+
+/* ========================================================================================================================================================================= */
+
+/**
+ * Function to query blocks for events on a given contract.
+ * @param chain - The blockchain to target for this query.
+ * @param address - The contract's address to query.
+ * @param abi - The contract's ABI.
+ * @param event - The event name to query for.
+ * @param querySize - The limit to how many blocks should be queried in each batch.
+ * @param args - Any arguments to pass to the event filter.
+ * @param startBlock - The block to start querying from. (Optional)
+ * @param endBlock - The block to stop querying at. (Optional)
+ * @returns Array of events.
+ */
+export const queryBlocks = async (chain: Chain, address: Address, abi: ABI, event: string, querySize: number, args: any[], startBlock?: number, endBlock?: number) => {
+  let results: ethers.Event[] = [];
+  if(startBlock === undefined) {
+    startBlock = 1;
+  }
+  if(endBlock === undefined) {
+    endBlock = await providers[chain][0].getBlockNumber();
+  }
+  if(endBlock > startBlock) {
+    let lastQueriedBlock = startBlock;
+    while(++lastQueriedBlock < endBlock) {
+      let targetBlock = Math.min(lastQueriedBlock + querySize, endBlock);
+      let result: ethers.Event[] | undefined = undefined;
+      let errors = 0;
+      let rpcID = 0;
+      while(result === undefined) {
+        try {
+          let contract = new ethers.Contract(address, abi, providers[chain][rpcID]);
+          let eventFilter = contract.filters[event](...args);
+          result = await contract.queryFilter(eventFilter, lastQueriedBlock, targetBlock);
+        } catch {
+          if(++rpcID >= chains[chain].rpcs.length) {
+            if(++errors >= maxQueryRetries) {
+              throw new WeaverError(chain, null, `Querying blocks ${lastQueriedBlock} to ${targetBlock} for events on ${address}`);
+            } else {
+              rpcID = 0;
+            }
+          }
+        }
+      }
+      results.push(...result);
+      lastQueriedBlock = targetBlock;
+    }
+  }
+  return results;
 }
 
 /* ========================================================================================================================================================================= */
@@ -124,7 +175,7 @@ export const multicallQuery = async (chain: Chain, queries: ContractCallContext[
  * @param methodParameters - Any arguments to pass to the method called.
  * @returns Query results for each contract.
  */
-export const multicallOneMethodQuery = async (chain: Chain, contracts: Address[], abi: ABI[], methodName: string, methodParameters: any[]) => {
+export const multicallOneMethodQuery = async (chain: Chain, contracts: Address[], abi: ABI, methodName: string, methodParameters: any[]) => {
   let results: Record<Address, any[]> = {};
   let queries: ContractCallContext[] = [];
   let calls: CallContext[] = [{ reference: '', methodName, methodParameters }];
@@ -151,7 +202,7 @@ export const multicallOneMethodQuery = async (chain: Chain, contracts: Address[]
  * @param calls - All method calls to query the target contract.
  * @returns Query results for each method call.
  */
-export const multicallOneContractQuery = async (chain: Chain, contractAddress: Address, abi: ABI[], calls: CallContext[]) => {
+export const multicallOneContractQuery = async (chain: Chain, contractAddress: Address, abi: ABI, calls: CallContext[]) => {
   let results: Record<string, any[]> = {};
   let query: ContractCallContext = { reference: 'oneContractQuery', contractAddress, abi, calls };
   let multicallQueryResults = (await multicallQuery(chain, [query])).results;
@@ -173,7 +224,7 @@ export const multicallOneContractQuery = async (chain: Chain, contractAddress: A
  * @param calls - All method calls to query the target contracts.
  * @returns Query results for each method call, for each contract.
  */
-export const multicallComplexQuery = async (chain: Chain, contracts: Address[], abi: ABI[], calls: CallContext[]) => {
+export const multicallComplexQuery = async (chain: Chain, contracts: Address[], abi: ABI, calls: CallContext[]) => {
   let results: Record<Address, Record<string, any[]>> = {};
   let queries: ContractCallContext[] = [];
   contracts.forEach(contract => {

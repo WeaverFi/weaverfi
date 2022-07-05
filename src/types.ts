@@ -18,8 +18,9 @@ export type PriceSource = 'chain' | 'coingecko' | '1inch' | 'paraswap';
 // NFT Data Query Types:
 export type NFTDataQueryType = 'none' | 'indexed' | 'listed' | 'ens';
 
-// ABI IO Types:
-export type ABIIOType = `int${number}` | `int${number}[${number | ''}]` | `uint${number}` | `uint${number}[${number | ''}]` | `bytes${number}` | `bytes${number}[${number | ''}]` | 'address' | `address[${number | ''}]` | 'bool' | `bool[${number | ''}]` | 'tuple' | `tuple[${number | ''}]` | 'string' | `string[${number | ''}]`;
+// ABI Types:
+export type ABI = (ABIEntry | ExtendedABIEntry | ExtendedABIEventEntry)[];
+export type ABIIOType = `int${number}` | `int${number}[${number | ''}]` | `uint${number}` | `uint${number}[${number | ''}]` | `bytes${number}` | `bytes${number}[${number | ''}]` | 'address' | `address[${number | ''}]` | 'bool' | `bool[${number | ''}]` | 'tuple' | `tuple[${number | ''}]` | 'string' | `string[${number | ''}]` | `contract ${string}`;
 
 // Generic Types:
 export type URL = `https://${string}`;
@@ -109,7 +110,7 @@ export interface NFT {
 /* ========================================================================================================================================================================= */
 
 // ABI Interfaces:
-export interface ABI {
+export interface ABIEntry {
     constant: true
     inputs: (ABIIO | ABITupleIO)[]
     name: string
@@ -123,6 +124,23 @@ export interface ABIIO {
 export interface ABITupleIO {
     type: 'tuple' | 'tuple[]'
     components: ABIIO[]
+}
+export interface ExtendedABIEntry {
+    inputs: ExtendedABIIO[]
+    name: string
+    outputs: ExtendedABIIO[]
+    stateMutability: 'view' | 'nonpayable'
+    type: 'function'
+}
+export interface ExtendedABIEventEntry {
+    anonymous: boolean
+    inputs: ExtendedABIIO[]
+    name: string
+    type: 'event'
+}
+export interface ExtendedABIIO extends ABIIO {
+    indexed?: boolean
+    internalType: ABIIOType
 }
 
 /* ========================================================================================================================================================================= */

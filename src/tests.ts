@@ -6,10 +6,19 @@ import { chains } from './chains';
 import { defaultAddress } from './functions';
 
 // Type Imports:
-import type { Address } from './types';
+import type { Address, ABI } from './types';
 
-// Initializations:
-const wallet: Address = '0x5f5b35611f822a83578347e41fee3ca13a7a6436';
+// Example Wallet:
+const wallet: Address = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E';
+
+// Example ABI:
+const erc20TransferEventABI: ABI = [
+  { "anonymous": false, "inputs": [
+    { "indexed": true, "internalType": "address", "name": "from", "type": "address" },
+    { "indexed": true, "internalType": "address", "name": "to", "type": "address" },
+    { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" }
+  ],"name": "Transfer", "type": "event" }
+];
 
 /* ========================================================================================================================================================================= */
 
@@ -37,10 +46,16 @@ const tests = async () => {
   // console.log('🕷️ ~ projects', projects);
   // let tokens = weaver.ETH.getTokens();
   // console.log('🕷️ ~ tokens', tokens);
-  // let queryResult = parseInt(await weaver.ETH.query(chains['eth'].usdc, minABI, 'balanceOf', [wallet]));
-  // console.log('🕷️ ~ queryResult', queryResult);
   // let gasResult = await weaver.ETH.getGasEstimates();
   // console.log('🕷️ ~ gasResult', gasResult);
+
+  /* ================================================== */
+
+  // Query Tests:
+  // let queryResult = parseInt(await weaver.ETH.query(chains['eth'].usdc, minABI, 'balanceOf', [wallet]));
+  // console.log('🕷️ ~ queryResult', queryResult);
+  // let queryBlocksResult = await weaver.ETH.queryBlocks(chains['eth'].usdc, erc20TransferEventABI, 'Transfer', 50000, [], 15083775, 15083778);
+  // console.log('🕷️ ~ queryBlocksResult', queryBlocksResult);
 
   /* ================================================== */
 
