@@ -26,7 +26,7 @@ const erc20TransferEventABI: ABI = [
 const tests = async () => {
 
   // Project Test:
-  // let projectBalance = await weaver.AVAX.getProjectBalance(wallet, 'lostworlds');
+  // let projectBalance = await weaver.OP.getProjectBalance(wallet, 'pooltogether');
   // console.log('🕷️ ~ projectBalance', projectBalance);
 
   /* ================================================== */
