@@ -2,14 +2,14 @@
 
 The NPM package to query DeFi.
 
-![CodeQL](https://github.com/CookieTrack-io/weaverfi/actions/workflows/codeql-analysis.yml/badge.svg)
-![Version](https://img.shields.io/github/package-json/v/CookieTrack-io/weaverfi)
+![CodeQL](https://github.com/WeaverFi/weaverfi/actions/workflows/codeql-analysis.yml/badge.svg)
+![Version](https://img.shields.io/github/package-json/v/WeaverFi/weaverfi)
 ![Downloads](https://img.shields.io/npm/dw/weaverfi)
 
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 
-![Twitter Shield](https://img.shields.io/twitter/follow/cookietrack_io?style=social)
+[<img src="https://img.shields.io/twitter/follow/weaver_fi?style=social" />](https://twitter.com/weaver_fi)
 
 [<img width="150px" src="https://user-images.githubusercontent.com/3408362/174302052-6757cf66-f454-4298-b150-2df023ab69e8.png" />](https://discord.com/invite/DzADcq7y75)
 
