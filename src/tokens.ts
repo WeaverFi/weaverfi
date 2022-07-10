@@ -108,7 +108,8 @@ export const eth_data: ChainTokenData = {
     { symbol: 'UNI-V2', logo: 'https://etherscan.io/token/images/uniswap_32.png' },
     { symbol: 'VEN', logo: 'https://etherscan.io/token/images/vechain_28.png' },
     { symbol: 'THETA', logo: 'https://etherscan.io/token/images/theta_28.png' },
-    { symbol: 'ZIL', logo: 'https://etherscan.io/token/images/zilliqa_28_2.png' }
+    { symbol: 'ZIL', logo: 'https://etherscan.io/token/images/zilliqa_28_2.png' },
+    { symbol: 'PTaUSDC', logo: 'https://raw.githubusercontent.com/pooltogether/pooltogether-react-components/08439a1fcdf661d89211d72815eec73b26d1bc1f/src/assets/Tokens/ptausdc.png' }
   ],
   nfts: [
     { address: '0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85', dataQuery: 'ens', name: 'ENS Domain' },
@@ -381,7 +382,7 @@ export const poly_data: ChainTokenData = {
     { symbol: 'BP-MTA', logo: 'https://polygonscan.com/token/images/Balancer_32.png' },
     { symbol: 'SLP', logo: 'https://polygonscan.com/token/images/sushiswap-sushi_32.png' },
     { symbol: 'mooCurveAm3CRV', logo: 'https://polygonscan.com/token/images/aave_32.png' },
-    { symbol: 'PTaUSDC', logo: 'https://polygonscan.com/token/images/centre-usdc_32.png' },
+    { symbol: 'PTaUSDC', logo: 'https://raw.githubusercontent.com/pooltogether/pooltogether-react-components/08439a1fcdf661d89211d72815eec73b26d1bc1f/src/assets/Tokens/ptausdc.png' },
     { symbol: 'APE-LP', logo: 'https://bscscan.com/token/images/apeswap_32.png' },
     { symbol: 'THETA', logo: 'https://polygonscan.com/token/images/theta_28.png' },
     { symbol: 'ENJ', logo: 'https://polygonscan.com/token/images/enjin_28_2.png' },
@@ -575,7 +576,7 @@ export const avax_data: ChainTokenData = {
     { symbol: 'FORTUNE', logo: 'https://cookie.game/android-chrome-512x512.png' },
     { symbol: 'BAKER', logo: 'https://cookie.game/android-chrome-512x512.png' },
     { symbol: 'COOKIE-BAKER', logo: 'https://cookie.game/android-chrome-512x512.png' },
-    { symbol: 'PTavUSDCe', logo: 'https://snowtrace.io/token/images/usdc_32.png' },
+    { symbol: 'PTavUSDCe', logo: 'https://raw.githubusercontent.com/pooltogether/pooltogether-react-components/08439a1fcdf661d89211d72815eec73b26d1bc1f/src/assets/Tokens/ptausdc.png' },
     { symbol: 'xGTR', logo: 'https://snowtrace.io/token/images/alligatormoneybags2_32.png' },
     { symbol: 'DAI', logo: 'https://snowtrace.io/token/images/MCDDai_32.png' },
     { symbol: 's3D', logo: 'https://snowtrace.io/token/images/snowball_32.png' },
@@ -706,7 +707,8 @@ export const op_data: ChainTokenData = {
     { address: '0x4200000000000000000000000000000000000006', symbol: 'WETH', logo: 'https://optimistic.etherscan.io/token/images/weth_28.png', decimals: 18 }
   ],
   logos: [
-    { symbol: 'ETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' }
+    { symbol: 'ETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' },
+    { symbol: 'PTaOptUSDC', logo: 'https://raw.githubusercontent.com/pooltogether/pooltogether-react-components/08439a1fcdf661d89211d72815eec73b26d1bc1f/src/assets/Tokens/ptausdc.png' }
   ],
   nfts: []
 }
