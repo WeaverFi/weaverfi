@@ -163,7 +163,7 @@ export const chains: Record<Chain, ChainData> = {
     usdc: '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8',
     usdcDecimals: 6,
     inch: true,
-    paraswap: false,
+    paraswap: true,
     rpcs: [
       'https://arb1.arbitrum.io/rpc',
       'https://rpc.ankr.com/arbitrum'
