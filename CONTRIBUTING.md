@@ -34,9 +34,37 @@ Doing so was made as easy and straightforward as possible. Simply fork this repo
 - Any new relevant new ABIs updated in `/src/ABIs.ts`.
 - A file in `/src/projects/` with the functionality of querying the new dapp in the appropriate chain folder, as a `.ts` file.
 
-There are tons of already present implementations of dapps in `/src/projects/`, use any relevant ones as a template for your new integration!
+The basic structure of any project's integration is an exported `get()` function that returns token balances. Here's a simple example from PoolTogether's Ethereum [integration]('https://github.com/WeaverFi/weaverfi/blob/main/src/projects/eth/pooltogether.ts'):
 
-You can test your implementation through `npm run test`, and a lot of tests are already setup and available in `/src/tests.ts`.
+```ts
+export const get = async (wallet: Address) => {
+  let balance: Token[] = [];
+  balance.push(...(await getPoolBalanceV4(wallet).catch((err) => { throw new WeaverError(chain, project, 'getPoolBalanceV4()', err) })));
+  return balance;
+}
+```
+
+The `getPoolBalanceV4()` function in this case is a function that would check a user's PoolTogether V4 balance on-chain, and return some `Token` objects. You can have many different functions to query many different aspects of any project! Keep in mind there are other ready objects for other token types such as `NativeToken`, `LPToken`, `DebtToken` or `XToken`.
+
+Here's the aforementioned example function:
+
+```ts
+export const getPoolBalanceV4 = async (wallet: Address) => {
+  let balance = parseInt(await query(chain, poolTicketV4, minABI, 'balanceOf', [wallet]));
+  if(balance > 0) {
+    let newToken = await addToken(chain, project, 'staked', usdc, balance, wallet, poolDepositV4);
+    return [newToken];
+  } else {
+    return [];
+  }
+}
+```
+
+As this integration is quite simple, the `query()` function was used to make on-chain queries. If there are multiple on-chain queries to make, consider using `multicallQuery()`, `multicallOneMethodQuery()` or `multicallOneContractQuery()` to greatly speed up the efficiency of your integration.
+
+The `addToken()` function was then used to create a `Token` object suitable to return as a result. Appropriately named methods are also available for other token types, such as `addNativeToken()`, `addLPToken()`, `addDebtToken()` and `addXToken()`.
+
+There are tons of already present implementations of dapps in `/src/projects/`, use any relevant ones as a template for your new integration! You can test your implementation through `npm run test`, and a lot of tests are already setup and available in `/src/tests.ts`.
 
 If your PR isn't reviewed right away, reach out in our [Discord server](https://discord.com/invite/DzADcq7y75)!
 
@@ -44,7 +72,22 @@ If your PR isn't reviewed right away, reach out in our [Discord server](https://
 
 In order to track a new token, first ensure it has a price feed available either through CoinGecko, ParaSwap or 1Inch (not necessary for NFTs).
 
-Simply add the token's information to `/src/tokens.ts` under its appropriate chain!
+Simply add the token's information to `/src/tokens.ts` under its appropriate chain! Each addition follows the following structure:
+
+```ts
+{
+  address: Address,
+  symbol: string,
+  logo: URL,
+  decimals: number
+}
+```
+
+Here's the USDC token on Ethereum, as an example:
+
+```ts
+{ address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', symbol: 'USDC', logo: 'https://etherscan.io/token/images/centre-usdc_28.png', decimals: 6 }
+```
 
 ## Other Contributions
 
