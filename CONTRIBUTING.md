@@ -64,6 +64,8 @@ As this integration is quite simple, the `query()` function was used to make on-
 
 The `addToken()` function was then used to create a `Token` object suitable to return as a result. Appropriately named methods are also available for other token types, such as `addNativeToken()`, `addLPToken()`, `addDebtToken()` and `addXToken()`.
 
+You can also add any extra info you'd like to your token balances, since all token types have an optional `info` attribute to indicate values like `apr`, `apy`, `unlock`, `deprecated`, or any others you may think of.
+
 There are tons of already present implementations of dapps in `/src/projects/`, use any relevant ones as a template for your new integration! You can test your implementation through `npm run test`, and a lot of tests are already setup and available in `/src/tests.ts`.
 
 If your PR isn't reviewed right away, reach out in our [Discord server](https://discord.com/invite/DzADcq7y75)!
