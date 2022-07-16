@@ -20,7 +20,7 @@ export type NFTDataQueryType = 'none' | 'indexed' | 'listed' | 'ens';
 
 // ABI Types:
 export type ABI = (ABIEntry | ExtendedABIEntry | ExtendedABIEventEntry)[];
-export type ABIIOType = `int${number}` | `int${number}[${number | ''}]` | `uint${number}` | `uint${number}[${number | ''}]` | `bytes${number | ''}` | `bytes${number | ''}[${number | ''}]` | 'address' | `address[${number | ''}]` | 'bool' | `bool[${number | ''}]` | 'tuple' | `tuple[${number | ''}]` | 'string' | `string[${number | ''}]` | `contract ${string}`;
+export type ABIIOType = `int${number}` | `int${number}[${number | ''}]` | `uint${number}` | `uint${number}[${number | ''}]` | `bytes${number | ''}` | `bytes${number | ''}[${number | ''}]` | 'address' | `address[${number | ''}]` | 'bool' | `bool[${number | ''}]` | 'tuple' | `tuple[${number | ''}]` | 'string' | `string[${number | ''}]` | `contract ${string}` | `struct ${string}`;
 
 // Generic Types:
 export type URL = `https://${string}`;
@@ -130,7 +130,7 @@ export interface ExtendedABIEntry {
     name: string
     outputs: ExtendedABIIO[]
     stateMutability: 'view' | 'nonpayable'
-    type: 'function'
+    type: 'function' | 'constructor'
 }
 export interface ExtendedABIEventEntry {
     anonymous: boolean
