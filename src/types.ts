@@ -19,7 +19,7 @@ export type PriceSource = 'chain' | 'coingecko' | '1inch' | 'paraswap';
 export type NFTDataQueryType = 'none' | 'indexed' | 'listed' | 'ens';
 
 // ABI Types:
-export type ABI = (ABIEntry | ExtendedABIEntry | ExtendedABIEventEntry)[];
+export type ABI = (ABIEntry | ExtendedABIEntry | ExtendedABIEventEntry | ExtendedABIConstructorEntry)[];
 export type ABIIOType = `int${number}` | `int${number}[${number | ''}]` | `uint${number}` | `uint${number}[${number | ''}]` | `bytes${number | ''}` | `bytes${number | ''}[${number | ''}]` | 'address' | `address[${number | ''}]` | 'bool' | `bool[${number | ''}]` | 'tuple' | `tuple[${number | ''}]` | 'string' | `string[${number | ''}]` | `contract ${string}` | `struct ${string}`;
 
 // Generic Types:
@@ -126,21 +126,30 @@ export interface ABITupleIO {
     components: ABIIO[]
 }
 export interface ExtendedABIEntry {
-    inputs: ExtendedABIIO[]
+    inputs: (ExtendedABIIO | ExtendedABITupleIO)[]
     name: string
-    outputs: ExtendedABIIO[]
-    stateMutability: 'view' | 'nonpayable'
-    type: 'function' | 'constructor'
+    outputs: (ExtendedABIIO | ExtendedABITupleIO)[]
+    stateMutability: 'view' | 'nonpayable' | 'payable' | 'pure'
+    type: 'function'
 }
 export interface ExtendedABIEventEntry {
     anonymous: boolean
-    inputs: ExtendedABIIO[]
+    inputs: (ExtendedABIIO | ExtendedABITupleIO)[]
     name: string
     type: 'event'
+}
+export interface ExtendedABIConstructorEntry {
+    inputs: (ExtendedABIIO | ExtendedABITupleIO)[]
+    stateMutability: 'view' | 'nonpayable' | 'payable' | 'pure'
+    type: 'constructor'
 }
 export interface ExtendedABIIO extends ABIIO {
     indexed?: boolean
     internalType: ABIIOType
+}
+export interface ExtendedABITupleIO {
+    type: 'tuple' | 'tuple[]'
+    components: ExtendedABIIO[]
 }
 
 /* ========================================================================================================================================================================= */
