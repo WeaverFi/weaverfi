@@ -20,7 +20,7 @@ export type NFTDataQueryType = 'none' | 'indexed' | 'listed' | 'ens';
 
 // ABI Types:
 export type ABI = (ABIEntry | ExtendedABIEntry | ExtendedABIEventEntry)[];
-export type ABIIOType = `int${number}` | `int${number}[${number | ''}]` | `uint${number}` | `uint${number}[${number | ''}]` | `bytes${number}` | `bytes${number}[${number | ''}]` | 'address' | `address[${number | ''}]` | 'bool' | `bool[${number | ''}]` | 'tuple' | `tuple[${number | ''}]` | 'string' | `string[${number | ''}]` | `contract ${string}`;
+export type ABIIOType = `int${number}` | `int${number}[${number | ''}]` | `uint${number}` | `uint${number}[${number | ''}]` | `bytes${number | ''}` | `bytes${number | ''}[${number | ''}]` | 'address' | `address[${number | ''}]` | 'bool' | `bool[${number | ''}]` | 'tuple' | `tuple[${number | ''}]` | 'string' | `string[${number | ''}]` | `contract ${string}`;
 
 // Generic Types:
 export type URL = `https://${string}`;
