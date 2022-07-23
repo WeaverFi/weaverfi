@@ -21,18 +21,15 @@ export const get = async (wallet: Address) => {
   let balance: Token[] = [];
   balance.push(...(await getUserStakeV2(wallet).catch((err) => { throw new WeaverError(chain, project, 'getUserStakeV2()', err) })));
   balance.push(...(await getUserRewardsV2(wallet).catch((err) => { throw new WeaverError(chain, project, 'getUserRewardsV2()', err) })));
-
   return balance;
-
 }
 
 /* ========================================================================================================================================================================= */
 
 // Function to get V2 vault balance:
 export const getUserStakeV2 = async (wallet: Address) => {
-  let balance = parseInt(await query(chain, perpetualV2, pika.perpetualV2ABI, 'getShareBalance', [wallet]));
-  if (balance > 0) {
-    balance = balance * .01; // pika uses 8 decimal 
+  let balance = parseInt(await query(chain, perpetualV2, pika.perpetualV2ABI, 'getShareBalance', [wallet])) * 0.01;
+  if(balance > 0) {
     let newToken = await addToken(chain, project, 'staked', usdc, balance, wallet, perpetualV2);
     return [newToken];
   } else {
@@ -42,10 +39,9 @@ export const getUserStakeV2 = async (wallet: Address) => {
 
 // Function to get V2 rewards:
 export const getUserRewardsV2 = async (wallet: Address) => {
-  let rewards = parseInt(await query(chain, vaultFeeV2, pika.vaultFeeV2ABI, 'getClaimableReward', [wallet]));
+  let rewards = parseInt(await query(chain, vaultFeeV2, pika.vaultFeeV2ABI, 'getClaimableReward', [wallet])) * 0.01;
   if (rewards > 0) {
-    rewards = rewards * .01
-    let newToken = await addToken(chain, project, 'unclaimed', usdc, rewards, wallet, vaultFeeV2)
+    let newToken = await addToken(chain, project, 'unclaimed', usdc, rewards, wallet, vaultFeeV2);
     return [newToken];
   }
   else {

@@ -66,7 +66,9 @@ The `addToken()` function was then used to create a `Token` object suitable to r
 
 You can also add any extra info you'd like to your token balances, since all token types have an optional `info` attribute to indicate values like `apr`, `apy`, `unlock`, `deprecated`, or any others you may think of.
 
-There are tons of already present implementations of dapps in `/src/projects/`, use any relevant ones as a template for your new integration! You can test your implementation through `npm run test`, and a lot of tests are already setup and available in `/src/tests.ts`.
+There are tons of already present implementations of dapps in `/src/projects/`, use any relevant ones as a template for your new integration!
+
+You can test your implementation through `npm run test`, and a lot of tests are already setup and available in `/src/tests.ts`. Make sure you run `npm run build` at least once to add your integration to the projects list!
 
 If your PR isn't reviewed right away, reach out in our [Discord server](https://discord.com/invite/DzADcq7y75)!
 
