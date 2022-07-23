@@ -736,3 +736,14 @@ export const lostworlds: Record<`${lostworldsABIs}ABI`, ABI> = {
     { constant: true, inputs: [{ name: "account", type: "address" }], name: "getPendingReward", outputs: [{ name: "", type: "uint256" }], type: "function" }
   ]
 }
+
+// Pika ABIs:
+type pikaABIs = 'perpetualV2' | 'vaultFeeV2';
+export const pika: Record<`${pikaABIs}ABI`, ABI> = {
+  perpetualV2ABI: [
+    { constant: true, inputs: [{ name: "stakeOwner", type: "address" }], name: "getShareBalance", outputs: [{name: "", type: "uint256"}], type: "function" }
+  ],
+  vaultFeeV2ABI: [
+    { constant: true, inputs: [{ name: "account", type: "address" }], name: "getClaimableReward", outputs: [{name: "", type: "uint256"}], type: "function" }
+  ]
+}
