@@ -68,6 +68,7 @@ import * as one_beefy from './projects/one/beefy';
 import * as one_sushiswap from './projects/one/sushiswap';
 
 // OP Project Imports:
+import * as op_pika from './projects/op/pika';
 import * as op_pooltogether from './projects/op/pooltogether';
 
 // POLY Project Imports:
@@ -151,6 +152,7 @@ const projects: Record<Chain, Record<string, any>> = {
 		sushiswap: one_sushiswap,
 	},
 	op: {
+		pika: op_pika,
 		pooltogether: op_pooltogether,
 	},
 	poly: {
