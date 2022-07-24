@@ -70,6 +70,7 @@ export const projects: Record<Chain, string[]> = {
 		'sushiswap',
 	],
 	op: [
+		'aave',
 		'pika',
 		'pooltogether',
 	],
