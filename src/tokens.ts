@@ -510,7 +510,7 @@ export const avax_data: ChainTokenData = {
     { address: '0x1f1E7c893855525b303f99bDF5c3c05Be09ca251', symbol: 'SYN', logo: 'https://snowtrace.io/token/images/synapse_32.png', decimals: 18 },
     { address: '0x264c1383EA520f73dd837F915ef3a732e204a493', symbol: 'BNB', logo: 'https://assets.coingecko.com/coins/images/825/small/binance-coin-logo.png?1547034615', decimals: 18 },
     { address: '0x130966628846BFd36ff31a822705796e8cb8C18D', symbol: 'MIM', logo: 'https://snowtrace.io/token/images/mimstablecoin_32.png', decimals: 18 },
-    { address: '0xDC42728B0eA910349ed3c6e1c9Dc06b5FB591f98', symbol: 'FRAX', logo: 'https://assets.coingecko.com/coins/images/13422/small/frax_logo.png?1608476506', decimals: 18 },
+    { address: '0xD24C2Ad096400B6FBcd2ad8B24E7acBc21A1da64', symbol: 'FRAX', logo: 'https://snowtrace.io/token/images/fraxfinance2_32.png', decimals: 18 },
     { address: '0xB1466d4cf0DCfC0bCdDcf3500F473cdACb88b56D', symbol: 'WET', logo: 'https://assets.coingecko.com/coins/images/17353/small/cropped-logo-wombat.png?1627368904', decimals: 18 },
     { address: '0xAcD7B3D9c10e97d0efA418903C0c7669E702E4C0', symbol: 'ELE', logo: 'https://assets.coingecko.com/coins/images/14541/small/elelogo_resized.png?1631114051', decimals: 18 },
     { address: '0x65378b697853568dA9ff8EaB60C13E1Ee9f4a654', symbol: 'HUSKY', logo: 'https://snowtrace.io/token/images/huskyavax_32.png', decimals: 18 },
