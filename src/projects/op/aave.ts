@@ -1,16 +1,15 @@
+
 // Imports:
+import { aave } from '../../ABIs';
 import { WeaverError } from '../../error';
-import { minABI, aave } from '../../ABIs';
-import { query, multicallQuery, multicallOneContractQuery, addToken, addDebtToken, parseBN, fetchData } from '../../functions';
+import { query, multicallOneContractQuery, addToken, addDebtToken, parseBN } from '../../functions';
 
 // Type Imports:
-import type { ContractCallContext } from 'ethereum-multicall';
-import type { Chain, Address, URL, Token, DebtToken, AaveAPIResponse, CallContext } from '../../types';
+import type { Chain, Address, Token, DebtToken, CallContext } from '../../types';
 
 // Initializations:
 const chain: Chain = 'op';
 const project = 'aave';
-
 const addressProviderV3: Address = '0xa97684ead0e402dC232d5A977953DF7ECBaB3CDb';
 const uiDataProviderV3: Address = '0x64f558d4BFC1c03a8c8B2ff84976fF04c762b51f';
 const dataProviderV3: Address = '0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654';
@@ -25,6 +24,8 @@ export const get = async (wallet: Address) => {
   balance.push(...(await getMarketBalancesV3(wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketBalancesV3()', err) })));
   return balance;
 }
+
+/* ========================================================================================================================================================================= */
 
 // Function to get lending market V3 balances:
 export const getMarketBalancesV3 = async (wallet: Address) => {
