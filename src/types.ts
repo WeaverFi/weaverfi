@@ -111,7 +111,7 @@ export interface NFT {
 
 // ABI Interfaces:
 export interface ABIEntry {
-    constant: true
+    constant: boolean
     inputs: (ABIIO | ABITupleIO)[]
     name: string
     outputs: (ABIIO | ABITupleIO)[]
