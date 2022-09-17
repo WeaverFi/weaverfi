@@ -22,7 +22,7 @@ Donations can also be made to support the development of WeaverFi through the fo
 
 **Ethereum:** ncookie.eth
 
-**BSC/Polygon/Fantom/Avalanche/Harmony/Cronos/Optimism/Arbitrum:** 0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E
+**BSC/Polygon/Fantom/Avalanche/Cronos/Optimism/Arbitrum:** 0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E
 
 We plan to soon change our donation structure to allocate some of the funds towards hosting costs, and the rest distributed among contributors.
 

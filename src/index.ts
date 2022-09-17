@@ -20,7 +20,6 @@ export const WeaverFi = {
   POLY: new ChainFunctions('poly'),
   FTM: new ChainFunctions('ftm'),
   AVAX: new ChainFunctions('avax'),
-  ONE: new ChainFunctions('one'),
   CRONOS: new ChainFunctions('cronos'),
   OP: new ChainFunctions('op'),
   ARB: new ChainFunctions('arb'),

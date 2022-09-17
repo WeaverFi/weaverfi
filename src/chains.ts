@@ -99,25 +99,6 @@ export const chains: Record<Chain, ChainData> = {
     },
     multicall: '0xed386fe855c1eff2f843b910923dd8846e45c5a4'
   },
-  one: {
-    id: 1666600000,
-    name: 'Harmony',
-    token: 'ONE',
-    wrappedToken: '0xcf664087a5bb0237a0bad6742852ec6c8d69a27a',
-    usdc: '0x985458e523db3d53125813ed68c274899e9dfab4',
-    usdcDecimals: 6,
-    inch: false,
-    paraswap: false,
-    rpcs: [
-      'https://api.harmony.one',
-      'https://harmony-0-rpc.gateway.pokt.network'
-    ],
-    coingeckoIDs: {
-      chainID: 'harmony-shard-0',
-      nativeTokenID: 'harmony'
-    },
-    multicall: '0x5c41f6817feeb65d7b2178b0b9cebfc8fad97969'
-  },
   cronos: {
     id: 25,
     name: 'Cronos',

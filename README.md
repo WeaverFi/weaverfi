@@ -85,7 +85,6 @@ The ETH chain also contains the `resolveENS(name)`, `lookupENS(address)` and `fe
 - POLY (Polygon)
 - FTM (Fantom)
 - AVAX (Avalanche)
-- ONE (Harmony)
 - CRONOS (Cronos)
 - OP (Optimism)
 - ARB (Arbitrum)

@@ -617,53 +617,6 @@ export const avax_data: ChainTokenData = {
 
 /* ========================================================================================================================================================================= */
 
-// Harmony:
-export const one_data: ChainTokenData = {
-  tokens: [
-    { address: '0xcf664087a5bb0237a0bad6742852ec6c8d69a27a', symbol: 'WONE', logo: 'https://etherscan.io/token/images/harmonyone_32.png', decimals: 18 },
-    { address: '0xea589e93ff18b1a1f1e9bac7ef3e86ab62addc79', symbol: 'VIPER', logo: 'https://assets.coingecko.com/coins/images/15305/small/0c4b902b40f14db918f4500956386414ab7ebcfe.jpeg?1620371961', decimals: 18 },
-    { address: '0x72cb10c6bfa5624dd07ef608027e366bd690048f', symbol: 'JEWEL', logo: 'https://assets.coingecko.com/coins/images/18570/small/fAisLIV.png?1632449282', decimals: 18 },
-    { address: '0xe176ebe47d621b984a73036b9da5d834411ef734', symbol: 'BUSD', logo: 'https://etherscan.io/token/images/binanceusd_32.png', decimals: 18 },
-    { address: '0x6983d1e6def3690c4d616b13597a09e6193ea013', symbol: '1ETH', logo: 'https://bscscan.com/token/images/ethereum_32.png', decimals: 18 },
-    { address: '0x985458e523db3d53125813ed68c274899e9dfab4', symbol: '1USDC', logo: 'https://etherscan.io/token/images/centre-usdc_28.png', decimals: 6 },
-    { address: '0x224e64ec1bdce3870a6a6c777edd450454068fec', symbol: 'UST', logo: 'https://etherscan.io/token/images/terra-ust_32.png', decimals: 18 },
-    { address: '0xbec775cb42abfa4288de81f387a9b1a3c4bc552a', symbol: '1SUSHI', logo: 'https://etherscan.io/token/images/sushitoken_32.png', decimals: 18 },
-    { address: '0x3095c7557bcb296ccc6e363de01b760ba031f2d9', symbol: '1WBTC', logo: 'https://etherscan.io/token/images/wbtc_28.png?v=1', decimals: 8 },
-    { address: '0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f', symbol: '1USDT', logo: 'https://etherscan.io/token/images/tether_32.png', decimals: 6 },
-    { address: '0x218532a12a389a4a92fc0c5fb22901d1c19198aa', symbol: 'LINK', logo: 'https://bscscan.com/token/images/chainlink_32.png?v=2', decimals: 18 },
-    { address: '0x582617bd8ca80d22d4432e63fda52d74dcdcee4c', symbol: 'bscADA', logo: 'https://bscscan.com/token/images/cardano_32.png', decimals: 18 },
-    { address: '0xef977d2f931c1978db5f6747666fa1eacb0d0339', symbol: '1DAI', logo: 'https://bscscan.com/token/images/dai_32.png', decimals: 18 },
-    { address: '0x301259f392b551ca8c592c9f676fcd2f9a0a84c5', symbol: '1MATIC', logo: 'https://bscscan.com/token/images/matic_32.png', decimals: 18 },
-    { address: '0xcf323aad9e522b93f11c352caa519ad0e14eb40f', symbol: '1AAVE', logo: 'https://etherscan.io/token/images/aave_32.png', decimals: 18 },
-    { address: '0x58f1b044d8308812881a1433d9bbeff99975e70c', symbol: '11INCH', logo: 'https://bscscan.com/token/images/1inch_32.png', decimals: 18 },
-    { address: '0xf155e1a57db0ca820ae37ab4050e0e4c7cfcecd0', symbol: 'bscDOGE', logo: 'https://bscscan.com/token/images/dogecoin_32.png', decimals: 8 },
-    { address: '0x7b9c523d59aefd362247bd5601a89722e3774dd2', symbol: '1SNX', logo: 'https://etherscan.io/token/images/SynthetixSNX_32.png', decimals: 18 },
-    { address: '0x90d81749da8867962c760414c1c25ec926e889b6', symbol: '1UNI', logo: 'https://bscscan.com/token/images/uniswap_32.png', decimals: 18 },
-    { address: '0xa0dc05f84a27fccbd341305839019ab86576bc07', symbol: '1YFI', logo: 'https://etherscan.io/token/images/yfi_32.png', decimals: 18 },
-    { address: '0x7a791e76bf4d4f3b9b492abb74e5108180be6b5a', symbol: '1LINK', logo: 'https://bscscan.com/token/images/chainlink_32.png?v=2', decimals: 18 },
-    { address: '0x352cd428efd6f31b5cae636928b7b84149cf369f', symbol: '1CRV', logo: 'https://etherscan.io/token/images/Curvefi_32.png', decimals: 18 },
-    { address: '0x6ab6d61428fde76768d7b45d8bfeec19c6ef91a8', symbol: 'BIFI', logo: 'https://bscscan.com/token/images/beefy_32.png?=v1', decimals: 18 },
-    { address: '0x63cf309500d8be0b9fdb8f1fb66c821236c0438c', symbol: '1YGG', logo: 'https://assets.coingecko.com/coins/images/17358/small/le1nzlO6_400x400.jpg?1632465691', decimals: 18 },
-    { address: '0xeb6c08ccb4421b6088e581ce04fcfbed15893ac3', symbol: '1FRAX', logo: 'https://assets.coingecko.com/coins/images/13422/small/frax_logo.png?1608476506', decimals: 18 }
-  ],
-  logos: [
-    { symbol: 'ONE', logo: 'https://etherscan.io/token/images/harmonyone_32.png' },
-    { symbol: 'xVIPER', logo: 'https://assets.coingecko.com/coins/images/15305/small/0c4b902b40f14db918f4500956386414ab7ebcfe.jpeg?1620371961' },
-    { symbol: 'bscBUSD', logo: 'https://bscscan.com/token/images/busd_32.png' },
-    { symbol: 'bscBNB', logo: 'https://etherscan.io/token/images/bnb_28_2.png' },
-    { symbol: 'bscCake', logo: 'https://bscscan.com/token/images/pancake_32.png?=v1' },
-    { symbol: 'bscUSDC', logo: 'https://bscscan.com/token/images/centre-usdc_28.png' },
-    { symbol: 'bscUSDT', logo: 'https://bscscan.com/token/images/busdt_32.png' },
-    { symbol: 'bscDOT', logo: 'https://bscscan.com/token/images/polkadot_32.png' },
-    { symbol: 'bscMATIC', logo: 'https://bscscan.com/token/images/matic_32.png' },
-    { symbol: 'bscETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' },
-    { symbol: 'LUNA', logo: 'https://assets.coingecko.com/coins/images/8284/small/luna1557227471663.png?1567147072' }
-  ],
-  nfts: []
-}
-
-/* ========================================================================================================================================================================= */
-
 // Cronos:
 export const cronos_data: ChainTokenData = {
   tokens: [

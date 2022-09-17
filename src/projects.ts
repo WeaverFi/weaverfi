@@ -64,11 +64,6 @@ export const projects: Record<Chain, string[]> = {
 		'scream',
 		'spookyswap',
 	],
-	one: [
-		'autofarm',
-		'beefy',
-		'sushiswap',
-	],
 	op: [
 		'aave',
 		'pika',

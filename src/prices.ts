@@ -7,7 +7,7 @@ import { getChainTokenData, fetchData, defaultAddress } from './functions';
 import type { Address, Chain, URL, TokenPriceData, TokenData } from './types';
 
 // Prices Object:
-export let prices: Record<Chain, TokenPriceData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [], op: [], arb: [] };
+export let prices: Record<Chain, TokenPriceData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], cronos: [], op: [], arb: [] };
 
 // Initializations:
 const maxPriceAge = 60000 * 20; // 20 Minutes
@@ -410,9 +410,7 @@ const redirectTokenPriceFeed = async (chain: Chain, address: Address) => {
   switch(chain) {
     case 'eth':
       switch(address.toLowerCase()) {
-        case '0x799a4202c12ca952cb311598a024c80ed371a41e': // ONE
-          proxyToken = { chain: 'one', address: defaultAddress, decimals: 18 };
-          break;
+        // None yet.
       }
       break;
     case 'bsc':
@@ -437,19 +435,6 @@ const redirectTokenPriceFeed = async (chain: Chain, address: Address) => {
     case 'avax':
       switch(address.toLowerCase()) {
         // None yet.
-      }
-      break;
-    case 'one':
-      switch(address.toLowerCase()) {
-        case '0x7a791e76bf4d4f3b9b492abb74e5108180be6b5a': // 1LINK
-          proxyToken = { chain: 'eth', address: '0x514910771af9ca656af840dff83e8264ecf986ca', decimals: 18 };
-          break;
-        case '0x352cd428efd6f31b5cae636928b7b84149cf369f': // 1CRV
-          proxyToken = { chain: 'eth', address: '0xd533a949740bb3306d119cc777fa900ba034cd52', decimals: 18 };
-          break;
-        case '0xeb6c08ccb4421b6088e581ce04fcfbed15893ac3': // 1FRAX
-          proxyToken = { chain: 'eth', address: '0x853d955acef822db058eb8505911ed77f175b99e', decimals: 18 };
-          break;
       }
       break;
     case 'cronos':

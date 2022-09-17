@@ -62,11 +62,6 @@ import * as ftm_curve from './projects/ftm/curve';
 import * as ftm_scream from './projects/ftm/scream';
 import * as ftm_spookyswap from './projects/ftm/spookyswap';
 
-// ONE Project Imports:
-import * as one_autofarm from './projects/one/autofarm';
-import * as one_beefy from './projects/one/beefy';
-import * as one_sushiswap from './projects/one/sushiswap';
-
 // OP Project Imports:
 import * as op_aave from './projects/op/aave';
 import * as op_pika from './projects/op/pika';
@@ -146,11 +141,6 @@ const projects: Record<Chain, Record<string, any>> = {
 		curve: ftm_curve,
 		scream: ftm_scream,
 		spookyswap: ftm_spookyswap,
-	},
-	one: {
-		autofarm: one_autofarm,
-		beefy: one_beefy,
-		sushiswap: one_sushiswap,
 	},
 	op: {
 		aave: op_aave,

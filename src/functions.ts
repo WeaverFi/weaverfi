@@ -10,7 +10,7 @@ import { getTokenPrice } from './prices';
 import { getSubgraphDomains } from './ens';
 import { Multicall } from 'ethereum-multicall';
 import { minABI, lpABI, nftABI } from './ABIs';
-import { eth_data, bsc_data, poly_data, ftm_data, avax_data, one_data, cronos_data, op_data, arb_data } from './tokens';
+import { eth_data, bsc_data, poly_data, ftm_data, avax_data, cronos_data, op_data, arb_data } from './tokens';
 
 // Type Imports:
 import type { ContractCallResults, ContractCallContext } from 'ethereum-multicall';
@@ -42,7 +42,7 @@ export const ignoredErrors: { chain: Chain, address: Address }[] = [
  * @returns A `providers` object with chain-specific ethers providers.
  */
 const initProviders = () => {
-  let providers: Record<Chain, ethers.providers.StaticJsonRpcProvider[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [], op: [], arb: [] };
+  let providers: Record<Chain, ethers.providers.StaticJsonRpcProvider[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], cronos: [], op: [], arb: [] };
   for(let stringChain in providers) {
     let chain = stringChain as Chain;
     for(let i = 0; i < chains[chain].rpcs.length; i++) {
@@ -737,7 +737,7 @@ export const addXToken = async (chain: Chain, location: string, status: TokenSta
  * @returns A record of arrays of tracked tokens on every chain.
  */
 export const getAllTokens = () => {
-  let tokens: Record<Chain, TokenData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], one: [], cronos: [], op: [], arb: [] };
+  let tokens: Record<Chain, TokenData[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], cronos: [], op: [], arb: [] };
   Object.keys(tokens).forEach(stringChain => {
     let chain = stringChain as Chain;
     tokens[chain].push(...getTokens(chain));
@@ -780,8 +780,6 @@ export const getChainTokenData = (chain: Chain) => {
       return ftm_data;
     case 'avax':
       return avax_data;
-    case 'one':
-      return one_data;
     case 'cronos':
       return cronos_data;
     case 'op':
