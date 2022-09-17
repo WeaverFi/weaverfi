@@ -87,7 +87,8 @@ export const eth_data: ChainTokenData = {
     { address: '0x4104b135DBC9609Fc1A9490E61369036497660c8', symbol: 'APW', logo: 'https://etherscan.io/token/images/APWine_32.png', decimals: 18 },
     { address: '0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F', symbol: 'SDT', logo: 'https://etherscan.io/token/images/stakedao_32.png', decimals: 18 },
     { address: '0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5', symbol: 'PSP', logo: 'https://etherscan.io/token/images/paraswaptoken_32.png', decimals: 18 },
-    { address: '0xa0246c9032bC3A600820415aE600c6388619A14D', symbol: 'FARM', logo: 'https://etherscan.io/token/images/harvestfinance2_32.png', decimals: 18 }
+    { address: '0xa0246c9032bC3A600820415aE600c6388619A14D', symbol: 'FARM', logo: 'https://etherscan.io/token/images/harvestfinance2_32.png', decimals: 18 },
+    { address: '0x420412E765BFa6d85aaaC94b4f7b708C89be2e2B', symbol: 'BRZ', logo: 'https://etherscan.io/token/images/brz_32.png', decimals: 4 }
   ],
   logos: [
     { symbol: 'ETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' },
@@ -389,7 +390,8 @@ export const poly_data: ChainTokenData = {
     { symbol: 'EURT', logo: 'https://assets.coingecko.com/coins/images/17385/small/Tether_full_logo_dm.png?1627537298' },
     { symbol: 'FTM', logo: 'https://polygonscan.com/token/images/fantomtoken_32.png' },
     { symbol: 'ICE', logo: 'https://polygonscan.com/token/images/ironfinanceicetoken_32.png' },
-    { symbol: 'IRON', logo: 'https://polygonscan.com/token/images/iron_32.png' }
+    { symbol: 'IRON', logo: 'https://polygonscan.com/token/images/iron_32.png' },
+    { symbol: 'pPOOL', logo: 'https://polygonscan.com/token/images/pooltogether_32.png' }
   ],
   nfts: [
     { address: '0x841918849E6784d7e643837Ad59571eA1fc5000B', dataQuery: 'indexed', name: 'PoolTogether: Season 1' },
@@ -657,7 +659,9 @@ export const op_data: ChainTokenData = {
     { address: '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1', symbol: 'DAI', logo: 'https://optimistic.etherscan.io/token/images/MCDDai_32.png', decimals: 18 },
     { address: '0x350a791Bfc2C21F9Ed5d10980Dad2e2638ffa7f6', symbol: 'LINK', logo: 'https://optimistic.etherscan.io/token/images/chainlink_32.png', decimals: 18 },
     { address: '0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4', symbol: 'SNX', logo: 'https://optimistic.etherscan.io/token/images/SynthetixSNX_32.png', decimals: 18 },
-    { address: '0x4200000000000000000000000000000000000006', symbol: 'WETH', logo: 'https://optimistic.etherscan.io/token/images/weth_28.png', decimals: 18 }
+    { address: '0x4200000000000000000000000000000000000006', symbol: 'WETH', logo: 'https://optimistic.etherscan.io/token/images/weth_28.png', decimals: 18 },
+    { address: '0x4200000000000000000000000000000000000042', symbol: 'OP', logo: 'https://optimistic.etherscan.io/token/images/optimism_32.png', decimals: 18 },
+    { address: '0xFA436399d0458Dbe8aB890c3441256E3E09022a8', symbol: 'ZIP', logo: 'https://optimistic.etherscan.io/token/images/zipswap_32.png', decimals: 18 }
   ],
   logos: [
     { symbol: 'ETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' },
