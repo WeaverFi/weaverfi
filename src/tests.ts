@@ -26,35 +26,35 @@ const erc20TransferEventABI: ABI = [
 const tests = async () => {
 
   // Project Test:
-  // let projectBalance = await weaver.OP.getProjectBalance(wallet, 'pooltogether');
+  // let projectBalance = await weaver.op.getProjectBalance(wallet, 'pooltogether');
   // console.log('🕷️ ~ projectBalance', projectBalance);
 
   /* ================================================== */
 
   // Chain-Specific Tests:
-  // let allProjectBalances = await weaver.ETH.getAllProjectBalances(wallet);
+  // let allProjectBalances = await weaver.eth.getAllProjectBalances(wallet);
   // console.log('🕷️ ~ allProjectBalances', allProjectBalances);
-  // let walletBalance = await weaver.ETH.getWalletBalance(wallet);
+  // let walletBalance = await weaver.eth.getWalletBalance(wallet);
   // console.log('🕷️ ~ walletBalance', walletBalance);
-  // let nftBalance = await weaver.ETH.getNFTBalance(wallet);
+  // let nftBalance = await weaver.eth.getNFTBalance(wallet);
   // console.log('🕷️ ~ nftBalance', nftBalance);
-  // let walletCheck = weaver.ETH.isAddress(wallet);
+  // let walletCheck = weaver.eth.isAddress(wallet);
   // console.log('🕷️ ~ walletCheck', walletCheck);
-  // let txCount = await weaver.ETH.getTXCount(wallet);
+  // let txCount = await weaver.eth.getTXCount(wallet);
   // console.log('🕷️ ~ txCount', txCount);
-  // let projects = weaver.ETH.getProjects();
+  // let projects = weaver.eth.getProjects();
   // console.log('🕷️ ~ projects', projects);
-  // let tokens = weaver.ETH.getTokens();
+  // let tokens = weaver.eth.getTokens();
   // console.log('🕷️ ~ tokens', tokens);
-  // let gasResult = await weaver.ETH.getGasEstimates();
+  // let gasResult = await weaver.eth.getGasEstimates();
   // console.log('🕷️ ~ gasResult', gasResult);
 
   /* ================================================== */
 
   // Query Tests:
-  // let queryResult = parseInt(await weaver.ETH.query(chains['eth'].usdc, minABI, 'balanceOf', [wallet]));
+  // let queryResult = parseInt(await weaver.eth.query(chains['eth'].usdc, minABI, 'balanceOf', [wallet]));
   // console.log('🕷️ ~ queryResult', queryResult);
-  // let queryBlocksResult = await weaver.ETH.queryBlocks(chains['eth'].usdc, erc20TransferEventABI, 'Transfer', 50000, [], 15083775, 15083778);
+  // let queryBlocksResult = await weaver.eth.queryBlocks(chains['eth'].usdc, erc20TransferEventABI, 'Transfer', 50000, [], 15083775, 15083778);
   // console.log('🕷️ ~ queryBlocksResult', queryBlocksResult);
 
   /* ================================================== */
@@ -74,11 +74,11 @@ const tests = async () => {
   /* ================================================== */
 
   // Domain Name Tests:
-  // let ensAddress = await weaver.ETH.resolveENS('ncookie.eth');
+  // let ensAddress = await weaver.eth.resolveENS('ncookie.eth');
   // console.log('🕷️ ~ ensAddress', ensAddress);
-  // let ensDomain = await weaver.ETH.lookupENS(wallet);
+  // let ensDomain = await weaver.eth.lookupENS(wallet);
   // console.log('🕷️ ~ ensDomain', ensDomain);
-  // let ensAvatar = await weaver.ETH.fetchAvatarENS('ncookie.eth');
+  // let ensAvatar = await weaver.eth.fetchAvatarENS('ncookie.eth');
   // console.log('🕷️ ~ ensAvatar', ensAvatar);
 
   /* ================================================== */
@@ -90,11 +90,11 @@ const tests = async () => {
   // console.log('🕷️ ~ nativeTokenPrices', nativeTokenPrices);
   // let prices = weaver.checkPrices();
   // console.log('🕷️ ~ prices', prices);
-  // let chainPrices = weaver.ETH.checkPrices();
+  // let chainPrices = weaver.eth.checkPrices();
   // console.log('🕷️ ~ chainPrices', chainPrices);
-  // let tokenPrices = await weaver.ETH.getTokenPrices();
+  // let tokenPrices = await weaver.eth.getTokenPrices();
   // console.log('🕷️ ~ tokenPrices', tokenPrices);
-  // let tokenPrice = await weaver.ETH.getTokenPrice(defaultAddress, 18);
+  // let tokenPrice = await weaver.eth.getTokenPrice(defaultAddress, 18);
   // console.log('🕷️ ~ tokenPrice', tokenPrice);
 
 }

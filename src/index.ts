@@ -7,7 +7,7 @@ import { projects } from './projects';
 import { ChainFunctions, ETHChainFunctions } from './chain-functions';
 
 // Type Imports:
-import type { Address, UpperCaseChain } from './types';
+import type { Address } from './types';
 
 /* ========================================================================================================================================================================= */
 
@@ -15,14 +15,14 @@ import type { Address, UpperCaseChain } from './types';
 export const WeaverFi = {
 
   // Chain-Specific Functions:
-  ETH: new ETHChainFunctions('eth'),
-  BSC: new ChainFunctions('bsc'),
-  POLY: new ChainFunctions('poly'),
-  FTM: new ChainFunctions('ftm'),
-  AVAX: new ChainFunctions('avax'),
-  CRONOS: new ChainFunctions('cronos'),
-  OP: new ChainFunctions('op'),
-  ARB: new ChainFunctions('arb'),
+  eth: new ETHChainFunctions('eth'),
+  bsc: new ChainFunctions('bsc'),
+  poly: new ChainFunctions('poly'),
+  ftm: new ChainFunctions('ftm'),
+  avax: new ChainFunctions('avax'),
+  cronos: new ChainFunctions('cronos'),
+  op: new ChainFunctions('op'),
+  arb: new ChainFunctions('arb'),
 
   /* ================================================== */
 
@@ -31,7 +31,7 @@ export const WeaverFi = {
    * @returns An array of all supported chain abbreviations.
    */
   getAllChains: () => {
-    return Object.keys(projects).map(chain => chain.toUpperCase() as UpperCaseChain);
+    return Object.keys(projects);
   },
 
   /**
