@@ -7,7 +7,7 @@ import { projects } from './projects';
 import { ChainFunctions, ETHChainFunctions } from './chain-functions';
 
 // Type Imports:
-import type { Address } from './types';
+import type { Chain, Address } from './types';
 
 /* ========================================================================================================================================================================= */
 
@@ -31,7 +31,7 @@ export const WeaverFi = {
    * @returns An array of all supported chain abbreviations.
    */
   getAllChains: () => {
-    return Object.keys(projects);
+    return Object.keys(projects) as Chain[];
   },
 
   /**
