@@ -88,9 +88,9 @@ const tests = async () => {
   // console.log('🕷️ ~ allTokenPrices', allTokenPrices);
   // let nativeTokenPrices = await weaver.getNativeTokenPrices();
   // console.log('🕷️ ~ nativeTokenPrices', nativeTokenPrices);
-  // let prices = weaver.fetchPrices();
+  // let prices = weaver.checkPrices();
   // console.log('🕷️ ~ prices', prices);
-  // let chainPrices = weaver.ETH.fetchPrices();
+  // let chainPrices = weaver.ETH.checkPrices();
   // console.log('🕷️ ~ chainPrices', chainPrices);
   // let tokenPrices = await weaver.ETH.getTokenPrices();
   // console.log('🕷️ ~ tokenPrices', tokenPrices);

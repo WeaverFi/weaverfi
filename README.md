@@ -53,7 +53,7 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 - `getAllTokens()`
 - `getAllTokenPrices()`
 - `getNativeTokenPrices()`
-- `fetchPrices()`
+- `checkPrices()`
 - `getAllBalances(wallet)`
 
 ## Chain Methods Available
@@ -74,7 +74,7 @@ Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWa
 - `getTokenPrices()`
 - `getTokenPrice(address, decimals)`
 - `updateTokenPrice(priceData)`
-- `fetchPrices()`
+- `checkPrices()`
 
 The ETH chain also contains the `resolveENS(name)`, `lookupENS(address)` and `fetchAvatarENS(name)` methods.
 

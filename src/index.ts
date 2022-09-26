@@ -75,10 +75,10 @@ export const WeaverFi = {
   },
 
   /**
-   * Function to fetch all previously queried token prices.
+   * Function to check all previously queried token prices.
    * @returns Current state of the `prices` object for all chains.
    */
-  fetchPrices: () => {
+  checkPrices: () => {
     return $.prices;
   },
 

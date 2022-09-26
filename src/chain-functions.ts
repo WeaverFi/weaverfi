@@ -170,10 +170,10 @@ export class ChainFunctions {
   }
   
   /**
-   * Function to fetch all previously queried token prices.
+   * Function to check all previously queried token prices.
    * @returns Current state of the `prices` object.
    */
-  fetchPrices() {
+  checkPrices() {
     return $.prices[this.chain];
   }
 }

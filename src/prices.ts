@@ -150,21 +150,12 @@ export const getTokenPrice = async (chain: Chain, address: Address, decimals?: n
   let priceFound = false;
   let maxTime = Date.now() - maxPriceAge;
 
-  // Checking Prices Array For Recent Data:
+  // Querying CoinGecko:
+  await queryCoinGeckoPrices(chain, [address]);
   let token = checkTokenPrice(chain, address);
   if(token && maxTime < token.timestamp) {
     priceFound = true;
     return token.price;
-  }
-
-  // Querying CoinGecko:
-  if(!priceFound) {
-    await queryCoinGeckoPrices(chain, [address]);
-    let token = checkTokenPrice(chain, address);
-    if(token && maxTime < token.timestamp) {
-      priceFound = true;
-      return token.price;
-    }
   }
 
   // Querying 1Inch:
