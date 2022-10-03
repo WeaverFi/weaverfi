@@ -119,7 +119,9 @@ export const eth_data: ChainTokenData = {
     { address: '0x90B3832e2F2aDe2FE382a911805B6933C056D6ed', dataQuery: 'none', name: 'PoolTogether: Pooly Supporter' },
     { address: '0x3545192b340F50d77403DC0A64cf2b32F03d00A9', dataQuery: 'none', name: 'PoolTogether: Pooly Lawyer' },
     { address: '0x5663e3E096f1743e77B8F71b5DE0CF9Dfd058523', dataQuery: 'none', name: 'PoolTogether: Pooly Judge' },
-    { address: '0x92B971d307ebFc7331C23429E204A5E4adF7a833', dataQuery: 'none', name: 'PoolTogether: Club Pooly' }
+    { address: '0x92B971d307ebFc7331C23429E204A5E4adF7a833', dataQuery: 'none', name: 'PoolTogether: Club Pooly' },
+    { address: '0x7Bc25283a29A3888CAb4555Ea86fF1a8C18Cc90a', dataQuery: 'indexed', name: 'Set In Merge' },
+    { address: '0xE42caD6fC883877A76A26A16ed92444ab177E306', dataQuery: 'none', name: 'ConsenSys: The Merge' }
   ]
 }
 
@@ -667,7 +669,12 @@ export const op_data: ChainTokenData = {
     { symbol: 'ETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' },
     { symbol: 'PTaOptUSDC', logo: 'https://raw.githubusercontent.com/pooltogether/pooltogether-react-components/08439a1fcdf661d89211d72815eec73b26d1bc1f/src/assets/Tokens/ptausdc.png' }
   ],
-  nfts: []
+  nfts: [
+    { address: '0xfb3999711d4f309F6B71504268F79b3fD578DA6F', dataQuery: 'none', name: 'Merge Bears: Consensus Layer Bear' },
+    { address: '0x22Cd0e2680f4B9aE140E3b9AbFA3463532e290Ff', dataQuery: 'none', name: 'Merge Bears: Execution Layer Bear' },
+    { address: '0x63D29F9c28Ce781DacB284A99b1239A25E3e2159', dataQuery: 'none', name: 'Merge Bears: Merge Bear' },
+    { address: '0xfA14e1157F35E1dAD95dC3F822A9d18c40e360E2', dataQuery: 'indexed', name: 'Optimism Quests: Season 1' }
+  ]
 }
 
 /* ========================================================================================================================================================================= */
