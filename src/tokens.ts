@@ -480,7 +480,7 @@ export const avax_data: ChainTokenData = {
     { address: '0x5947BB275c521040051D82396192181b413227A3', symbol: 'LINK.e', logo: 'https://snowtrace.io/token/images/chainlinktoken_32.png', decimals: 18 },
     { address: '0xd6070ae98b8069de6B494332d1A1a81B6179D960', symbol: 'BIFI', logo: 'https://snowtrace.io/token/images/beefy_32.png', decimals: 18 },
     { address: '0x8729438EB15e2C8B576fCc6AeCdA6A148776C0F5', symbol: 'QI', logo: 'https://snowtrace.io/token/images/benqi_32.png', decimals: 18 },
-    { address: '0x60781C2586D68229fde47564546784ab3fACA982', symbol: 'PNG', logo: 'https://snowtrace.io/token/images/pangolin_32.png', decimals: 18 },
+    { address: '0x60781C2586D68229fde47564546784ab3fACA982', symbol: 'PNG', logo: 'https://assets.coingecko.com/coins/images/14023/small/mXGnm3Eo_400x400.jpg?1644478963', decimals: 18 },
     { address: '0xd1c3f94DE7e5B45fa4eDBBA472491a9f4B166FC4', symbol: 'XAVA', logo: 'https://snowtrace.io/token/images/avalaunch_32.png', decimals: 18 },
     { address: '0x4C9B4E1AC6F24CdE3660D5E4Ef1eBF77C710C084', symbol: 'LYD', logo: 'https://snowtrace.io/token/images/lydiafinance_32.png', decimals: 18 },
     { address: '0x617724974218A18769020A70162165A539c07E8a', symbol: 'OLIVE', logo: 'https://snowtrace.io/token/images/olivecash_32.png', decimals: 18 },
