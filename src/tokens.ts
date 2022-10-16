@@ -46,7 +46,6 @@ export const eth_data: ChainTokenData = {
     { address: '0x0d8775f648430679a709e98d2b0cb6250d2887ef', symbol: 'BAT', logo: 'https://etherscan.io/token/images/bat.png', decimals: 18 },
     { address: '0xf34960d9d60be18cc1d5afc1a6f012a723a28811', symbol: 'KCS', logo: 'https://etherscan.io/token/images/kucointoken_32.png', decimals: 6 },
     { address: '0x1f573d6fb3f13d689ff844b4ce37794d79a7ff1c', symbol: 'BNT', logo: 'https://etherscan.io/token/images/bancor_32.png', decimals: 18 },
-    { address: '0x799a4202c12ca952cb311598a024c80ed371a41e', symbol: 'ONE', logo: 'https://etherscan.io/token/images/harmonyone_32.png', decimals: 18 },
     { address: '0x467Bccd9d29f223BcE8043b84E8C8B282827790F', symbol: 'TEL', logo: 'https://etherscan.io/token/images/telcoin_28.png', decimals: 2 },
     { address: '0xdf574c24545e5ffecb9a659c229253d4111d87e1', symbol: 'HUSD', logo: 'https://etherscan.io/token/images/husd_32.png', decimals: 8 },
     { address: '0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE', symbol: 'SHIB', logo: 'https://etherscan.io/token/images/shibatoken_32.png', decimals: 18 },
@@ -110,7 +109,8 @@ export const eth_data: ChainTokenData = {
     { symbol: 'VEN', logo: 'https://etherscan.io/token/images/vechain_28.png' },
     { symbol: 'THETA', logo: 'https://etherscan.io/token/images/theta_28.png' },
     { symbol: 'ZIL', logo: 'https://etherscan.io/token/images/zilliqa_28_2.png' },
-    { symbol: 'PTaUSDC', logo: 'https://raw.githubusercontent.com/pooltogether/pooltogether-react-components/08439a1fcdf661d89211d72815eec73b26d1bc1f/src/assets/Tokens/ptausdc.png' }
+    { symbol: 'PTaUSDC', logo: 'https://raw.githubusercontent.com/pooltogether/pooltogether-react-components/08439a1fcdf661d89211d72815eec73b26d1bc1f/src/assets/Tokens/ptausdc.png' },
+    { symbol: 'ONE', logo: 'https://etherscan.io/token/images/harmonyone_32.png' }
   ],
   nfts: [
     { address: '0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85', dataQuery: 'ens', name: 'ENS Domain' },
