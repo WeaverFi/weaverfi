@@ -121,7 +121,8 @@ export const eth_data: ChainTokenData = {
     { address: '0x5663e3E096f1743e77B8F71b5DE0CF9Dfd058523', dataQuery: 'none', name: 'PoolTogether: Pooly Judge' },
     { address: '0x92B971d307ebFc7331C23429E204A5E4adF7a833', dataQuery: 'none', name: 'PoolTogether: Club Pooly' },
     { address: '0x7Bc25283a29A3888CAb4555Ea86fF1a8C18Cc90a', dataQuery: 'indexed', name: 'Set In Merge' },
-    { address: '0xE42caD6fC883877A76A26A16ed92444ab177E306', dataQuery: 'none', name: 'ConsenSys: The Merge' }
+    { address: '0xE42caD6fC883877A76A26A16ed92444ab177E306', dataQuery: 'none', name: 'ConsenSys: The Merge' },
+    { address: '0xBCC664B1E6848caba2Eb2f3dE6e21F81b9276dD8', dataQuery: 'none', name: 'Pfers' }
   ]
 }
 
@@ -397,7 +398,8 @@ export const poly_data: ChainTokenData = {
   ],
   nfts: [
     { address: '0x841918849E6784d7e643837Ad59571eA1fc5000B', dataQuery: 'indexed', name: 'PoolTogether: Season 1' },
-    { address: '0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d', dataQuery: 'indexed', name: 'Lens: Profile' }
+    { address: '0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d', dataQuery: 'indexed', name: 'Lens: Profile' },
+    { address: '0x1871464F087dB27823Cff66Aa88599AA4815aE95', dataQuery: 'indexed', name: 'Galaxy: OATs' }
   ]
 }
 
