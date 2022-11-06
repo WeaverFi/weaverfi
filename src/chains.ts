@@ -15,7 +15,8 @@ export const chains: Record<Chain, ChainData> = {
     paraswap: true,
     rpcs: [
       'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-      'https://eth-rpc.gateway.pokt.network'
+      'https://eth-rpc.gateway.pokt.network',
+      'https://rpc.ankr.com/eth'
     ],
     coingeckoIDs: {
       chainID: 'ethereum',
@@ -34,7 +35,8 @@ export const chains: Record<Chain, ChainData> = {
     paraswap: true,
     rpcs: [
       'https://bsc-dataseed.binance.org',
-      'https://bsc-mainnet.gateway.pokt.network/v1/lb/6136201a7bad1500343e248d'
+      'https://bsc-mainnet.gateway.pokt.network/v1/lb/6136201a7bad1500343e248d',
+      'https://rpc.ankr.com/bsc'
     ],
     coingeckoIDs: {
       chainID: 'binance-smart-chain',
@@ -53,7 +55,8 @@ export const chains: Record<Chain, ChainData> = {
     paraswap: true,
     rpcs: [
       'https://polygon-rpc.com',
-      'https://poly-rpc.gateway.pokt.network/'
+      'https://poly-rpc.gateway.pokt.network/',
+      'https://rpc.ankr.com/polygon'
     ],
     coingeckoIDs: {
       chainID: 'polygon-pos',
@@ -72,7 +75,8 @@ export const chains: Record<Chain, ChainData> = {
     paraswap: true,
     rpcs: [
       'https://rpc.ftm.tools/',
-      'https://rpcapi.fantom.network'
+      'https://rpcapi.fantom.network',
+      'https://rpc.ankr.com/fantom'
     ],
     coingeckoIDs: {
       chainID: 'fantom',
@@ -91,7 +95,8 @@ export const chains: Record<Chain, ChainData> = {
     paraswap: true,
     rpcs: [
       'https://api.avax.network/ext/bc/C/rpc',
-      'https://avax-mainnet.gateway.pokt.network/v1/lb/605238bf6b986eea7cf36d5e/ext/bc/C/rpc'
+      'https://avax-mainnet.gateway.pokt.network/v1/lb/605238bf6b986eea7cf36d5e/ext/bc/C/rpc',
+      'https://rpc.ankr.com/avalanche'
     ],
     coingeckoIDs: {
       chainID: 'avalanche',
@@ -128,7 +133,8 @@ export const chains: Record<Chain, ChainData> = {
     inch: true,
     paraswap: false,
     rpcs: [
-      'https://mainnet.optimism.io'
+      'https://mainnet.optimism.io',
+      'https://rpc.ankr.com/optimism'
     ],
     coingeckoIDs: {
       chainID: 'optimistic-ethereum',
