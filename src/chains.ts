@@ -133,9 +133,9 @@ export const chains: Record<Chain, ChainData> = {
     inch: true,
     paraswap: false,
     rpcs: [
-      'https://rpc.ankr.com/optimism',
       'https://optimism-mainnet.public.blastapi.io',
-      'https://mainnet.optimism.io'
+      'https://mainnet.optimism.io',
+      'https://rpc.ankr.com/optimism'
     ],
     coingeckoIDs: {
       chainID: 'optimistic-ethereum',
