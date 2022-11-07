@@ -93,6 +93,30 @@ Here's the USDC token on Ethereum, as an example:
 { address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', symbol: 'USDC', logo: 'https://etherscan.io/token/images/centre-usdc_28.png', decimals: 6 }
 ```
 
+## Tracking New NFT
+
+In order to track a new NFT, simply add its information to `/src/tokens.ts` under its appropriate chain, with the following structure:
+
+```ts
+{
+  address: Address,
+  dataQuery: 'indexed' | 'listed' | 'none',
+  name: string
+}
+```
+
+The `dataQuery` value lets the SDK know how to fetch data from any given NFT. These are the currently available query types:
+
+- `indexed`: The NFT has a `tokenOfOwnerByIndex` method.
+- `listed`: The NFT has a `tokensOfOwner` method.
+- `none`: The NFT does not allow for ownership search, and thus no data is displayed.
+
+Here's the Pfer NFT on Ethereum, for example:
+
+```ts
+{ address: '0xBCC664B1E6848caba2Eb2f3dE6e21F81b9276dD8', dataQuery: 'none', name: 'Pfers' }
+```
+
 ## Other Contributions
 
 If you have in mind any other type of contribution, please reach out in our [Discord server](https://discord.com/invite/DzADcq7y75)!
