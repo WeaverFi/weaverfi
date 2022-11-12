@@ -39,12 +39,11 @@ export class ChainFunctions {
    * @param event - The event name to query for.
    * @param querySize - The limit to how many blocks should be queried in each batch.
    * @param args - Any arguments to pass to the event filter.
-   * @param startBlock - The block to start querying from. (Optional)
-   * @param endBlock - The block to stop querying at. (Optional)
+   * @param options - Extra info such as starting block, ending block or choosing whether to display logs or not. (Optional)
    * @returns Array of events.
    */
-  queryBlocks(address: Address, abi: ABI, event: string, querySize: number, args: any[], startBlock?: number, endBlock?: number) {
-    return evm.queryBlocks(this.chain, address, abi, event, querySize, args, startBlock, endBlock);
+  queryBlocks(address: Address, abi: ABI, event: string, querySize: number, args: any[], options?: { startBlock?: number, endBlock?: number, logs?: boolean }) {
+    return evm.queryBlocks(this.chain, address, abi, event, querySize, args, options);
   }
   
   /**

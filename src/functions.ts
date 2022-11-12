@@ -104,18 +104,13 @@ export const query = async (chain: Chain, address: Address, abi: ABI, method: st
  * @param event - The event name to query for.
  * @param querySize - The limit to how many blocks should be queried in each batch.
  * @param args - Any arguments to pass to the event filter.
- * @param startBlock - The block to start querying from. (Optional)
- * @param endBlock - The block to stop querying at. (Optional)
+ * @param options - Extra info such as starting block, ending block or choosing whether to display logs or not. (Optional)
  * @returns Array of events.
  */
-export const queryBlocks = async (chain: Chain, address: Address, abi: ABI, event: string, querySize: number, args: any[], startBlock?: number, endBlock?: number) => {
-  let results: ethers.Event[] = [];
-  if(startBlock === undefined) {
-    startBlock = 1;
-  }
-  if(endBlock === undefined) {
-    endBlock = await providers[chain][0].getBlockNumber();
-  }
+export const queryBlocks = async (chain: Chain, address: Address, abi: ABI, event: string, querySize: number, args: any[], options?: { startBlock?: number, endBlock?: number, logs?: boolean }) => {
+  const results: ethers.Event[] = [];
+  const startBlock = options?.startBlock || 1;
+  const endBlock = options?.endBlock || await providers[chain][0].getBlockNumber();
   if(endBlock > startBlock) {
     let lastQueriedBlock = startBlock;
     while(++lastQueriedBlock < endBlock) {
@@ -123,11 +118,13 @@ export const queryBlocks = async (chain: Chain, address: Address, abi: ABI, even
       let result: ethers.Event[] | undefined = undefined;
       let errors = 0;
       let rpcID = 0;
+      options?.logs && console.info(`Querying ${event} events on blocks ${lastQueriedBlock} to ${targetBlock}...`);
       while(result === undefined) {
         try {
           let contract = new ethers.Contract(address, abi, providers[chain][rpcID]);
           let eventFilter = contract.filters[event](...args);
           result = await contract.queryFilter(eventFilter, lastQueriedBlock, targetBlock);
+          options?.logs && result.length > 0 && console.info(`Found ${result.length} ${event} events.`);
         } catch {
           if(++rpcID >= chains[chain].rpcs.length) {
             if(++errors >= maxQueryRetries) {
@@ -136,6 +133,7 @@ export const queryBlocks = async (chain: Chain, address: Address, abi: ABI, even
               rpcID = 0;
             }
           }
+          options?.logs && console.info(`Retrying query...`);
         }
       }
       results.push(...result);

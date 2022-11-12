@@ -54,7 +54,7 @@ const tests = async () => {
   // Query Tests:
   // let queryResult = parseInt(await weaver.eth.query(chains['eth'].usdc, minABI, 'balanceOf', [wallet]));
   // console.log('🕷️ ~ queryResult', queryResult);
-  // let queryBlocksResult = await weaver.eth.queryBlocks(chains['eth'].usdc, erc20TransferEventABI, 'Transfer', 50000, [], 15083775, 15083778);
+  // let queryBlocksResult = await weaver.eth.queryBlocks(chains['eth'].usdc, erc20TransferEventABI, 'Transfer', 50000, [], { startBlock: 15083775, endBlock: 15083778 });
   // console.log('🕷️ ~ queryBlocksResult', queryBlocksResult);
 
   /* ================================================== */
