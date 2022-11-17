@@ -7,7 +7,7 @@ import { projects } from './projects';
 import { ChainFunctions, ETHChainFunctions } from './chain-functions';
 
 // Type Imports:
-import type { Chain, Address } from './types';
+import type { Chain, Address, ChainData } from './types';
 
 /* ========================================================================================================================================================================= */
 
@@ -89,7 +89,22 @@ export const WeaverFi = {
    */
   getAllBalances: (wallet: Address) => {
     return evm.getAllBalances(wallet);
-  }
+  },
+
+  /**
+   * Function to set custom RPC Endpoints to use for a chain.
+   * @param chain The chain to specify RPC Endpoints for
+   * @param rpcs The array of RPC endpoints to use
+   * @param allowDefaultRPCs If false, WeaverFi will not use any default RPC endpoints as fallbacks
+   */
+  setCustomRpcEndpoints: (chain: Chain, rpcs: ChainData["rpcs"], { allowDefaultRPCs = false } = {}) => {
+    // NOTE: Copies the array to avoid changes to the list without using this function
+    chains[chain].rpcs = [...rpcs];
+    chains[chain].allowDefaultRPCs = allowDefaultRPCs;
+
+    // Update the changes in the provider list:
+    evm.updateChainProviders(chain);
+  },
 }
 
 // Exporting Default Module:

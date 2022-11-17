@@ -38,22 +38,43 @@ export const ignoredErrors: { chain: Chain, address: Address }[] = [
 /* ========================================================================================================================================================================= */
 
 /**
+ * Function to update ethers providers for a chain.
+ * Reads RPC Endpoints from `./chains.ts`
+ */
+export const updateChainProviders = (chain: Chain) => {
+  providers[chain] = [];
+
+  // Add custom RPCs first
+  providers[chain].push(...chains[chain].rpcs.map(
+    url => new ethers.providers.StaticJsonRpcProvider(url, chains[chain].id)
+  ));
+
+  // Add default RPCs last (if enabled):
+  if(chains[chain].allowDefaultRPCs) {
+    providers[chain].push(...chains[chain].defaultRPCs.map(
+      url => new ethers.providers.StaticJsonRpcProvider(url, chains[chain].id)
+    ));
+  }
+
+  // Throw error if list is empty:
+  if(providers[chain].length == 0) {
+    throw new WeaverError(chain, null, "No providers available for chain. Custom RPC Endpoints were not provided and default list is blocked.");
+  }
+}
+
+/**
  * Function to initialize ethers providers for every chain.
- * @returns A `providers` object with chain-specific ethers providers.
  */
 const initProviders = () => {
-  let providers: Record<Chain, ethers.providers.StaticJsonRpcProvider[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], cronos: [], op: [], arb: [] };
   for(let stringChain in providers) {
     let chain = stringChain as Chain;
-    for(let i = 0; i < chains[chain].rpcs.length; i++) {
-      providers[chain].push(new ethers.providers.StaticJsonRpcProvider(chains[chain].rpcs[i]));
-    }
+    updateChainProviders(chain);
   }
-  return providers;
 }
 
 // Initializing Ethers Providers:
-const providers = initProviders();
+let providers: Record<Chain, ethers.providers.StaticJsonRpcProvider[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], cronos: [], op: [], arb: [] };
+initProviders();
 
 /* ========================================================================================================================================================================= */
 

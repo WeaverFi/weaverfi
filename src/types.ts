@@ -162,8 +162,10 @@ export interface ChainData {
     usdc: Address
     usdcDecimals: number
     inch: boolean
-    paraswap: boolean,
+    paraswap: boolean
     rpcs: URL[]
+    defaultRPCs: URL[]
+    allowDefaultRPCs: boolean
     coingeckoIDs: CoinGeckoIDs
     multicall: Address
 }
