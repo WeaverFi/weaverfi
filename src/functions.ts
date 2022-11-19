@@ -17,6 +17,7 @@ import type { ContractCallResults, ContractCallContext } from 'ethereum-multical
 import type { Chain, Address, URL, IPFS, IPNS, ABI, TokenData, NFTData, TokenStatus, TokenType, NativeToken, Token, LPToken, DebtToken, XToken, PricedToken, NFT, CallContext } from './types';
 
 // Initializations:
+export const providers: Record<Chain, ethers.providers.StaticJsonRpcProvider[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], cronos: [], op: [], arb: [] };
 export const defaultTokenLogo: URL = 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@d5c68edec1f5eaec59ac77ff2b48144679cebca1/32/icon/generic.png';
 export const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 export const zero: Address = '0x0000000000000000000000000000000000000000';
@@ -38,33 +39,35 @@ export const ignoredErrors: { chain: Chain, address: Address }[] = [
 /* ========================================================================================================================================================================= */
 
 /**
+ * Function to update ethers providers for a chain.
+ */
+export const updateChainProviders = (chain: Chain) => {
+  providers[chain] = chains[chain].rpcs.map(url => new ethers.providers.StaticJsonRpcProvider(url, chains[chain].id));
+}
+
+/**
  * Function to initialize ethers providers for every chain.
- * @returns A `providers` object with chain-specific ethers providers.
  */
 const initProviders = () => {
-  let providers: Record<Chain, ethers.providers.StaticJsonRpcProvider[]> = { eth: [], bsc: [], poly: [], ftm: [], avax: [], cronos: [], op: [], arb: [] };
   for(let stringChain in providers) {
     let chain = stringChain as Chain;
-    for(let i = 0; i < chains[chain].rpcs.length; i++) {
-      providers[chain].push(new ethers.providers.StaticJsonRpcProvider(chains[chain].rpcs[i]));
-    }
+    updateChainProviders(chain);
   }
-  return providers;
 }
 
 // Initializing Ethers Providers:
-const providers = initProviders();
+initProviders();
 
 /* ========================================================================================================================================================================= */
 
 /**
  * Function to make blockchain queries.
- * @param chain - The blockchain to target for this query.
- * @param address - The contract's address to query.
- * @param abi - The contract's ABI.
- * @param method - The method to be called from the contract.
- * @param args - Any arguments to pass to the method called.
- * @param block - The block height from which to query info from. (Optional)
+ * @param chain The blockchain to target for this query.
+ * @param address The contract's address to query.
+ * @param abi The contract's ABI.
+ * @param method The method to be called from the contract.
+ * @param args Any arguments to pass to the method called.
+ * @param block The block height from which to query info from. (Optional)
  * @returns Query results.
  */
 export const query = async (chain: Chain, address: Address, abi: ABI, method: string, args: any[], block?: number) => {
@@ -98,13 +101,13 @@ export const query = async (chain: Chain, address: Address, abi: ABI, method: st
 
 /**
  * Function to query blocks for events on a given contract.
- * @param chain - The blockchain to target for this query.
- * @param address - The contract's address to query.
- * @param abi - The contract's ABI.
- * @param event - The event name to query for.
- * @param querySize - The limit to how many blocks should be queried in each batch.
- * @param args - Any arguments to pass to the event filter.
- * @param options - Extra info such as starting block, ending block or choosing whether to display logs or not. (Optional)
+ * @param chain The blockchain to target for this query.
+ * @param address The contract's address to query.
+ * @param abi The contract's ABI.
+ * @param event The event name to query for.
+ * @param querySize The limit to how many blocks should be queried in each batch.
+ * @param args Any arguments to pass to the event filter.
+ * @param options Extra info such as starting block, ending block or choosing whether to display logs or not. (Optional)
  * @returns Array of events.
  */
 export const queryBlocks = async (chain: Chain, address: Address, abi: ABI, event: string, querySize: number, args: any[], options?: { startBlock?: number, endBlock?: number, logs?: boolean }) => {
@@ -147,8 +150,8 @@ export const queryBlocks = async (chain: Chain, address: Address, abi: ABI, even
 
 /**
  * Function to make multicall blockchain queries (multiple method calls in one query).
- * @param chain - The blockchain to target for this query.
- * @param queries - The queries to be executed.
+ * @param chain The blockchain to target for this query.
+ * @param queries The queries to be executed.
  * @returns Query results for all given queries.
  * @see {@link multicallOneMethodQuery}, {@link multicallOneContractQuery} and {@link multicallComplexQuery} for simpler use cases.
  */
@@ -166,11 +169,11 @@ export const multicallQuery = async (chain: Chain, queries: ContractCallContext[
 
 /**
  * Function to make multicall blockchain queries with a singular method call to multiple contracts.
- * @param chain - The blockchain to target for this query.
- * @param contracts - The contracts to query.
- * @param abi - The ABI needed for the given query.
- * @param methodName - The method to call on each contract.
- * @param methodParameters - Any arguments to pass to the method called.
+ * @param chain The blockchain to target for this query.
+ * @param contracts The contracts to query.
+ * @param abi The ABI needed for the given query.
+ * @param methodName The method to call on each contract.
+ * @param methodParameters Any arguments to pass to the method called.
  * @returns Query results for each contract.
  */
 export const multicallOneMethodQuery = async (chain: Chain, contracts: Address[], abi: ABI, methodName: string, methodParameters: any[]) => {
@@ -194,10 +197,10 @@ export const multicallOneMethodQuery = async (chain: Chain, contracts: Address[]
 
 /**
  * Function to make multicall blockchain queries with many method calls to a single contract.
- * @param chain - The blockchain to target for this query.
- * @param contractAddress - The contract to query.
- * @param abi - The aggregated ABI needed for all given queries.
- * @param calls - All method calls to query the target contract.
+ * @param chain The blockchain to target for this query.
+ * @param contractAddress The contract to query.
+ * @param abi The aggregated ABI needed for all given queries.
+ * @param calls All method calls to query the target contract.
  * @returns Query results for each method call.
  */
 export const multicallOneContractQuery = async (chain: Chain, contractAddress: Address, abi: ABI, calls: CallContext[]) => {
@@ -216,10 +219,10 @@ export const multicallOneContractQuery = async (chain: Chain, contractAddress: A
 
 /**
  * Function to make multicall blockchain queries with many method calls to many contracts.
- * @param chain - The blockchain to target for this query.
- * @param contracts - The contracts to query.
- * @param abi - The aggregated ABI needed for all given queries.
- * @param calls - All method calls to query the target contracts.
+ * @param chain The blockchain to target for this query.
+ * @param contracts The contracts to query.
+ * @param abi The aggregated ABI needed for all given queries.
+ * @param calls All method calls to query the target contracts.
  * @returns Query results for each method call, for each contract.
  */
 export const multicallComplexQuery = async (chain: Chain, contracts: Address[], abi: ABI, calls: CallContext[]) => {
@@ -244,8 +247,8 @@ export const multicallComplexQuery = async (chain: Chain, contracts: Address[], 
 
 /**
  * Function to fetch a wallet's token balances.
- * @param chain - The blockchain to query info from.
- * @param wallet - The wallet to query balances for.
+ * @param chain The blockchain to query info from.
+ * @param wallet The wallet to query balances for.
  * @returns All native and token balances for the specified wallet.
  */
 export const getWalletBalance = async (chain: Chain, wallet: Address) => {
@@ -259,9 +262,9 @@ export const getWalletBalance = async (chain: Chain, wallet: Address) => {
 
 /**
  * Function to fetch project balances for a given wallet.
- * @param chain - The blockchain to query info from.
- * @param wallet - The wallet to query balances for.
- * @param project - The project/dapp to query for balances in.
+ * @param chain The blockchain to query info from.
+ * @param wallet The wallet to query balances for.
+ * @param project The project/dapp to query for balances in.
  * @returns A wallet's balance on the specified project/dapp.
  */
 export const getProjectBalance = async (chain: Chain, wallet: Address, project: string) => {
@@ -280,8 +283,8 @@ export const getProjectBalance = async (chain: Chain, wallet: Address, project: 
 
 /**
  * Function to fetch all project balances for a given wallet.
- * @param chain - The blockchain to query info from.
- * @param wallet - The wallet to query balances for.
+ * @param chain The blockchain to query info from.
+ * @param wallet The wallet to query balances for.
  * @returns A wallet's balance on all projects/dapps on the specified chain.
  */
 export const getAllProjectBalances = async (chain: Chain, wallet: Address) => {
@@ -298,7 +301,7 @@ export const getAllProjectBalances = async (chain: Chain, wallet: Address) => {
 
 /**
  * Function to fetch all balances for a given wallet, including in their wallets and in dapps/projects.
- * @param wallet - The wallet to query balances for.
+ * @param wallet The wallet to query balances for.
  * @returns A wallet's token, project and NFT balances.
  * @see {@link getWalletBalance}, {@link getProjectBalance} and {@link getWalletNFTBalance} for more specific (and faster) queries.
  */
@@ -322,8 +325,8 @@ export const getAllBalances = async (wallet: Address) => {
 
 /**
  * Function to get a wallet's native token balance.
- * @param chain - The blockchain to query info from.
- * @param wallet - The wallet to query native balance for.
+ * @param chain The blockchain to query info from.
+ * @param wallet The wallet to query native balance for.
  * @returns An array of NativeToken objects if any balance is found.
  */
 export const getWalletNativeTokenBalance = async (chain: Chain, wallet: Address) => {
@@ -351,8 +354,8 @@ export const getWalletNativeTokenBalance = async (chain: Chain, wallet: Address)
 
 /**
  * Function to get a wallet's token balance.
- * @param chain - The blockchain to query info from.
- * @param wallet - The wallet to query token balances for.
+ * @param chain The blockchain to query info from.
+ * @param wallet The wallet to query token balances for.
  * @returns An array of Token objects if any balances are found.
  */
 export const getWalletTokenBalance = async (chain: Chain, wallet: Address) => {
@@ -380,8 +383,8 @@ export const getWalletTokenBalance = async (chain: Chain, wallet: Address) => {
 
 /**
  * Function to get a wallet's NFT balance.
- * @param chain - The blockchain to query info from.
- * @param wallet - The wallet to query NFT balances for.
+ * @param chain The blockchain to query info from.
+ * @param wallet The wallet to query NFT balances for.
  * @returns An array of NFT objects if any balances are found.
  */
 export const getWalletNFTBalance = async (chain: Chain, wallet: Address) => {
@@ -409,7 +412,7 @@ export const getWalletNFTBalance = async (chain: Chain, wallet: Address) => {
 
 /**
  * Function to check if a hash corresponds to a valid wallet/contract address.
- * @param address - The hash to check for validity.
+ * @param address The hash to check for validity.
  * @returns True or false, depending on if the hash is a valid address or not.
  */
 export const isAddress = (address: Address) => {
@@ -420,8 +423,8 @@ export const isAddress = (address: Address) => {
 
 /**
  * Function to get a wallet's transaction count.
- * @param chain - The blockchain to query info from.
- * @param wallet - The wallet to query transaction count for.
+ * @param chain The blockchain to query info from.
+ * @param wallet The wallet to query transaction count for.
  * @returns A number of transactions.
  */
 export const getWalletTXCount = async (chain: Chain, wallet: Address) => {
@@ -449,9 +452,9 @@ export const getWalletTXCount = async (chain: Chain, wallet: Address) => {
 
 /**
  * Function to get all relevant native token info.
- * @param chain - The blockchain to query info from.
- * @param rawBalance - The balance to be assigned to the native token's object, with decimals.
- * @param owner - The native token owner's wallet address.
+ * @param chain The blockchain to query info from.
+ * @param rawBalance The balance to be assigned to the native token's object, with decimals.
+ * @param owner The native token owner's wallet address.
  * @returns A NativeToken object with all its information.
  */
 export const addNativeToken = async (chain: Chain, rawBalance: number, owner: Address): Promise<NativeToken> => {
@@ -476,13 +479,13 @@ export const addNativeToken = async (chain: Chain, rawBalance: number, owner: Ad
 
 /**
  * Function to get all relevant token info.
- * @param chain - The blockchain to query info from.
- * @param location - The current location of the token, either in a wallet or in some project's contract.
- * @param status - The current status of the token.
- * @param address - The token's address.
- * @param rawBalance - The balance to be assigned to the token's object, with decimals.
- * @param owner - The token owner's wallet address.
- * @param contract - The contract interacted with to generate this deposit, stake, etc. (Optional)
+ * @param chain The blockchain to query info from.
+ * @param location The current location of the token, either in a wallet or in some project's contract.
+ * @param status The current status of the token.
+ * @param address The token's address.
+ * @param rawBalance The balance to be assigned to the token's object, with decimals.
+ * @param owner The token owner's wallet address.
+ * @param contract The contract interacted with to generate this deposit, stake, etc. (Optional)
  * @returns A Token object with all its information.
  */
 export const addToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, contract?: Address): Promise<Token> => {
@@ -528,13 +531,13 @@ export const addToken = async (chain: Chain, location: string, status: TokenStat
 
 /**
  * Function to get all relevant liquidity pool token info.
- * @param chain - The blockchain to query info from.
- * @param location - The current location of the token, either in a wallet or in some project's contract.
- * @param status - The current status of the token.
- * @param address - The token's address.
- * @param rawBalance - The balance to be assigned to the token's object, with decimals.
- * @param owner - The token owner's wallet address.
- * @param contract - The contract interacted with to generate this deposit, liquidity, etc. (Optional)
+ * @param chain The blockchain to query info from.
+ * @param location The current location of the token, either in a wallet or in some project's contract.
+ * @param status The current status of the token.
+ * @param address The token's address.
+ * @param rawBalance The balance to be assigned to the token's object, with decimals.
+ * @param owner The token owner's wallet address.
+ * @param contract The contract interacted with to generate this deposit, liquidity, etc. (Optional)
  * @returns A LPToken object with all its information.
  */
 export const addLPToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, contract?: Address): Promise<LPToken> => {
@@ -617,12 +620,12 @@ export const addLPToken = async (chain: Chain, location: string, status: TokenSt
 
 /**
  * Function to get all relevant debt token info.
- * @param chain - The blockchain to query info from.
- * @param location - The current location of the token, either in a wallet or in some project's contract.
- * @param address - The token's address.
- * @param rawBalance - The balance to be assigned to the token's object, with decimals.
- * @param owner - The token owner's wallet address.
- * @param contract - The contract interacted with to generate this debt. (Optional)
+ * @param chain The blockchain to query info from.
+ * @param location The current location of the token, either in a wallet or in some project's contract.
+ * @param address The token's address.
+ * @param rawBalance The balance to be assigned to the token's object, with decimals.
+ * @param owner The token owner's wallet address.
+ * @param contract The contract interacted with to generate this debt. (Optional)
  * @returns A DebtToken object with all its information.
  */
 export const addDebtToken = async (chain: Chain, location: string, address: Address, rawBalance: number, owner: Address, contract?: Address): Promise<DebtToken> => {
@@ -669,15 +672,15 @@ export const addDebtToken = async (chain: Chain, location: string, address: Addr
 
 /**
  * Function to get all relevant derivative/composite token info (example: xJOE).
- * @param chain - The blockchain to query info from.
- * @param location - The current location of the token, either in a wallet or in some project's contract.
- * @param status - The current status of the token.
- * @param address - The token's address.
- * @param rawBalance - The balance to be assigned to the token's object, with decimals.
- * @param owner - The token owner's wallet address.
- * @param underlyingAddress - The underlying token's address (the token this token is built upon).
- * @param underlyingRawBalance - The equivalent balance of the underlying token this xToken represents.
- * @param contract - The contract interacted with to generate this deposit, stake, etc. (Optional)
+ * @param chain The blockchain to query info from.
+ * @param location The current location of the token, either in a wallet or in some project's contract.
+ * @param status The current status of the token.
+ * @param address The token's address.
+ * @param rawBalance The balance to be assigned to the token's object, with decimals.
+ * @param owner The token owner's wallet address.
+ * @param underlyingAddress The underlying token's address (the token this token is built upon).
+ * @param underlyingRawBalance The equivalent balance of the underlying token this xToken represents.
+ * @param contract The contract interacted with to generate this deposit, stake, etc. (Optional)
  * @returns A XToken object with all its information.
  */
 export const addXToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, underlyingAddress: Address, underlyingRawBalance: number, contract?: Address): Promise<XToken> => {
@@ -747,7 +750,7 @@ export const getAllTokens = () => {
 
 /**
  * Function to get a list of all tracked tokens on any given chain.
- * @param chain - The chain to fetch tracked tokens from.
+ * @param chain The chain to fetch tracked tokens from.
  * @returns An array of all tracked tokens in the given chain.
  */
 export const getTokens = (chain: Chain) => {
@@ -763,7 +766,7 @@ export const getTokens = (chain: Chain) => {
 
 /**
  * Helper function to get a given chains' token data.
- * @param chain - The chain to fetch data from.
+ * @param chain The chain to fetch data from.
  * @returns The given chain's token data.
  */
 export const getChainTokenData = (chain: Chain) => {
@@ -793,8 +796,8 @@ export const getChainTokenData = (chain: Chain) => {
 
 /**
  * Function to get a token's logo.
- * @param chain - The chain to fetch data from.
- * @param symbol - The token's symbol.
+ * @param chain The chain to fetch data from.
+ * @param symbol The token's symbol.
  * @returns The token logo if available, else a generic coin logo.
  */
 export const getTokenLogo = (chain: Chain, symbol: string) => {
@@ -825,7 +828,7 @@ export const getTokenLogo = (chain: Chain, symbol: string) => {
 
 /**
  * Function to get gas estimates for TXs on any given chain.
- * @param chain - The chain to fetch data from.
+ * @param chain The chain to fetch data from.
  * @returns The gas price, token price and gas estimates for various TX types.
  */
 export const getGasEstimates = async (chain: Chain): Promise<{ gasPrice: number, tokenPrice: number, estimates: Record<string, { gas: number, cost: number }>, ethGasPrice?: number, ethTokenPrice?: number }> => {
@@ -857,7 +860,7 @@ export const getGasEstimates = async (chain: Chain): Promise<{ gasPrice: number,
 
 /**
  * Helper function to parse big numbers from query results.
- * @param bn - The big number to parse.
+ * @param bn The big number to parse.
  * @returns A regular JavaScript number.
  */
 export const parseBN = (bn: any) => {
@@ -885,8 +888,8 @@ export const parseBN = (bn: any) => {
 
 /**
  * Helper function to get an already tracked token's info.
- * @param chain - The chain to fetch data from.
- * @param address - The token's address.
+ * @param chain The chain to fetch data from.
+ * @param address The token's address.
  * @returns The token's data if tracked, else undefined.
  */
 const getTrackedTokenInfo = (chain: Chain, address: Address) => {
@@ -902,12 +905,12 @@ const getTrackedTokenInfo = (chain: Chain, address: Address) => {
 
 /**
  * Function to get all relevant info from an already tracked token.
- * @param chain - The chain to fetch data from.
- * @param location - The current location of the token, either in a wallet or in some project's contract.
- * @param status - The current status of the token.
- * @param token - The tracked token's information.
- * @param rawBalance - The balance to be assigned to the token's object, with decimals.
- * @param owner - The token owner's wallet address.
+ * @param chain The chain to fetch data from.
+ * @param location The current location of the token, either in a wallet or in some project's contract.
+ * @param status The current status of the token.
+ * @param token The tracked token's information.
+ * @param rawBalance The balance to be assigned to the token's object, with decimals.
+ * @param owner The token owner's wallet address.
  * @returns A Token object with all its information.
  */
 const addTrackedToken = async (chain: Chain, location: string, status: TokenStatus, token: TokenData, rawBalance: number, owner: Address): Promise<Token> => {
@@ -928,11 +931,11 @@ const addTrackedToken = async (chain: Chain, location: string, status: TokenStat
 
 /**
  * Function to get all relevant info from an already tracked NFT collection.
- * @param chain - The blockchain to query info from.
- * @param location - The current location of the NFTs in the collection, either in a wallet or in some project's contract.
- * @param status - The current status of the NFT collection.
- * @param nft - The tracked NFT collection's information.
- * @param owner - The NFT owner's wallet address.
+ * @param chain The blockchain to query info from.
+ * @param location The current location of the NFTs in the collection, either in a wallet or in some project's contract.
+ * @param status The current status of the NFT collection.
+ * @param nft The tracked NFT collection's information.
+ * @param owner The NFT owner's wallet address.
  * @returns An array of NFT objects with all their information.
  */
 const addTrackedNFTs = async (chain: Chain, location: string, status: TokenStatus, nft: NFTData, balance: number, owner: Address): Promise<NFT[]> => {
@@ -1001,7 +1004,7 @@ const addTrackedNFTs = async (chain: Chain, location: string, status: TokenStatu
 
 /**
  * Helper function to get a native token's symbol.
- * @param chain - The blockchain the native token belongs to.
+ * @param chain The blockchain the native token belongs to.
  * @returns The appropriate token's symbol.
  */
 const getNativeTokenSymbol = (chain: Chain) => {

@@ -15,7 +15,7 @@ const ethProvider = new ethers.providers.StaticJsonRpcProvider(chains.eth.rpcs[0
 
 /**
  * Function to resolve an ENS domain name into an address.
- * @param name - The ENS domain name to resolve.
+ * @param name The ENS domain name to resolve.
  * @returns An address if resolvable, else null.
  */
 export const resolveENS = async (name: ENSDomain) => {
@@ -30,7 +30,7 @@ export const resolveENS = async (name: ENSDomain) => {
 
 /**
  * Function to reverse lookup an ENS domain.
- * @param address - The address to reverse lookup.
+ * @param address The address to reverse lookup.
  * @returns An ENS domain name if resolvable, else null.
  */
 export const lookupENS = async (address: Address) => {
@@ -45,7 +45,7 @@ export const lookupENS = async (address: Address) => {
 
 /**
  * Function to fetch an ENS domain's avatar.
- * @param name - The ENS domain name to query info from.
+ * @param name The ENS domain name to query info from.
  * @returns An avatar URI if available, else null.
  */
 export const fetchAvatarENS = async (name: ENSDomain) => {
@@ -63,7 +63,7 @@ export const fetchAvatarENS = async (name: ENSDomain) => {
 
 /**
  * Function to fetch ENS domains from subgraph.
- * @param address - The address to lookup domains for.
+ * @param address The address to lookup domains for.
  * @returns An array of found ENS domains.
  */
 export const getSubgraphDomains = async (address: Address) => {
