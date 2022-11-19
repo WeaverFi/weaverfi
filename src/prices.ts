@@ -31,7 +31,7 @@ export const getAllTokenPrices = async () => {
 
 /**
  * Function to populate the `prices` object with all tracked tokens' prices in one chain.
- * @param chain - The blockchain to query tokens' prices for.
+ * @param chain The blockchain to query tokens' prices for.
  * @returns Current state of the `prices` object post-update, including only the selected chain.
  */
 export const getChainTokenPrices = async (chain: Chain) => {
@@ -139,9 +139,9 @@ export const getNativeTokenPrices = async () => {
 
 /**
  * Function to get a token's current price by checking all price sources sequentially until a value is found.
- * @param chain - The blockchain in which the given token is in.
- * @param address - The token's address.
- * @param decimals - The token's decimals.
+ * @param chain The blockchain in which the given token is in.
+ * @param address The token's address.
+ * @param decimals The token's decimals.
  * @returns The token's price (also updates the `prices` object).
  */
 export const getTokenPrice = async (chain: Chain, address: Address, decimals?: number): Promise<number> => {
@@ -197,8 +197,8 @@ export const getTokenPrice = async (chain: Chain, address: Address, decimals?: n
 
 /**
  * Function to check a previously queried token's price.
- * @param chain - The blockchain in which the given token is in.
- * @param address - The token's address.
+ * @param chain The blockchain in which the given token is in.
+ * @param address The token's address.
  * @returns The token's price if previously queried, else undefined.
  */
 export const checkTokenPrice = (chain: Chain, address: Address) => {
@@ -214,8 +214,8 @@ export const checkTokenPrice = (chain: Chain, address: Address) => {
 
 /**
  * Function to query token prices from CoinGecko, and update the `prices` object.
- * @param chain - The blockchain in which the tokens are in.
- * @param addresses - The tokens' addresses.
+ * @param chain The blockchain in which the tokens are in.
+ * @param addresses The tokens' addresses.
  */
 export const queryCoinGeckoPrices = async (chain: Chain, addresses: Address[]) => {
 
@@ -275,9 +275,9 @@ export const queryCoinGeckoPrices = async (chain: Chain, addresses: Address[]) =
 
 /**
  * Function to query a token's price from 1Inch, and update the `prices` object.
- * @param chain - The blockchain in which the token is in.
- * @param address - The token's address.
- * @param decimals - The token's decimals.
+ * @param chain The blockchain in which the token is in.
+ * @param address The token's address.
+ * @param decimals The token's decimals.
  */
 export const query1InchPrice = async (chain: Chain, address: Address, decimals: number) => {
 
@@ -317,9 +317,9 @@ export const query1InchPrice = async (chain: Chain, address: Address, decimals: 
 
 /**
  * Function to query a token's price from ParaSwap, and update the `prices` object.
- * @param chain - The blockchain in which the token is in.
- * @param address - The token's address.
- * @param decimals - The token's decimals.
+ * @param chain The blockchain in which the token is in.
+ * @param address The token's address.
+ * @param decimals The token's decimals.
  */
 export const queryParaSwapPrice = async (chain: Chain, address: Address, decimals: number) => {
 
@@ -360,8 +360,8 @@ export const queryParaSwapPrice = async (chain: Chain, address: Address, decimal
 
 /**
  * Function to update the `prices` object with a token's newly queried price.
- * @param chain - The blockchain in which the token is in.
- * @param priceData - The token's new price data.
+ * @param chain The blockchain in which the token is in.
+ * @param priceData The token's new price data.
  */
 export const updatePrices = (chain: Chain, priceData: TokenPriceData) => {
   let foundPrice = prices[chain].findIndex(token => token.address == priceData.address);
@@ -389,8 +389,8 @@ export const updatePrices = (chain: Chain, priceData: TokenPriceData) => {
 
 /**
  * Function to redirect common token's price feeds where necessary to other equivalent token's price sources, and update the `prices` object.
- * @param chain - The chain the original token is in.
- * @param address - The original token's address.
+ * @param chain The chain the original token is in.
+ * @param address The original token's address.
  */
 const redirectTokenPriceFeed = async (chain: Chain, address: Address) => {
 

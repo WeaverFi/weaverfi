@@ -164,8 +164,6 @@ export interface ChainData {
     inch: boolean
     paraswap: boolean
     rpcs: URL[]
-    defaultRPCs: URL[]
-    allowDefaultRPCs: boolean
     coingeckoIDs: CoinGeckoIDs
     multicall: Address
 }

@@ -75,6 +75,8 @@ Each supported chain has its own methods that can be used as `WeaverFi.eth.getWa
 - `getTokenPrice(address, decimals)`
 - `updateTokenPrice(priceData)`
 - `checkPrices()`
+- `setCustomRpcEndpoints(rpcs)`
+- `getProviders()`
 
 The ETH chain also contains the `resolveENS(name)`, `lookupENS(address)` and `fetchAvatarENS(name)` methods.
 

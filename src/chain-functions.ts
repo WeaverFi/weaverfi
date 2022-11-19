@@ -5,9 +5,10 @@ import * as $ from './prices';
 import * as evm from './functions';
 import { chains } from './chains';
 import { projects } from './projects';
+import { WeaverError } from './error';
 
 // Type Imports:
-import type { Chain, Address, TokenPriceData, ABI, ENSDomain } from './types';
+import type { Chain, Address, URL, TokenPriceData, ABI, ENSDomain } from './types';
 
 /* ========================================================================================================================================================================= */
 
@@ -25,7 +26,7 @@ export class ChainFunctions {
    * @param abi The contract's ABI.
    * @param method The method to be called from the contract.
    * @param args Any arguments to pass to the method called.
-   * @param block - The block height from which to query info from. (Optional)
+   * @param block The block height from which to query info from. (Optional)
    * @returns Query results.
    */
   query(address: Address, abi: ABI, method: string, args: any[], block?: number) {
@@ -34,12 +35,12 @@ export class ChainFunctions {
 
   /**
    * Function to query blocks for events on a given contract.
-   * @param address - The contract's address to query.
-   * @param abi - The contract's ABI.
-   * @param event - The event name to query for.
-   * @param querySize - The limit to how many blocks should be queried in each batch.
-   * @param args - Any arguments to pass to the event filter.
-   * @param options - Extra info such as starting block, ending block or choosing whether to display logs or not. (Optional)
+   * @param address The contract's address to query.
+   * @param abi The contract's ABI.
+   * @param event The event name to query for.
+   * @param querySize The limit to how many blocks should be queried in each batch.
+   * @param args Any arguments to pass to the event filter.
+   * @param options Extra info such as starting block, ending block or choosing whether to display logs or not. (Optional)
    * @returns Array of events.
    */
   queryBlocks(address: Address, abi: ABI, event: string, querySize: number, args: any[], options?: { startBlock?: number, endBlock?: number, logs?: boolean }) {
@@ -175,6 +176,32 @@ export class ChainFunctions {
   checkPrices() {
     return $.prices[this.chain];
   }
+
+  /**
+   * Function to set custom RPC endpoints.
+   * @param rpcs An array of RPC endpoints to use.
+   * @param options Extra toggles such as enabling the default RPC endpoints as fallbacks. (Optional)
+   */
+  setCustomRpcEndpoints(rpcs: URL[], options?: { includeDefaults?: boolean }) {
+    if(rpcs.length > 0) {
+      if(options?.includeDefaults) {
+        chains[this.chain].rpcs = [...rpcs, ...chains[this.chain].rpcs];
+      } else {
+        chains[this.chain].rpcs = [...rpcs];
+      }
+      evm.updateChainProviders(this.chain);
+    } else if(!options?.includeDefaults) {
+      throw new WeaverError(this.chain, null, 'No custom RPC endpoints were provided and defaults are not enabled.');
+    }
+  }
+
+  /**
+   * Function to get ethers providers currently intialized.
+   * @returns An array of ethers static providers.
+   */
+  getProviders() {
+    return evm.providers[this.chain];
+  }
 }
 
 /* ========================================================================================================================================================================= */
@@ -184,7 +211,7 @@ export class ETHChainFunctions extends ChainFunctions {
 
   /**
    * Function to resolve an ENS domain name into an address.
-   * @param name - The ENS domain name to resolve.
+   * @param name The ENS domain name to resolve.
    * @returns An address if resolvable, else null.
    */
   resolveENS(name: ENSDomain) {
@@ -193,7 +220,7 @@ export class ETHChainFunctions extends ChainFunctions {
 
   /**
    * Function to reverse lookup an ENS domain.
-   * @param address - The address to reverse lookup.
+   * @param address The address to reverse lookup.
    * @returns An ENS domain name if resolvable, else null.
    */
   lookupENS(address: Address) {
@@ -202,7 +229,7 @@ export class ETHChainFunctions extends ChainFunctions {
 
   /**
    * Function to fetch an ENS domain's avatar.
-   * @param name - The ENS domain name to query info from.
+   * @param name The ENS domain name to query info from.
    * @returns An avatar URI if available, else null.
    */
   fetchAvatarENS(name: ENSDomain) {
