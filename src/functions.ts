@@ -803,7 +803,7 @@ export const getChainTokenData = (chain: Chain) => {
 export const getTokenLogo = (chain: Chain, symbol: string) => {
 
   // Initializing Default Token Logo:
-  let logo = defaultTokenLogo;
+  let logo: URL = defaultTokenLogo;
 
   // Selecting Token Data:
   let data = getChainTokenData(chain);

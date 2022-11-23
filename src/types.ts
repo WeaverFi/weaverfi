@@ -22,7 +22,7 @@ export type ABI = (ABIEntry | ExtendedABIEntry | ExtendedABIEventEntry | Extende
 export type ABIIOType = `int${number}` | `int${number}[${number | ''}]` | `uint${number}` | `uint${number}[${number | ''}]` | `bytes${number | ''}` | `bytes${number | ''}[${number | ''}]` | 'address' | `address[${number | ''}]` | 'bool' | `bool[${number | ''}]` | 'tuple' | `tuple[${number | ''}]` | 'string' | `string[${number | ''}]` | `contract ${string}` | `struct ${string}`;
 
 // Generic Types:
-export type URL = `https://${string}`;
+export type URL = `http${'s'|''}://${string}`;
 export type Hash = `0x${string}`;
 export type IPFS = `ipfs://${string}`;
 export type IPNS = `ipns://${string}`;
