@@ -1,6 +1,48 @@
 
 // Type Imports:
-import type { Chain, ChainData } from './types';
+import type { Chain, ChainData, URL } from './types';
+
+// Default chain RPC Endpoints:
+export const defaultRPCEndpoints: Record<Chain, URL[]> = {
+  eth: [
+    'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+    'https://eth-rpc.gateway.pokt.network',
+    'https://rpc.ankr.com/eth'
+  ],
+  bsc: [
+    'https://bsc-dataseed.binance.org',
+    'https://bsc-mainnet.gateway.pokt.network/v1/lb/6136201a7bad1500343e248d',
+    'https://rpc.ankr.com/bsc'
+  ],
+  poly: [
+    'https://polygon-rpc.com',
+    'https://poly-rpc.gateway.pokt.network/',
+    'https://rpc.ankr.com/polygon'
+  ],
+  ftm: [
+    'https://rpc.ftm.tools/',
+    'https://rpcapi.fantom.network',
+    'https://rpc.ankr.com/fantom'
+  ],
+  avax: [
+    'https://api.avax.network/ext/bc/C/rpc',
+    'https://avax-mainnet.gateway.pokt.network/v1/lb/605238bf6b986eea7cf36d5e/ext/bc/C/rpc',
+    'https://rpc.ankr.com/avalanche'
+  ],
+  cronos: [
+    'https://evm-cronos.crypto.org',
+    'https://rpc.vvs.finance'
+  ],
+  op: [
+    'https://optimism-mainnet.public.blastapi.io',
+    'https://mainnet.optimism.io',
+    'https://rpc.ankr.com/optimism'
+  ],
+  arb: [
+    'https://arb1.arbitrum.io/rpc',
+    'https://rpc.ankr.com/arbitrum'
+  ]
+};
 
 // Exporting Chain Data:
 export const chains: Record<Chain, ChainData> = {
@@ -13,11 +55,7 @@ export const chains: Record<Chain, ChainData> = {
     usdcDecimals: 6,
     inch: true,
     paraswap: true,
-    rpcs: [
-      'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-      'https://eth-rpc.gateway.pokt.network',
-      'https://rpc.ankr.com/eth'
-    ],
+    rpcs: [...defaultRPCEndpoints.eth],
     coingeckoIDs: {
       chainID: 'ethereum',
       nativeTokenID: 'ethereum'
@@ -33,11 +71,7 @@ export const chains: Record<Chain, ChainData> = {
     usdcDecimals: 18,
     inch: true,
     paraswap: true,
-    rpcs: [
-      'https://bsc-dataseed.binance.org',
-      'https://bsc-mainnet.gateway.pokt.network/v1/lb/6136201a7bad1500343e248d',
-      'https://rpc.ankr.com/bsc'
-    ],
+    rpcs: [...defaultRPCEndpoints.bsc],
     coingeckoIDs: {
       chainID: 'binance-smart-chain',
       nativeTokenID: 'binancecoin'
@@ -53,11 +87,7 @@ export const chains: Record<Chain, ChainData> = {
     usdcDecimals: 6,
     inch: true,
     paraswap: true,
-    rpcs: [
-      'https://polygon-rpc.com',
-      'https://poly-rpc.gateway.pokt.network/',
-      'https://rpc.ankr.com/polygon'
-    ],
+    rpcs: [...defaultRPCEndpoints.poly],
     coingeckoIDs: {
       chainID: 'polygon-pos',
       nativeTokenID: 'matic-network'
@@ -73,11 +103,7 @@ export const chains: Record<Chain, ChainData> = {
     usdcDecimals: 6,
     inch: false,
     paraswap: true,
-    rpcs: [
-      'https://rpc.ftm.tools/',
-      'https://rpcapi.fantom.network',
-      'https://rpc.ankr.com/fantom'
-    ],
+    rpcs: [...defaultRPCEndpoints.ftm],
     coingeckoIDs: {
       chainID: 'fantom',
       nativeTokenID: 'fantom'
@@ -93,11 +119,7 @@ export const chains: Record<Chain, ChainData> = {
     usdcDecimals: 6,
     inch: true,
     paraswap: true,
-    rpcs: [
-      'https://api.avax.network/ext/bc/C/rpc',
-      'https://avax-mainnet.gateway.pokt.network/v1/lb/605238bf6b986eea7cf36d5e/ext/bc/C/rpc',
-      'https://rpc.ankr.com/avalanche'
-    ],
+    rpcs: [...defaultRPCEndpoints.avax],
     coingeckoIDs: {
       chainID: 'avalanche',
       nativeTokenID: 'avalanche-2'
@@ -113,10 +135,7 @@ export const chains: Record<Chain, ChainData> = {
     usdcDecimals: 6,
     inch: false,
     paraswap: false,
-    rpcs: [
-      'https://evm-cronos.crypto.org',
-      'https://rpc.vvs.finance'
-    ],
+    rpcs: [...defaultRPCEndpoints.cronos],
     coingeckoIDs: {
       chainID: 'cronos',
       nativeTokenID: 'crypto-com-chain'
@@ -132,11 +151,7 @@ export const chains: Record<Chain, ChainData> = {
     usdcDecimals: 6,
     inch: true,
     paraswap: false,
-    rpcs: [
-      'https://optimism-mainnet.public.blastapi.io',
-      'https://mainnet.optimism.io',
-      'https://rpc.ankr.com/optimism'
-    ],
+    rpcs: [...defaultRPCEndpoints.op],
     coingeckoIDs: {
       chainID: 'optimistic-ethereum',
       nativeTokenID: 'ethereum'
@@ -152,10 +167,7 @@ export const chains: Record<Chain, ChainData> = {
     usdcDecimals: 6,
     inch: true,
     paraswap: true,
-    rpcs: [
-      'https://arb1.arbitrum.io/rpc',
-      'https://rpc.ankr.com/arbitrum'
-    ],
+    rpcs: [...defaultRPCEndpoints.arb],
     coingeckoIDs: {
       chainID: 'arbitrum-one',
       nativeTokenID: 'ethereum'
