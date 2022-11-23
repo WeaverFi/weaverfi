@@ -2,8 +2,10 @@
 // Type Imports:
 import type { Chain, ChainData, URL } from './types';
 
-// Default chain RPC Endpoints:
-export const defaultRPCEndpoints: Record<Chain, URL[]> = {
+/* ========================================================================================================================================================================= */
+
+// Default chain RPC endpoints:
+export const defaultRpcEndpoints: Record<Chain, URL[]> = {
   eth: [
     'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
     'https://eth-rpc.gateway.pokt.network',
@@ -42,7 +44,9 @@ export const defaultRPCEndpoints: Record<Chain, URL[]> = {
     'https://arb1.arbitrum.io/rpc',
     'https://rpc.ankr.com/arbitrum'
   ]
-};
+}
+
+/* ========================================================================================================================================================================= */
 
 // Exporting Chain Data:
 export const chains: Record<Chain, ChainData> = {
@@ -55,7 +59,7 @@ export const chains: Record<Chain, ChainData> = {
     usdcDecimals: 6,
     inch: true,
     paraswap: true,
-    rpcs: [...defaultRPCEndpoints.eth],
+    rpcs: [...defaultRpcEndpoints.eth],
     coingeckoIDs: {
       chainID: 'ethereum',
       nativeTokenID: 'ethereum'
@@ -71,7 +75,7 @@ export const chains: Record<Chain, ChainData> = {
     usdcDecimals: 18,
     inch: true,
     paraswap: true,
-    rpcs: [...defaultRPCEndpoints.bsc],
+    rpcs: [...defaultRpcEndpoints.bsc],
     coingeckoIDs: {
       chainID: 'binance-smart-chain',
       nativeTokenID: 'binancecoin'
@@ -87,7 +91,7 @@ export const chains: Record<Chain, ChainData> = {
     usdcDecimals: 6,
     inch: true,
     paraswap: true,
-    rpcs: [...defaultRPCEndpoints.poly],
+    rpcs: [...defaultRpcEndpoints.poly],
     coingeckoIDs: {
       chainID: 'polygon-pos',
       nativeTokenID: 'matic-network'
@@ -103,7 +107,7 @@ export const chains: Record<Chain, ChainData> = {
     usdcDecimals: 6,
     inch: false,
     paraswap: true,
-    rpcs: [...defaultRPCEndpoints.ftm],
+    rpcs: [...defaultRpcEndpoints.ftm],
     coingeckoIDs: {
       chainID: 'fantom',
       nativeTokenID: 'fantom'
@@ -119,7 +123,7 @@ export const chains: Record<Chain, ChainData> = {
     usdcDecimals: 6,
     inch: true,
     paraswap: true,
-    rpcs: [...defaultRPCEndpoints.avax],
+    rpcs: [...defaultRpcEndpoints.avax],
     coingeckoIDs: {
       chainID: 'avalanche',
       nativeTokenID: 'avalanche-2'
@@ -135,7 +139,7 @@ export const chains: Record<Chain, ChainData> = {
     usdcDecimals: 6,
     inch: false,
     paraswap: false,
-    rpcs: [...defaultRPCEndpoints.cronos],
+    rpcs: [...defaultRpcEndpoints.cronos],
     coingeckoIDs: {
       chainID: 'cronos',
       nativeTokenID: 'crypto-com-chain'
@@ -151,7 +155,7 @@ export const chains: Record<Chain, ChainData> = {
     usdcDecimals: 6,
     inch: true,
     paraswap: false,
-    rpcs: [...defaultRPCEndpoints.op],
+    rpcs: [...defaultRpcEndpoints.op],
     coingeckoIDs: {
       chainID: 'optimistic-ethereum',
       nativeTokenID: 'ethereum'
@@ -167,7 +171,7 @@ export const chains: Record<Chain, ChainData> = {
     usdcDecimals: 6,
     inch: true,
     paraswap: true,
-    rpcs: [...defaultRPCEndpoints.arb],
+    rpcs: [...defaultRpcEndpoints.arb],
     coingeckoIDs: {
       chainID: 'arbitrum-one',
       nativeTokenID: 'ethereum'

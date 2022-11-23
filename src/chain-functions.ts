@@ -3,7 +3,7 @@
 import * as ens from './ens';
 import * as $ from './prices';
 import * as evm from './functions';
-import { chains, defaultRPCEndpoints } from './chains';
+import { chains, defaultRpcEndpoints } from './chains';
 import { projects } from './projects';
 import { WeaverError } from './error';
 
@@ -185,7 +185,7 @@ export class ChainFunctions {
   setCustomRpcEndpoints(rpcs: URL[], options?: { includeDefaults?: boolean }) {
     if(rpcs.length > 0) {
       if(options?.includeDefaults) {
-        chains[this.chain].rpcs = [...rpcs, ...defaultRPCEndpoints[this.chain]];
+        chains[this.chain].rpcs = [...rpcs, ...defaultRpcEndpoints[this.chain]];
       } else {
         chains[this.chain].rpcs = [...rpcs];
       }
