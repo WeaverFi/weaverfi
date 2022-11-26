@@ -94,3 +94,6 @@ export const WeaverFi = {
 
 // Exporting Default Module:
 export default WeaverFi;
+
+// Exporting Types:
+export * from './types';

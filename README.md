@@ -93,10 +93,10 @@ The ETH chain also contains the `resolveENS(name)`, `lookupENS(address)` and `fe
 
 ## Types
 
-Any extra types used within the SDK are located in the `types.ts` file.
+The WeaverFi package also exports its typings, found in the `types.ts` file.
 
-If needed, these can be imported from `weaverfi/dist/types`. Example:
+If needed, these can be imported as follows:
 
 ```ts
-import type { ChainID, Address, Token } from 'weaverfi/dist/types';
+import type { ChainID, Address, Token } from 'weaverfi';
 ```
