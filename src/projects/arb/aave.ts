@@ -8,13 +8,11 @@ import { query, multicallOneContractQuery, addToken, addDebtToken, parseBN } fro
 import type { Chain, Address, Token, DebtToken, CallContext } from '../../types';
 
 // Initializations:
-const chain: Chain = 'ftm';
+const chain: Chain = 'arb';
 const project = 'aave';
 const addressProviderV3: Address = '0xa97684ead0e402dC232d5A977953DF7ECBaB3CDb';
-const uiDataProviderV3: Address = '0x46E1b32fA843da745D7AA0ae630b544D6af9fe81';
+const uiDataProviderV3: Address = '0x85272bf6DdCCBDea45Cf0535ea5C65bf91B480c4';
 const dataProviderV3: Address = '0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654';
-const incentivesV3: Address = '0x929EC64c34a17401F460460D4B9390518E5B473e';
-const wftm: Address = '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83';
 
 /* ========================================================================================================================================================================= */
 
@@ -51,14 +49,14 @@ export const getMarketBalancesV3 = async (wallet: Address) => {
       let currentVariableDebt = parseBN(balanceResults[2]);
       let stableBorrowRate = parseBN(balanceResults[5]);
       let liquidityRate = parseBN(balanceResults[6]);
-
+  
       // Finding Interest Bearing Token Addresses:
       if(currentATokenBalance > 0 || currentStableDebt > 0 || currentVariableDebt > 0) {
         if(!ibTokens[asset]) {
           ibTokens[asset] = await query(chain, dataProviderV3, aave.dataProviderABI, 'getReserveTokensAddresses', [asset]);
         }
       }
-  
+
       // Lending Balances:
       if(currentATokenBalance > 0) {
         let newToken = await addToken(chain, project, 'lent', asset, currentATokenBalance, wallet, ibTokens[asset].aTokenAddress);
@@ -89,26 +87,5 @@ export const getMarketBalancesV3 = async (wallet: Address) => {
     }
   })());
   await Promise.all(promises);
-  balances.push(...(await getIncentivesV3(ibTokens, wallet)));
   return balances;
-}
-
-// Function to get unclaimed V3 incentives:
-export const getIncentivesV3 = async (ibTokens: Record<Address, { aTokenAddress: Address, variableDebtTokenAddress: Address }>, wallet: Address) => {
-  if(Object.keys(ibTokens).length > 0) {
-    let tokens: Address[] = [];
-    for(let asset in ibTokens) {
-      tokens.push(ibTokens[asset as Address].aTokenAddress);
-      tokens.push(ibTokens[asset as Address].variableDebtTokenAddress);
-    }
-    let rewards = parseInt(await query(chain, incentivesV3, aave.incentivesABI, 'getUserRewards', [tokens, wallet, wftm]));
-    if(rewards > 0) {
-      let newToken = await addToken(chain, project, 'unclaimed', wftm, rewards, wallet);
-      return [newToken];
-    } else {
-      return [];
-    }
-  } else {
-    return [];
-  }
 }

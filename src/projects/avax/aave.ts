@@ -11,13 +11,15 @@ import type { Chain, Address, URL, Token, DebtToken, AaveAPIResponse, CallContex
 // Initializations:
 const chain: Chain = 'avax';
 const project = 'aave';
-const addressProvider: Address = '0xb6A86025F0FE1862B372cb0ca18CE3EDe02A318f';
-const incentives: Address = '0x01D83Fe6A10D2f2B7AF17034343746188272cAc9';
 const addressProviderV3: Address = '0xa97684ead0e402dC232d5A977953DF7ECBaB3CDb';
-const uiDataProviderV3: Address = '0xdBbFaFC45983B4659E368a3025b81f69Ab6E5093';
+const uiDataProviderV3: Address = '0x1dDAF95C8f58d1283E9aE5e3C964b575D7cF7aE3';
 const dataProviderV3: Address = '0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654';
 const incentivesV3: Address = '0x929EC64c34a17401F460460D4B9390518E5B473e';
 const wavax: Address = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7';
+
+// Aave V2 Initializations (to be deprecated later):
+const addressProviderV2: Address = '0xb6A86025F0FE1862B372cb0ca18CE3EDe02A318f';
+const incentivesV2: Address = '0x01D83Fe6A10D2f2B7AF17034343746188272cAc9';
 const apiURL: URL = 'https://aave-api-v2.aave.com/data/liquidity/v2';
 
 /* ========================================================================================================================================================================= */
@@ -25,21 +27,19 @@ const apiURL: URL = 'https://aave-api-v2.aave.com/data/liquidity/v2';
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | DebtToken)[] = [];
-  let markets: AaveAPIResponse[] = await fetchData(`${apiURL}?poolId=${addressProvider}`);
-  if(markets.length > 0) {
-    balance.push(...(await getMarketBalances(markets, wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketBalances()', err) })));
-    balance.push(...(await getIncentives(wallet).catch((err) => { throw new WeaverError(chain, project, 'getIncentives()', err) })));
-    balance.push(...(await getMarketBalancesV3(wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketBalancesV3()', err) })));
-  } else {
-    throw new WeaverError(chain, project, 'Invalid response from Aave API');
+  let marketsV2: AaveAPIResponse[] = await fetchData(`${apiURL}?poolId=${addressProviderV2}`);
+  if(marketsV2.length > 0) {
+    balance.push(...(await getMarketBalancesV2(marketsV2, wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketBalancesV2()', err) })));
   }
+  balance.push(...(await getIncentivesV2(wallet).catch((err) => { throw new WeaverError(chain, project, 'getIncentivesV2()', err) })));
+  balance.push(...(await getMarketBalancesV3(wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketBalancesV3()', err) })));
   return balance;
 }
 
 /* ========================================================================================================================================================================= */
 
-// Function to get lending market balances:
-export const getMarketBalances = async (markets: AaveAPIResponse[], wallet: Address) => {
+// Function to get V2 lending market balances:
+export const getMarketBalancesV2 = async (markets: AaveAPIResponse[], wallet: Address) => {
 
   // Initializations:
   let balances: (Token | DebtToken)[] = [];
@@ -100,9 +100,9 @@ export const getMarketBalances = async (markets: AaveAPIResponse[], wallet: Addr
   return balances;
 }
 
-// Function to get unclaimed incentives:
-export const getIncentives = async (wallet: Address) => {
-  let rewards = parseInt(await query(chain, incentives, aave.incentivesABI, 'getUserUnclaimedRewards', [wallet]));
+// Function to get unclaimed V2 incentives:
+export const getIncentivesV2 = async (wallet: Address) => {
+  let rewards = parseInt(await query(chain, incentivesV2, aave.incentivesABI, 'getUserUnclaimedRewards', [wallet]));
   if(rewards > 0) {
     let newToken = await addToken(chain, project, 'unclaimed', wavax, rewards, wallet);
     return [newToken];
@@ -111,7 +111,7 @@ export const getIncentives = async (wallet: Address) => {
   }
 }
 
-// Function to get lending market V3 balances:
+// Function to get V3 lending market balances:
 export const getMarketBalancesV3 = async (wallet: Address) => {
 
   // Initializations:

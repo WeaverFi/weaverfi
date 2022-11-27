@@ -11,7 +11,7 @@ import type { Chain, Address, Token, DebtToken, CallContext } from '../../types'
 const chain: Chain = 'op';
 const project = 'aave';
 const addressProviderV3: Address = '0xa97684ead0e402dC232d5A977953DF7ECBaB3CDb';
-const uiDataProviderV3: Address = '0x64f558d4BFC1c03a8c8B2ff84976fF04c762b51f';
+const uiDataProviderV3: Address = '0x44b864b92043a960313F3C94BD6DB4dA202814F6';
 const dataProviderV3: Address = '0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654';
 const incentivesV3: Address = '0x929EC64c34a17401F460460D4B9390518E5B473e';
 const op: Address = '0x4200000000000000000000000000000000000042';
@@ -27,7 +27,7 @@ export const get = async (wallet: Address) => {
 
 /* ========================================================================================================================================================================= */
 
-// Function to get lending market V3 balances:
+// Function to get V3 lending market balances:
 export const getMarketBalancesV3 = async (wallet: Address) => {
 
   // Initializations:
