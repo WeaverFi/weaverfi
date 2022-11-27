@@ -41,6 +41,7 @@ export const projects: Record<Chain, string[]> = {
 		'venus',
 	],
 	cronos: [
+		'autofarm',
 	],
 	eth: [
 		'aave',

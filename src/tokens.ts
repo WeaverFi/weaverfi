@@ -644,7 +644,8 @@ export const cronos_data: ChainTokenData = {
     { address: '0xe44Fd7fCb2b1581822D0c862B68222998a0c299a', symbol: 'WETH', logo: 'https://cronoscan.com/token/images/weth_32.png', decimals: 18 },
     { address: '0x57d06bB1e3B60C875cD3A4445a53217F9B44d390', symbol: 'PHNX', logo: 'https://cronoscan.com/token/images/phenixfinance_32.png', decimals: 18 },
     { address: '0xF2001B145b43032AAF5Ee2884e456CCd805F677D', symbol: 'DAI', logo: 'https://cronoscan.com/token/images/MCDDai_32.png', decimals: 18 },
-    { address: '0xe6801928061CDbE32AC5AD0634427E140EFd05F9', symbol: 'BIFI', logo: 'https://assets.coingecko.com/coins/images/12704/small/token.png?1601876182', decimals: 18 }
+    { address: '0xe6801928061CDbE32AC5AD0634427E140EFd05F9', symbol: 'BIFI', logo: 'https://assets.coingecko.com/coins/images/12704/small/token.png?1601876182', decimals: 18 },
+    { address: '0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23', symbol: 'WCRO', logo: 'https://cronoscan.com/token/images/cryptocom_32.png', decimals: 18 }
   ],
   logos: [
     { symbol: 'CRO', logo: 'https://cronoscan.com/token/images/cryptocom_32.png' }

@@ -39,6 +39,7 @@ import * as bsc_pancakeswap from './projects/bsc/pancakeswap';
 import * as bsc_venus from './projects/bsc/venus';
 
 // CRONOS Project Imports:
+import * as cronos_autofarm from './projects/cronos/autofarm';
 
 // ETH Project Imports:
 import * as eth_aave from './projects/eth/aave';
@@ -120,6 +121,7 @@ const projects: Record<Chain, Record<string, any>> = {
 		venus: bsc_venus,
 	},
 	cronos: {
+		autofarm: cronos_autofarm,
 	},
 	eth: {
 		aave: eth_aave,
