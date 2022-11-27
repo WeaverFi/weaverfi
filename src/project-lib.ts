@@ -4,6 +4,7 @@
 import type { Chain } from './types';
 
 // ARB Project Imports:
+import * as arb_aave from './projects/arb/aave';
 
 // AVAX Project Imports:
 import * as avax_aave from './projects/avax/aave';
@@ -84,6 +85,7 @@ import * as poly_sushiswap from './projects/poly/sushiswap';
 // Projects Record:
 const projects: Record<Chain, Record<string, any>> = {
 	arb: {
+		aave: arb_aave,
 	},
 	avax: {
 		aave: avax_aave,

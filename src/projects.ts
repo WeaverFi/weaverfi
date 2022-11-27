@@ -6,6 +6,7 @@ import type { Chain } from './types';
 // Projects List:
 export const projects: Record<Chain, string[]> = {
 	arb: [
+		'aave',
 	],
 	avax: [
 		'aave',
