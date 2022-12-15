@@ -7,6 +7,7 @@ import type { Chain } from './types';
 export const projects: Record<Chain, string[]> = {
 	arb: [
 		'aave',
+		'beefy',
 	],
 	avax: [
 		'aave',
@@ -42,11 +43,13 @@ export const projects: Record<Chain, string[]> = {
 	],
 	cronos: [
 		'autofarm',
+		'beefy',
 	],
 	eth: [
 		'aave',
 		'apwine',
 		'balancer',
+		'beefy',
 		'compound',
 		'cream',
 		'curve',
@@ -68,6 +71,7 @@ export const projects: Record<Chain, string[]> = {
 	],
 	op: [
 		'aave',
+		'beefy',
 		'pika',
 		'pooltogether',
 	],

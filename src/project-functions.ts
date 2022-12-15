@@ -2,7 +2,7 @@
 // Imports:
 import { WeaverError } from './error';
 import { getTokenPrice } from './prices';
-import { query, multicallOneContractQuery, multicallOneMethodQuery, addXToken, getTokenLogo, defaultTokenLogo, parseBN, zero } from './functions';
+import { query, multicallOneContractQuery, multicallOneMethodQuery, addXToken, getTokenLogo, defaultTokenLogo, parseBN, zero, getNativeTokenSymbol } from './functions';
 import { minABI, lpABI, aave, balancer, belt, alpaca, curve, bzx, axial, mstable } from './ABIs';
 
 // Type Imports:
@@ -270,17 +270,17 @@ export const addCurveToken = async (chain: Chain, location: string, status: Toke
 
     // Initializing Token Values:
     let type: TokenType = 'lpToken';
-    let address0 = poolInfo[0].underlyingCoin ??= poolInfo[0].coin;
-    let address1 = poolInfo[1].underlyingCoin  ??= poolInfo[1].coin;
-    let supply0 = poolInfo[0].underlyingBalance ??= poolInfo[0].balance;
-    let supply1 = poolInfo[1].underlyingBalance ??= poolInfo[1].balance;
-    let decimals0 = poolInfo[0].underlyingDecimals ??= poolInfo[0].decimals;
-    let decimals1 = poolInfo[1].underlyingDecimals ??= poolInfo[1].decimals;
+    let address0 = poolInfo[0].underlyingCoin ?? poolInfo[0].coin;
+    let address1 = poolInfo[1].underlyingCoin ?? poolInfo[1].coin;
+    let supply0 = poolInfo[0].underlyingBalance ?? poolInfo[0].balance;
+    let supply1 = poolInfo[1].underlyingBalance ?? poolInfo[1].balance;
+    let decimals0 = poolInfo[0].underlyingDecimals ?? poolInfo[0].decimals;
+    let decimals1 = poolInfo[1].underlyingDecimals ?? poolInfo[1].decimals;
 
     // Fetching Underlying Token Symbols:
     let multicallResults = await multicallOneMethodQuery(chain, [address0, address1], minABI, 'symbol', []);
-    let symbol0: string = multicallResults[address0][0];
-    let symbol1: string = multicallResults[address1][0];
+    let symbol0: string = multicallResults[address0]?.[0] ?? getNativeTokenSymbol(chain);
+    let symbol1: string = multicallResults[address1]?.[0] ?? getNativeTokenSymbol(chain);
 
     // First Paired Token:
     let token0: PricedToken = {
@@ -314,9 +314,9 @@ export const addCurveToken = async (chain: Chain, location: string, status: Toke
     // Calculating Token Price:
     let price = 0;
     for(let i = 0; i < poolInfo.length; i++) {
-      let address = poolInfo[i].underlyingCoin ??= poolInfo[i].coin;
-      let supply = poolInfo[i].underlyingBalance ??= poolInfo[i].balance;
-      let decimals = poolInfo[i].underlyingDecimals ??= poolInfo[i].decimals;
+      let address = poolInfo[i].underlyingCoin ?? poolInfo[i].coin;
+      let supply = poolInfo[i].underlyingBalance ?? poolInfo[i].balance;
+      let decimals = poolInfo[i].underlyingDecimals ?? poolInfo[i].decimals;
       let tokenPrice = await getTokenPrice(chain, address, decimals);
       price += (supply / (10 ** decimals)) * tokenPrice;
     }

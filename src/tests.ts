@@ -9,7 +9,7 @@ import { defaultAddress } from './functions';
 import type { Address, ABI } from './types';
 
 // Example Wallet:
-const wallet: Address = '0xbE4FeAE32210f682A41e1C41e3eaF4f8204cD29E';
+const wallet: Address = '0xE7B4d4b35A0F2045c6e77bfdd94B99Fb0Be961B0';
 
 // Example ABI:
 const erc20TransferEventABI: ABI = [
@@ -26,8 +26,8 @@ const erc20TransferEventABI: ABI = [
 const tests = async () => {
 
   // Project Test:
-  // let projectBalance = await weaver.op.getProjectBalance(wallet, 'pooltogether');
-  // console.log('🕷️ ~ projectBalance', projectBalance);
+  let projectBalance = await weaver.eth.getProjectBalance(wallet, 'beefy');
+  console.log('🕷️ ~ projectBalance', projectBalance);
 
   /* ================================================== */
 

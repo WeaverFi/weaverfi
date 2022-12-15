@@ -5,6 +5,7 @@ import type { Chain } from './types';
 
 // ARB Project Imports:
 import * as arb_aave from './projects/arb/aave';
+import * as arb_beefy from './projects/arb/beefy';
 
 // AVAX Project Imports:
 import * as avax_aave from './projects/avax/aave';
@@ -40,11 +41,13 @@ import * as bsc_venus from './projects/bsc/venus';
 
 // CRONOS Project Imports:
 import * as cronos_autofarm from './projects/cronos/autofarm';
+import * as cronos_beefy from './projects/cronos/beefy';
 
 // ETH Project Imports:
 import * as eth_aave from './projects/eth/aave';
 import * as eth_apwine from './projects/eth/apwine';
 import * as eth_balancer from './projects/eth/balancer';
+import * as eth_beefy from './projects/eth/beefy';
 import * as eth_compound from './projects/eth/compound';
 import * as eth_cream from './projects/eth/cream';
 import * as eth_curve from './projects/eth/curve';
@@ -66,6 +69,7 @@ import * as ftm_spookyswap from './projects/ftm/spookyswap';
 
 // OP Project Imports:
 import * as op_aave from './projects/op/aave';
+import * as op_beefy from './projects/op/beefy';
 import * as op_pika from './projects/op/pika';
 import * as op_pooltogether from './projects/op/pooltogether';
 
@@ -87,6 +91,7 @@ import * as poly_sushiswap from './projects/poly/sushiswap';
 const projects: Record<Chain, Record<string, any>> = {
 	arb: {
 		aave: arb_aave,
+		beefy: arb_beefy,
 	},
 	avax: {
 		aave: avax_aave,
@@ -122,11 +127,13 @@ const projects: Record<Chain, Record<string, any>> = {
 	},
 	cronos: {
 		autofarm: cronos_autofarm,
+		beefy: cronos_beefy,
 	},
 	eth: {
 		aave: eth_aave,
 		apwine: eth_apwine,
 		balancer: eth_balancer,
+		beefy: eth_beefy,
 		compound: eth_compound,
 		cream: eth_cream,
 		curve: eth_curve,
@@ -148,6 +155,7 @@ const projects: Record<Chain, Record<string, any>> = {
 	},
 	op: {
 		aave: op_aave,
+		beefy: op_beefy,
 		pika: op_pika,
 		pooltogether: op_pooltogether,
 	},
