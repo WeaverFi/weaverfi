@@ -15,6 +15,9 @@ const registry: Address = '0x90E00ACe148ca3b23Ac1bC8C240C2a7Dd9c2d7f5';
 const cryptoRegistry: Address = '0x8F942C20D02bEfc377D41445793068908E2250D0';
 const factory: Address = '0xB9fC157394Af804a3578134A6585C0dc9cc990d4';
 
+// TODO: Add Curve to Arbitrum
+// TODO: Add Curve to Optimism
+
 /* ========================================================================================================================================================================= */
 
 // Function to get project balance:
