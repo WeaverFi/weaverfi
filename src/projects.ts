@@ -8,6 +8,7 @@ export const projects: Record<Chain, string[]> = {
 	arb: [
 		'aave',
 		'beefy',
+		'cream',
 	],
 	avax: [
 		'aave',
@@ -17,7 +18,6 @@ export const projects: Record<Chain, string[]> = {
 		'axial',
 		'beefy',
 		'benqi',
-		'cream',
 		'curve',
 		'cycle',
 		'lostworlds',

@@ -2,21 +2,21 @@
 // Imports:
 import { WeaverError } from '../../error';
 import { minABI, cream } from '../../ABIs';
-import { query, multicallComplexQuery, addToken, addDebtToken, parseBN } from '../../functions';
+import { query, multicallComplexQuery, addToken, addDebtToken, parseBN, defaultAddress } from '../../functions';
 
 // Type Imports:
-import type { Chain, Address, Token, DebtToken, CallContext } from '../../types';
+import type { Chain, Address, Token, LPToken, DebtToken, CallContext } from '../../types';
 
 // Initializations:
-const chain: Chain = 'avax';
+const chain: Chain = 'arb';
 const project = 'cream';
-const controller: Address = '0x2eE80614Ccbc5e28654324a66A396458Fa5cD7Cc';
+const controller: Address = '0xbadaC56c9aca307079e8B8FC699987AAc89813ee';
 
 /* ========================================================================================================================================================================= */
 
 // Function to get project balance:
 export const get = async (wallet: Address) => {
-  let balance: (Token | DebtToken)[] = [];
+  let balance: (Token | LPToken | DebtToken)[] = [];
   balance.push(...(await getMarketBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketBalances()', err) })));
   return balance;
 }
@@ -25,7 +25,7 @@ export const get = async (wallet: Address) => {
 
 // Function to get all market balances and debt:
 export const getMarketBalances = async (wallet: Address) => {
-  let balances: (Token | DebtToken)[] = [];
+  let balances: (Token | LPToken | DebtToken)[] = [];
   let markets: Address[] = await query(chain, controller, cream.controllerABI, 'getAllMarkets', []);
 
   // Market Balance Multicall Query:
@@ -47,7 +47,8 @@ export const getMarketBalances = async (wallet: Address) => {
         if(balance > 0) {
           let exchangeRate = parseInt(await query(chain, market, cream.tokenABI, 'exchangeRateStored', []));
           let decimals = parseInt(await query(chain, market, minABI, 'decimals', []));
-          let tokenAddress = await query(chain, market, cream.tokenABI, 'underlying', []);
+          let symbol = await query(chain, market, minABI, 'symbol', []);
+          let tokenAddress: Address = market.toLowerCase() === '0x5441090c0401ee256b09deb35679ad175d1a0c97' ? defaultAddress : await query(chain, market, cream.tokenABI, 'underlying', []);
           let underlyingBalance = (balance / (10 ** decimals)) * (exchangeRate / (10 ** (decimals + 2)));
           let newToken = await addToken(chain, project, 'lent', tokenAddress, underlyingBalance, wallet);
           balances.push(newToken);
@@ -58,7 +59,7 @@ export const getMarketBalances = async (wallet: Address) => {
       if(borrowingResults) {
         let debt = parseBN(borrowingResults[0]);
         if(debt > 0) {
-          let tokenAddress = await query(chain, market, cream.tokenABI, 'underlying', []);
+          let tokenAddress: Address = market.toLowerCase() === '0x5441090c0401ee256b09deb35679ad175d1a0c97' ? defaultAddress : await query(chain, market, cream.tokenABI, 'underlying', []);
           let newToken = await addDebtToken(chain, project, tokenAddress, debt, wallet);
           balances.push(newToken);
         }

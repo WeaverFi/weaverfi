@@ -12,6 +12,8 @@ const chain: Chain = 'avax';
 const project = 'benqi';
 const controller: Address = '0x486Af39519B4Dc9a7fCcd318217352830E8AD9b4';
 
+// TODO: Add Liquid Staking (https://staking.benqi.fi/stake)
+
 /* ========================================================================================================================================================================= */
 
 // Function to get project balance:

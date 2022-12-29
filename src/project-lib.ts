@@ -6,6 +6,7 @@ import type { Chain } from './types';
 // ARB Project Imports:
 import * as arb_aave from './projects/arb/aave';
 import * as arb_beefy from './projects/arb/beefy';
+import * as arb_cream from './projects/arb/cream';
 
 // AVAX Project Imports:
 import * as avax_aave from './projects/avax/aave';
@@ -15,7 +16,6 @@ import * as avax_avalaunch from './projects/avax/avalaunch';
 import * as avax_axial from './projects/avax/axial';
 import * as avax_beefy from './projects/avax/beefy';
 import * as avax_benqi from './projects/avax/benqi';
-import * as avax_cream from './projects/avax/cream';
 import * as avax_curve from './projects/avax/curve';
 import * as avax_cycle from './projects/avax/cycle';
 import * as avax_lostworlds from './projects/avax/lostworlds';
@@ -92,6 +92,7 @@ const projects: Record<Chain, Record<string, any>> = {
 	arb: {
 		aave: arb_aave,
 		beefy: arb_beefy,
+		cream: arb_cream,
 	},
 	avax: {
 		aave: avax_aave,
@@ -101,7 +102,6 @@ const projects: Record<Chain, Record<string, any>> = {
 		axial: avax_axial,
 		beefy: avax_beefy,
 		benqi: avax_benqi,
-		cream: avax_cream,
 		curve: avax_curve,
 		cycle: avax_cycle,
 		lostworlds: avax_lostworlds,
