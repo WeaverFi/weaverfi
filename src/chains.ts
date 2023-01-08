@@ -36,8 +36,8 @@ export const defaultRpcEndpoints: Record<Chain, URL[]> = {
     'https://rpc.vvs.finance'
   ],
   op: [
-    'https://optimism-mainnet.public.blastapi.io',
     'https://mainnet.optimism.io',
+    'https://optimism-mainnet.public.blastapi.io',
     'https://rpc.ankr.com/optimism'
   ],
   arb: [
