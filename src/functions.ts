@@ -415,7 +415,7 @@ export const getWalletNFTBalance = async (chain: Chain, wallet: Address) => {
  * @param address The hash to check for validity.
  * @returns True or false, depending on if the hash is a valid address or not.
  */
-export const isAddress = (address: Address) => {
+export const isAddress = (address: string) => {
   return ethers.utils.isAddress(address);
 }
 

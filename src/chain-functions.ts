@@ -52,7 +52,7 @@ export class ChainFunctions {
    * @param address The hash to check for validity.
    * @returns True or false, depending on if the hash is a valid address or not.
    */
-  isAddress(address: Address) {
+  isAddress(address: string) {
     return evm.isAddress(address);
   }
   
