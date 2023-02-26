@@ -60,10 +60,15 @@ export const WeaverFi = {
 
   /**
    * Function to populate the `prices` object with all tracked tokens' prices.
+   * 
+   * If a token's price has already been queried, it will use that instead of refetching, unless `forceRefetch` is set to `true`.
+   * 
+   * The default time until a price value is considered stale is `20 minutes`. This can be overwritten through the `maxAgeInMs` option.
+   * @param options Optional settings.
    * @returns Current state of the `prices` object post-update.
    */
-  getAllTokenPrices: () => {
-    return $.getAllTokenPrices();
+  getAllTokenPrices: (options?: { forceRefetch?: boolean, maxAgeInMs?: number }) => {
+    return $.getAllTokenPrices(options);
   },
 
   /**
@@ -84,6 +89,8 @@ export const WeaverFi = {
 
   /**
    * Function to fetch all balances for a given wallet, including in their wallets and in dapps/projects.
+   * 
+   * NOTE: This function queries a ton of data. It is recommended to use other more targeted methods.
    * @param wallet The wallet to query balances for.
    * @returns A wallet's token, project and NFT balances.
    */

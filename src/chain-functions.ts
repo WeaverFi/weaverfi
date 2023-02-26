@@ -145,20 +145,30 @@ export class ChainFunctions {
   
   /**
    * Function to populate the `prices` object with token prices.
+   * 
+   * If a token's price has already been queried, it will use that instead of refetching, unless `forceRefetch` is set to `true`.
+   * 
+   * The default time until a price value is considered stale is `20 minutes`. This can be overwritten through the `maxAgeInMs` option.
+   * @param options Optional settings.
    * @returns Current state of the `prices` object post-update.
    */
-  getTokenPrices() {
-    return $.getChainTokenPrices(this.chain);
+  getTokenPrices(options?: { forceRefetch?: boolean, maxAgeInMs?: number }) {
+    return $.getChainTokenPrices(this.chain, options);
   }
   
   /**
    * Function to get a token's current price.
+   * 
+   * If the token's price has already been queried, it will use that instead of refetching, unless `forceRefetch` is set to `true`.
+   * 
+   * The default time until a price value is considered stale is `20 minutes`. This can be overwritten through the `maxAgeInMs` option.
    * @param address The token's address.
    * @param decimals The token's decimals.
+   * @param options Optional settings.
    * @returns The token's price (also updates the `prices` object).
    */
-  getTokenPrice(address: Address, decimals?: number) {
-    return $.getTokenPrice(this.chain, address, decimals);
+  getTokenPrice(address: Address, decimals: number, options?: { forceRefetch?: boolean, maxAgeInMs?: number }) {
+    return $.getTokenPrice(this.chain, address, decimals, options);
   }
   
   /**
