@@ -364,7 +364,7 @@ export const queryParaSwapPrice = async (chain: Chain, address: Address, decimal
  * @param priceData The token's new price data.
  */
 export const updatePrices = (chain: Chain, priceData: TokenPriceData) => {
-  let foundPrice = prices[chain].findIndex(token => token.address == priceData.address);
+  let foundPrice = prices[chain].findIndex(token => token.address == priceData.address.toLowerCase());
   if(foundPrice != -1) {
     if(priceData.timestamp > prices[chain][foundPrice].timestamp) {
       prices[chain][foundPrice].price = priceData.price;
@@ -381,6 +381,7 @@ export const updatePrices = (chain: Chain, priceData: TokenPriceData) => {
         }
       }
     }
+    priceData.address = priceData.address.toLowerCase() as Address
     prices[chain].push(priceData);
   }
 }

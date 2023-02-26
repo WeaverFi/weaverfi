@@ -665,7 +665,8 @@ export const op_data: ChainTokenData = {
     { address: '0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4', symbol: 'SNX', logo: 'https://optimistic.etherscan.io/token/images/SynthetixSNX_32.png', decimals: 18 },
     { address: '0x4200000000000000000000000000000000000006', symbol: 'WETH', logo: 'https://optimistic.etherscan.io/token/images/weth_28.png', decimals: 18 },
     { address: '0x4200000000000000000000000000000000000042', symbol: 'OP', logo: 'https://optimistic.etherscan.io/token/images/optimism_32.png', decimals: 18 },
-    { address: '0xFA436399d0458Dbe8aB890c3441256E3E09022a8', symbol: 'ZIP', logo: 'https://optimistic.etherscan.io/token/images/zipswap_32.png', decimals: 18 }
+    { address: '0xFA436399d0458Dbe8aB890c3441256E3E09022a8', symbol: 'ZIP', logo: 'https://optimistic.etherscan.io/token/images/zipswap_32.png', decimals: 18 },
+    { address: '0x8B21e9b7dAF2c4325bf3D18c1BeB79A347fE902A', symbol: 'COLLAB', logo: 'https://assets.coingecko.com/coins/images/29098/small/collab.png?1676566517', decimals: 18 }
   ],
   logos: [
     { symbol: 'ETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' },
