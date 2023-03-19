@@ -9,6 +9,5 @@
     "esModuleInterop": true,
     "declaration": true
   },
-  "include": [ "src" ],
-  "exclude": [ "src/projects/template.ts" ]
+  "include": [ "src" ]
 }

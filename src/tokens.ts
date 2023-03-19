@@ -87,7 +87,8 @@ export const eth_data: ChainTokenData = {
     { address: '0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F', symbol: 'SDT', logo: 'https://etherscan.io/token/images/stakedao_32.png', decimals: 18 },
     { address: '0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5', symbol: 'PSP', logo: 'https://etherscan.io/token/images/paraswaptoken_32.png', decimals: 18 },
     { address: '0xa0246c9032bC3A600820415aE600c6388619A14D', symbol: 'FARM', logo: 'https://etherscan.io/token/images/harvestfinance2_32.png', decimals: 18 },
-    { address: '0x420412E765BFa6d85aaaC94b4f7b708C89be2e2B', symbol: 'BRZ', logo: 'https://etherscan.io/token/images/brz_32.png', decimals: 4 }
+    { address: '0x420412E765BFa6d85aaaC94b4f7b708C89be2e2B', symbol: 'BRZ', logo: 'https://etherscan.io/token/images/brz_32.png', decimals: 4 },
+    { address: '0x5870700f1272a1AdbB87C3140bD770880a95e55D', symbol: 'BIFI', logo: 'https://bscscan.com/token/images/beefy_32.png?=v1', decimals: 18 }
   ],
   logos: [
     { symbol: 'ETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' },
@@ -644,7 +645,8 @@ export const cronos_data: ChainTokenData = {
     { address: '0xe44Fd7fCb2b1581822D0c862B68222998a0c299a', symbol: 'WETH', logo: 'https://cronoscan.com/token/images/weth_32.png', decimals: 18 },
     { address: '0x57d06bB1e3B60C875cD3A4445a53217F9B44d390', symbol: 'PHNX', logo: 'https://cronoscan.com/token/images/phenixfinance_32.png', decimals: 18 },
     { address: '0xF2001B145b43032AAF5Ee2884e456CCd805F677D', symbol: 'DAI', logo: 'https://cronoscan.com/token/images/MCDDai_32.png', decimals: 18 },
-    { address: '0xe6801928061CDbE32AC5AD0634427E140EFd05F9', symbol: 'BIFI', logo: 'https://assets.coingecko.com/coins/images/12704/small/token.png?1601876182', decimals: 18 }
+    { address: '0xe6801928061CDbE32AC5AD0634427E140EFd05F9', symbol: 'BIFI', logo: 'https://cronoscan.com/token/images/beefyfinance_32.png', decimals: 18 },
+    { address: '0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23', symbol: 'WCRO', logo: 'https://cronoscan.com/token/images/cryptocom_32.png', decimals: 18 }
   ],
   logos: [
     { symbol: 'CRO', logo: 'https://cronoscan.com/token/images/cryptocom_32.png' }
@@ -666,6 +668,7 @@ export const op_data: ChainTokenData = {
     { address: '0x4200000000000000000000000000000000000006', symbol: 'WETH', logo: 'https://optimistic.etherscan.io/token/images/weth_28.png', decimals: 18 },
     { address: '0x4200000000000000000000000000000000000042', symbol: 'OP', logo: 'https://optimistic.etherscan.io/token/images/optimism_32.png', decimals: 18 },
     { address: '0xFA436399d0458Dbe8aB890c3441256E3E09022a8', symbol: 'ZIP', logo: 'https://optimistic.etherscan.io/token/images/zipswap_32.png', decimals: 18 },
+    { address: '0x4E720DD3Ac5CFe1e1fbDE4935f386Bb1C66F4642', symbol: 'BIFI', logo: 'https://optimistic.etherscan.io/token/images/beefy_32.png', decimals: 18 },
     { address: '0x8B21e9b7dAF2c4325bf3D18c1BeB79A347fE902A', symbol: 'COLLAB', logo: 'https://assets.coingecko.com/coins/images/29098/small/collab.png?1676566517', decimals: 18 }
   ],
   logos: [
@@ -698,7 +701,8 @@ export const arb_data: ChainTokenData = {
     { address: '0xd4d42F0b6DEF4CE0383636770eF773390d85c61A', symbol: 'SUSHI', logo: 'https://arbiscan.io/token/images/sushitoken_32.png', decimals: 18 },
     { address: '0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a', symbol: 'GMX', logo: 'https://arbiscan.io/token/images/gmxarbi_32.png', decimals: 18 },
     { address: '0x040d1EdC9569d4Bab2D15287Dc5A4F10F56a56B8', symbol: 'BAL', logo: 'https://arbiscan.io/token/images/Balancer_32.png', decimals: 18 },
-    { address: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1', symbol: 'WETH', logo: 'https://arbiscan.io/token/images/weth_28.png', decimals: 18 }
+    { address: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1', symbol: 'WETH', logo: 'https://arbiscan.io/token/images/weth_28.png', decimals: 18 },
+    { address: '0x99C409E5f62E4bd2AC142f17caFb6810B8F0BAAE', symbol: 'BIFI', logo: 'https://arbiscan.io/token/images/beefy_32.png', decimals: 18 }
   ],
   logos: [
     { symbol: 'ETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' }

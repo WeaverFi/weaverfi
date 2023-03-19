@@ -2,28 +2,27 @@
 // Imports:
 import { WeaverError } from '../../error';
 import { minABI, beefy } from '../../ABIs';
-import { addCurveToken } from '../../project-functions';
 import { query, multicallOneMethodQuery, addToken, addLPToken, parseBN, fetchData } from '../../functions';
 
 // Type Imports:
-import type { Chain, Address, URL, Token, LPToken, BeefyAPIResponse } from '../../types';
+import type { Chain, Address, URL, Token, LPToken, XToken, BeefyAPIResponse } from '../../types';
 
 // Initializations:
-const chain: Chain = 'avax';
+const chain: Chain = 'cronos';
 const project = 'beefy';
-const staking: Address = '0x86d38c6b6313c5A3021D68D1F57CF5e69197592A';
-const bifi: Address = '0xd6070ae98b8069de6B494332d1A1a81B6179D960';
-const wavax: Address = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7';
+const staking: Address = '0x107Dbf9c9C0EF2Df114159e5C7DC2baf7C444cFF';
+const bifi: Address = '0xe6801928061CDbE32AC5AD0634427E140EFd05F9';
+const wcro: Address = '0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23';
 const apiURL: URL = 'https://api.beefy.finance';
 
 /* ========================================================================================================================================================================= */
 
 // Function to get project balance:
 export const get = async (wallet: Address) => {
-  const balance: (Token | LPToken)[] = [];
+  const balance: (Token | LPToken | XToken)[] = [];
   const vaultsData: BeefyAPIResponse[] = await fetchData(`${apiURL}/vaults`);
   const apyData: Record<string, number | null> = await fetchData(`${apiURL}/apy`);
-  const vaults = vaultsData.filter(vault => vault.chain === 'avax' && vault.status === 'active');
+  const vaults = vaultsData.filter(vault => vault.chain === 'cronos' && vault.status === 'active');
   if(vaults.length > 0) {
     balance.push(...(await getVaultBalances(wallet, vaults, apyData).catch((err) => { throw new WeaverError(chain, project, 'getVaultBalances()', err) })));
     balance.push(...(await getStakedBIFI(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedBIFI()', err) })));
@@ -37,8 +36,8 @@ export const get = async (wallet: Address) => {
 
 // Function to get vault balances:
 export const getVaultBalances = async (wallet: Address, vaults: BeefyAPIResponse[], apys: Record<string, number | null>) => {
-  const balances: (Token | LPToken)[] = [];
-
+  const balances: (Token | LPToken | XToken)[] = [];
+  
   // Balance Multicall Query:
   const vaultAddresses = vaults.map(vault => vault.earnedTokenAddress);
   const multicallResults = await multicallOneMethodQuery(chain, vaultAddresses, minABI, 'balanceOf', [wallet]);
@@ -52,8 +51,8 @@ export const getVaultBalances = async (wallet: Address, vaults: BeefyAPIResponse
   
         // Native Token Vaults:
         if(!vault.tokenAddress) {
-          if(vault.token === 'AVAX') {
-            const newToken = await addToken(chain, project, 'staked', wavax, underlyingBalance, wallet);
+          if(vault.token === 'CRO') {
+            const newToken = await addToken(chain, project, 'staked', wcro, underlyingBalance, wallet);
             const vaultAPY = apys[vault.id];
             if(vaultAPY) {
               newToken.info = {
@@ -63,20 +62,9 @@ export const getVaultBalances = async (wallet: Address, vaults: BeefyAPIResponse
             balances.push(newToken);
           }
         } else {
-  
-          // Curve Vaults:
-          if(vault.platformId === 'curve' || vault.tokenProviderId === 'curve') {
-            const newToken = await addCurveToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
-            const vaultAPY = apys[vault.id];
-            if(vaultAPY) {
-              newToken.info = {
-                apy: vaultAPY
-              }
-            }
-            balances.push(newToken);
     
           // LP Token Vaults:
-          } else if(vault.assets.length === 2) {
+          if(vault.assets.length === 2) {
             const newToken = await addLPToken(chain, project, 'staked', vault.tokenAddress, underlyingBalance, wallet);
             const vaultAPY = apys[vault.id];
             if(vaultAPY) {
@@ -115,7 +103,7 @@ export const getStakedBIFI = async (wallet: Address) => {
   }
   const pendingRewards = parseInt(await query(chain, staking, beefy.stakingABI, 'earned', [wallet]));
   if(pendingRewards > 0) {
-    const newToken = await addToken(chain, project, 'unclaimed', wavax, pendingRewards, wallet, staking);
+    const newToken = await addToken(chain, project, 'unclaimed', wcro, pendingRewards, wallet, staking);
     balances.push(newToken);
   }
   return balances;

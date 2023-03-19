@@ -10,8 +10,8 @@ import type { Chain, Address, Token, XToken, CallContext } from '../../types';
 // Initializations:
 const chain: Chain = 'avax';
 const project = 'platypus';
-const masterChef: Address = '0x68c5f4374228BEEdFa078e77b5ed93C28a2f713E';
-const factoryChef: Address = '0x7125B4211357d7C3a90F796c956c12c681146EbB';
+const masterChef: Address = '0xfF6934aAC9C94E1C39358D4fDCF70aeca77D0AB0';
+const factoryChef: Address = '0x2Cd5012b5f7cc09bfE0De6C44df32a92D2431232';
 const ptp: Address = '0x22d4002028f537599be9f666d1c4fa138522f9c8';
 const vePTP: Address = '0x5857019c749147EEE22b1Fe63500F237F3c1B692';
 
@@ -71,11 +71,14 @@ export const getPoolBalances = async (wallet: Address) => {
         }
   
         // Bonus Rewards:
-        let pendingBonus = parseInt(rewards.pendingBonusToken);
-        if(pendingBonus > 0) {
-          let newToken = await addToken(chain, project, 'unclaimed', rewards.bonusTokenAddress, pendingBonus, wallet, masterChef);
-          balances.push(newToken);
-        }
+        let bonusRewards: number[] = rewards.pendingBonusTokens.map((amount: string) => parseInt(amount));
+        let bonusRewardPromises = bonusRewards.map((bonusReward, i) => (async () => {
+          if(bonusReward > 0) {
+            let newToken = await addToken(chain, project, 'unclaimed', rewards.bonusTokenAddresses[i], bonusReward, wallet, masterChef);
+            balances.push(newToken);
+          }
+        })());
+        await Promise.all(bonusRewardPromises);
       }
     }
   })());
@@ -114,11 +117,14 @@ export const getFactoryPoolBalances = async (wallet: Address) => {
         }
   
         // Bonus Rewards:
-        let pendingBonus = parseInt(rewards.pendingBonusToken);
-        if(pendingBonus > 0) {
-          let newToken = await addToken(chain, project, 'unclaimed', rewards.bonusTokenAddress, pendingBonus, wallet, factoryChef);
-          balances.push(newToken);
-        }
+        let bonusRewards: number[] = rewards.pendingBonusTokens.map((amount: string) => parseInt(amount));
+        let bonusRewardPromises = bonusRewards.map((bonusReward, i) => (async () => {
+          if(bonusReward > 0) {
+            let newToken = await addToken(chain, project, 'unclaimed', rewards.bonusTokenAddresses[i], bonusReward, wallet, factoryChef);
+            balances.push(newToken);
+          }
+        })());
+        await Promise.all(bonusRewardPromises);
       }
     }
   })());

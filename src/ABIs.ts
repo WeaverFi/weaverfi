@@ -361,7 +361,7 @@ export const quickswap: Record<`${quickswapABIs}ABI`, ABI> = {
 }
 
 // BenQi ABIs:
-type benqiABIs = 'controller' | 'market';
+type benqiABIs = 'controller' | 'market' | 'liquidStaking';
 export const benqi: Record<`${benqiABIs}ABI`, ABI> = {
   controllerABI: [
     { constant: true, inputs: [], name: "getAllMarkets", outputs: [{ name: "", type: "address[]" }], type: "function" }
@@ -369,6 +369,9 @@ export const benqi: Record<`${benqiABIs}ABI`, ABI> = {
   marketABI: [
     { constant: true, inputs: [{ name: "account", type: "address" }], name: "getAccountSnapshot", outputs: [{ name: "", type: "uint256" }, { name: "", type: "uint256" }, { name: "", type: "uint256" }, { name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [], name: "underlying", outputs: [{ name: "", type: "address" }], type: "function" }
+  ],
+  liquidStakingABI: [
+    { constant: true, inputs: [{ name: "shareAmount", type: "uint256" }], name: "getPooledAvaxByShares", outputs: [{ name: "", type: "uint256" }], type: "function" }
   ]
 }
 
@@ -708,15 +711,15 @@ export const platypus: Record<`${platypusABIs}ABI`, ABI> = {
   ],
   masterChefABI: [
     { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
-    { constant: true, inputs: [{ name: "<input>", type: "uint256" }, { name: "<input>", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }, { name: "factor", type: "uint256" }], type: "function" },
-    { constant: true, inputs: [{ name: "<input>", type: "uint256" }], name: "poolInfo", outputs: [{ name: "lpToken", type: "address" }, { name: "allocPoint", type: "uint256" }, { name: "lastRewardTimestamp", type: "uint256" }, { name: "accPtpPerShare", type: "uint256" }, { name: "rewarder", type: "address" }, { name: "sumOfFactors", type: "uint256" }, { name: "accPtpPerFactorShare", type: "uint256" }, { name: "adjustedAllocPoint", type: "uint256" }], type: "function" },
-    { constant: true, inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], name: "pendingTokens", outputs: [{ name: "pendingPtp", type: "uint256" }, { name: "bonusTokenAddress", type: "address" }, { name: "bonusTokenSymbol", type: "string" }, { name: "pendingBonusToken", type: "uint256" }], type: "function" }
+    { constant: true, inputs: [{ name: "<input>", type: "uint256" }, { name: "<input>", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint128" }, { name: "factor", type: "uint128" }, { name: "rewardDebt", type: "uint128" }, { name: "claimablePtp", type: "uint128" }], type: "function" },
+    { constant: true, inputs: [{ name: "<input>", type: "uint256" }], name: "poolInfo", outputs: [{ name: "lpToken", type: "address" }, { name: "rewarder", type: "address" }, { name: "sumOfFactors", type: "uint128" }, { name: "accPtpPerShare", type: "uint128" }, { name: "accPtpPerFactorShare", type: "uint128" }], type: "function" },
+    { constant: true, inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], name: "pendingTokens", outputs: [{ name: "pendingPtp", type: "uint256" }, { name: "bonusTokenAddresses", type: "address[]" }, { name: "bonusTokenSymbols", type: "string[]" }, { name: "pendingBonusTokens", type: "uint256[]" }], type: "function" }
   ],
   factoryChefABI: [
     { constant: true, inputs: [], name: "poolLength", outputs: [{ name: "", type: "uint256" }], type: "function" },
-    { constant: true, inputs: [{ name: "<input>", type: "uint256" }, { name: "<input>", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }], type: "function" },
-    { constant: true, inputs: [{ name: "<input>", type: "uint256" }], name: "poolInfo", outputs: [{ name: "lpToken", type: "address" }, { name: "baseAllocPoint", type: "uint256" }, { name: "lastRewardTimestamp", type: "uint256" }, { name: "accPtpPerShare", type: "uint256" }, { name: "rewarder", type: "address" }], type: "function" },
-    { constant: true, inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], name: "pendingTokens", outputs: [{ name: "pendingPtp", type: "uint256" }, { name: "bonusTokenAddress", type: "address" }, { name: "bonusTokenSymbol", type: "string" }, { name: "pendingBonusToken", type: "uint256" }], type: "function" }
+    { constant: true, inputs: [{ name: "<input>", type: "uint256" }, { name: "<input>", type: "address" }], name: "userInfo", outputs: [{ name: "amount", type: "uint128" }, { name: "rewardDebt", type: "uint128" }], type: "function" },
+    { constant: true, inputs: [{ name: "<input>", type: "uint256" }], name: "poolInfo", outputs: [{ name: "lpToken", type: "address" }, { name: "rewarder", type: "address" }, { name: "accPtpPerShare", type: "uint256" }], type: "function" },
+    { constant: true, inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], name: "pendingTokens", outputs: [{ name: "pendingPtp", type: "uint256" }, { name: "bonusTokenAddresses", type: "address[]" }, { name: "bonusTokenSymbols", type: "string[]" }, { name: "pendingBonusTokens", type: "uint256[]" }], type: "function" }
   ],
   tokenABI: [
     { constant: true, inputs: [], name: "underlyingToken", outputs: [{ name: "", type: "address" }], type: "function" }
@@ -733,12 +736,12 @@ export const lostworlds: Record<`${lostworldsABIs}ABI`, ABI> = {
 }
 
 // Pika ABIs:
-type pikaABIs = 'perpetualV2' | 'vaultFeeV2';
+type pikaABIs = 'perpetual' | 'vaultFee';
 export const pika: Record<`${pikaABIs}ABI`, ABI> = {
-  perpetualV2ABI: [
+  perpetualABI: [
     { constant: true, inputs: [{ name: "stakeOwner", type: "address" }], name: "getShareBalance", outputs: [{name: "", type: "uint256"}], type: "function" }
   ],
-  vaultFeeV2ABI: [
+  vaultFeeABI: [
     { constant: true, inputs: [{ name: "account", type: "address" }], name: "getClaimableReward", outputs: [{name: "", type: "uint256"}], type: "function" }
   ]
 }

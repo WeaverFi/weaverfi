@@ -857,6 +857,27 @@ export const parseBN = (bn: any) => {
 /* ========================================================================================================================================================================= */
 
 /**
+ * Helper function to get a native token's symbol.
+ * @param chain The blockchain the native token belongs to.
+ * @returns The appropriate token's symbol.
+ */
+export const getNativeTokenSymbol = (chain: Chain) => {
+  if(chain === 'bsc') {
+    return 'BNB';
+  } else if(chain === 'poly') {
+    return 'MATIC';
+  } else if(chain === 'cronos') {
+    return 'CRO';
+  } else if(chain === 'op' || chain === 'arb') {
+    return 'ETH';
+  } else {
+    return chain.toUpperCase();
+  }
+}
+
+/* ========================================================================================================================================================================= */
+
+/**
  * Helper function to get an already tracked token's info.
  * @param chain The chain to fetch data from.
  * @param address The token's address.
@@ -964,27 +985,6 @@ const addTrackedNFTs = async (chain: Chain, location: string, status: TokenStatu
   }
 
   return nfts;
-}
-
-/* ========================================================================================================================================================================= */
-
-/**
- * Helper function to get a native token's symbol.
- * @param chain The blockchain the native token belongs to.
- * @returns The appropriate token's symbol.
- */
-const getNativeTokenSymbol = (chain: Chain) => {
-  if(chain === 'bsc') {
-    return 'BNB';
-  } else if(chain === 'poly') {
-    return 'MATIC';
-  } else if(chain === 'cronos') {
-    return 'CRO';
-  } else if(chain === 'op' || chain === 'arb') {
-    return 'ETH';
-  } else {
-    return chain.toUpperCase();
-  }
 }
 
 /* ========================================================================================================================================================================= */

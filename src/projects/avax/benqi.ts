@@ -1,8 +1,9 @@
 
 // Imports:
+import { utils } from 'ethers';
 import { WeaverError } from '../../error';
 import { minABI, benqi } from '../../ABIs';
-import { query, multicallComplexQuery, addToken, addDebtToken, parseBN, defaultAddress } from '../../functions';
+import { query, multicallComplexQuery, addToken, addDebtToken, parseBN, defaultAddress, multicallOneContractQuery } from '../../functions';
 
 // Type Imports:
 import type { Chain, Address, Token, DebtToken, CallContext } from '../../types';
@@ -11,6 +12,8 @@ import type { Chain, Address, Token, DebtToken, CallContext } from '../../types'
 const chain: Chain = 'avax';
 const project = 'benqi';
 const controller: Address = '0x486Af39519B4Dc9a7fCcd318217352830E8AD9b4';
+const savax: Address = '0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE';
+const wavax: Address = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7';
 
 /* ========================================================================================================================================================================= */
 
@@ -64,5 +67,30 @@ export const getMarketBalances = async (wallet: Address) => {
     }
   })());
   await Promise.all(promises);
+  return balances;
+}
+
+// Function to get all liquid staked AVAX (sAVAX):
+export const getLiquidStakingBalances = async (wallet: Address) => {
+  let balances: Token[] = [];
+
+  //Liquid Staking Balance Multicall Query:
+  let abi = minABI.concat(benqi.liquidStakingABI);
+  let calls: CallContext[] = [
+    { reference: 'shareBalance', methodName: 'balanceOf', methodParameters: [wallet] },
+    { reference: 'exchangeRate', methodName: 'getPooledAvaxByShares', methodParameters: [utils.parseEther('1')] }
+  ];
+  let multicallResults = await multicallOneContractQuery(chain, savax, abi, calls);
+  let balanceResults = multicallResults['shareBalance'];
+  let exchangeRateResults = multicallResults['exchangeRate'];
+  if(balanceResults && exchangeRateResults) {
+    let shareBalance = parseBN(balanceResults[0]);
+    let exchangeRate = parseBN(exchangeRateResults[0]);
+    if(shareBalance > 0) {
+      let underlyingBalance = shareBalance * (exchangeRate / (10 ** 18));
+      let newToken = await addToken(chain, project, 'staked', wavax, underlyingBalance, wallet, savax);
+      balances.push(newToken);
+    }
+  }
   return balances;
 }

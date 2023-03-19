@@ -31,236 +31,239 @@ export type IPNS = `ipns://${string}`;
 
 // Token Interfaces:
 export interface BaseToken {
-    symbol: string
-    address: Address
-    balance: number
+	symbol: string
+	address: Address
+	balance: number
 }
 export interface PricedToken extends BaseToken {
-    price: number
-    logo: URL
+	price: number
+	logo: URL
 }
 export interface OwnedToken extends BaseToken {
-    type: TokenType
-    chain: Chain
-    location: string
-    status: TokenStatus
-    owner: Address
-    contract?: Address
-    info?: TokenInfo
+	type: TokenType
+	chain: Chain
+	location: string
+	status: TokenStatus
+	owner: Address
+	contract?: Address
+	info?: TokenInfo
 }
 export interface NativeToken extends OwnedToken, PricedToken {
-    type: 'nativeToken'
+	type: 'nativeToken'
 }
 export interface Token extends OwnedToken, PricedToken {
-    type: 'token'
+	type: 'token'
 }
 export interface LPToken extends OwnedToken {
-    type: 'lpToken'
-    token0: PricedToken
-    token1: PricedToken
+	type: 'lpToken'
+	token0: PricedToken
+	token1: PricedToken
 }
 export interface DebtToken extends OwnedToken, PricedToken {
-    type: 'debt'
+	type: 'debt'
 }
 export interface XToken extends OwnedToken {
-    type: 'xToken'
-    logo: URL
-    underlyingToken: PricedToken
+	type: 'xToken'
+	logo: URL
+	underlyingToken: PricedToken
 }
 export interface TokenInfo {
-    apr?: number
-    apy?: number
-    unlock?: number
-    deprecated?: boolean
+	apr?: number
+	apy?: number
+	unlock?: number
+	deprecated?: boolean
 }
 
 // Token Type Guards:
 export function isNativeToken(token: OwnedToken): token is NativeToken {
-    return token.type === 'nativeToken';
+	return token.type === 'nativeToken';
 }
 export function isToken(token: OwnedToken): token is Token {
-    return token.type === 'token';
+	return token.type === 'token';
 }
 export function isLPToken(token: OwnedToken): token is LPToken {
-    return token.type === 'lpToken';
+	return token.type === 'lpToken';
 }
 export function isDebtToken(token: OwnedToken): token is DebtToken {
-    return token.type === 'debt';
+	return token.type === 'debt';
 }
 export function isXToken(token: OwnedToken): token is XToken {
-    return token.type === 'xToken';
+	return token.type === 'xToken';
 }
 
 /* ========================================================================================================================================================================= */
 
 // NFT Interface:
 export interface NFT {
-    type: TokenType
-    chain: Chain
-    location: string
-    status: TokenStatus
-    owner: Address
-    name: string
-    address: Address
-    id?: number
-    data?: string
+	type: TokenType
+	chain: Chain
+	location: string
+	status: TokenStatus
+	owner: Address
+	name: string
+	address: Address
+	id?: number
+	data?: string
 }
 
 /* ========================================================================================================================================================================= */
 
 // ABI Interfaces:
 export interface ABIEntry {
-    constant: boolean
-    inputs: (ABIIO | ABITupleIO)[]
-    name: string
-    outputs: (ABIIO | ABITupleIO)[]
-    type: 'function'
+	constant: boolean
+	inputs: (ABIIO | ABITupleIO)[]
+	name: string
+	outputs: (ABIIO | ABITupleIO)[]
+	type: 'function'
 }
 export interface ABIIO {
-    name: string
-    type: ABIIOType
+	name: string
+	type: ABIIOType
 }
 export interface ABITupleIO {
-    type: 'tuple' | 'tuple[]'
-    components: ABIIO[]
+	type: 'tuple' | 'tuple[]'
+	components: ABIIO[]
 }
 export interface ExtendedABIEntry {
-    inputs: (ExtendedABIIO | ExtendedABITupleIO)[]
-    name: string
-    outputs: (ExtendedABIIO | ExtendedABITupleIO)[]
-    stateMutability: 'view' | 'nonpayable' | 'payable' | 'pure'
-    type: 'function'
+	inputs: (ExtendedABIIO | ExtendedABITupleIO)[]
+	name: string
+	outputs: (ExtendedABIIO | ExtendedABITupleIO)[]
+	stateMutability: 'view' | 'nonpayable' | 'payable' | 'pure'
+	type: 'function'
 }
 export interface ExtendedABIEventEntry {
-    anonymous: boolean
-    inputs: (ExtendedABIIO | ExtendedABITupleIO)[]
-    name: string
-    type: 'event'
+	anonymous: boolean
+	inputs: (ExtendedABIIO | ExtendedABITupleIO)[]
+	name: string
+	type: 'event'
 }
 export interface ExtendedABIConstructorEntry {
-    inputs: (ExtendedABIIO | ExtendedABITupleIO)[]
-    stateMutability: 'view' | 'nonpayable' | 'payable' | 'pure'
-    type: 'constructor'
+	inputs: (ExtendedABIIO | ExtendedABITupleIO)[]
+	stateMutability: 'view' | 'nonpayable' | 'payable' | 'pure'
+	type: 'constructor'
 }
 export interface ExtendedABIIO extends ABIIO {
-    indexed?: boolean
-    internalType: ABIIOType
+	indexed?: boolean
+	internalType: ABIIOType
 }
 export interface ExtendedABITupleIO {
-    type: 'tuple' | 'tuple[]'
-    components: ExtendedABIIO[]
+	type: 'tuple' | 'tuple[]'
+	components: ExtendedABIIO[]
 }
 
 /* ========================================================================================================================================================================= */
 
 // Chain Data Interfaces:
 export interface ChainData {
-    id: ChainID
-    name: string
-    token: string
-    wrappedToken: Address
-    usdc: Address
-    usdcDecimals: number
-    inch: boolean
-    paraswap: boolean
-    rpcs: URL[]
-    coingeckoIDs: CoinGeckoIDs
-    multicall: Address
+	id: ChainID
+	name: string
+	token: string
+	wrappedToken: Address
+	usdc: Address
+	usdcDecimals: number
+	inch: boolean
+	paraswap: boolean
+	rpcs: URL[]
+	coingeckoIDs: CoinGeckoIDs
+	multicall: Address
 }
 export interface CoinGeckoIDs {
-    chainID: string
-    nativeTokenID: string
+	chainID: string
+	nativeTokenID: string
 }
 
 /* ========================================================================================================================================================================= */
 
 // Chain Token Data Interfaces:
 export interface ChainTokenData {
-    tokens: TokenData[]
-    logos: LogoData[]
-    nfts: NFTData[]
+	tokens: TokenData[]
+	logos: LogoData[]
+	nfts: NFTData[]
 }
 export interface TokenData {
-    address: Address
-    symbol: string
-    logo: URL
-    decimals: number
+	address: Address
+	symbol: string
+	logo: URL
+	decimals: number
 }
 export interface LogoData {
-    symbol: string
-    logo: URL
+	symbol: string
+	logo: URL
 }
 export interface NFTData {
-    address: Address
-    dataQuery: NFTDataQueryType
-    name: string
+	address: Address
+	dataQuery: NFTDataQueryType
+	name: string
 }
 
 /* ========================================================================================================================================================================= */
 
 // Token Price Data Interface:
 export interface TokenPriceData {
-    symbol: string | null
-    address: Address
-    price: number
-    source: PriceSource
-    timestamp: number
+	symbol: string | null
+	address: Address
+	price: number
+	source: PriceSource
+	timestamp: number
 }
 
 /* ========================================================================================================================================================================= */
 
 // Multicall Interface:
 export interface CallContext {
-    reference: string
-    methodName: string
-    methodParameters: any[]
+	reference: string
+	methodName: string
+	methodParameters: any[]
 }
 
 /* ========================================================================================================================================================================= */
 
 // Miscellaneous API Response Types:
 export interface SnowballAPIResponse {
-    symbol: string
-    address: Address
-    lpAddress: Address
-    deprecated: boolean
-    yearlyAPY: number
-    yearlySwapFees: number
-    gaugeInfo: {
-        address: Address
-        snobYearlyAPR: number
-    }
+	symbol: string
+	address: Address
+	lpAddress: Address
+	deprecated: boolean
+	yearlyAPY: number
+	yearlySwapFees: number
+	gaugeInfo: {
+		address: Address
+		snobYearlyAPR: number
+	}
 }
 export interface AaveAPIResponse {
-    symbol: string
-    isActive: boolean
-    underlyingAsset: Address
-    aTokenAddress: Address
-    avg7DaysLiquidityRate: number
-    borrowingEnabled: boolean
-    variableDebtTokenAddress: Address
-    avg7DaysVariableBorrowRate: number
-    stableBorrowRateEnabled: boolean
-    stableDebtTokenAddress: Address
-    stableBorrowRate: number
+	symbol: string
+	isActive: boolean
+	underlyingAsset: Address
+	aTokenAddress: Address
+	avg7DaysLiquidityRate: number
+	borrowingEnabled: boolean
+	variableDebtTokenAddress: Address
+	avg7DaysVariableBorrowRate: number
+	stableBorrowRateEnabled: boolean
+	stableDebtTokenAddress: Address
+	stableBorrowRate: number
 }
 export interface BeefyAPIResponse {
-    id: string
-    chain: string
-    status: 'active' | 'eol'
-    platform: string
-    token: string
-    tokenAddress: Address
-    earnedTokenAddress: Address
-    assets: string[]
+	id: string
+	chain: 'ethereum' | 'bsc' | 'polygon' | 'fantom' | 'avax' | 'cronos' | 'optimism' | 'arbitrum'
+	status: 'active' | 'eol'
+	platformId: string
+	token: string
+	tokenDecimals: number
+	tokenAddress: Address
+	tokenProviderId: string
+	earnedTokenAddress: Address
+	assets: string[]
+	pricePerFullShare: string
 }
 export interface YieldYakAPIResponse {
-    apr: number | null
-    apy: number | null
+	apr: number | null
+	apy: number | null
 }
 export interface MoonPotAPIResponse {
-    status: 'active' | 'eol'
-    token: string
-    tokenAddress: Address
-    contractAddress: Address
+	status: 'active' | 'eol'
+	token: string
+	tokenAddress: Address
+	contractAddress: Address
 }

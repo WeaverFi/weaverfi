@@ -2,37 +2,30 @@
 // Imports:
 import { WeaverError } from '../../error';
 import { minABI, aave } from '../../ABIs';
-import { addAaveBLPToken } from '../../project-functions';
-import { query, multicallQuery, addToken, addDebtToken, addXToken, parseBN, fetchData } from '../../functions';
+import { query, multicallQuery, addToken, addDebtToken, parseBN, fetchData } from '../../functions';
 
 // Type Imports:
 import type { ContractCallContext } from 'ethereum-multicall';
-import type { Chain, Address, URL, Token, LPToken, DebtToken, XToken, AaveAPIResponse } from '../../types';
+import type { Chain, Address, URL, Token, DebtToken, AaveAPIResponse } from '../../types';
 
 // Initializations:
-const chain: Chain = 'eth';
-const project = 'aave';
-const addressProvider: Address = '0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5';
-const lpStaking: Address = '0xa1116930326D21fB917d5A27F1E9943A9595fb47';
-const incentives: Address = '0xd784927Ff2f95ba542BfC824c8a8a98F3495f6b5';
-const stakedAave: Address = '0x4da27a545c0c5B758a6BA100e3a049001de870f5';
-const aaveToken: Address = '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9';
+const chain: Chain = 'avax';
+const project = 'aave_v2';
+const wavax: Address = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7';
+const addressProvider: Address = '0xb6A86025F0FE1862B372cb0ca18CE3EDe02A318f';
+const incentives: Address = '0x01D83Fe6A10D2f2B7AF17034343746188272cAc9';
 const apiURL: URL = 'https://aave-api-v2.aave.com/data/liquidity/v2';
 
 /* ========================================================================================================================================================================= */
 
 // Function to get project balance:
 export const get = async (wallet: Address) => {
-  let balance: (Token | LPToken | DebtToken | XToken)[] = [];
+  let balance: (Token | DebtToken)[] = [];
   let markets: AaveAPIResponse[] = await fetchData(`${apiURL}?poolId=${addressProvider}`);
   if(markets.length > 0) {
     balance.push(...(await getMarketBalances(markets, wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketBalances()', err) })));
-    balance.push(...(await getIncentives(wallet).catch((err) => { throw new WeaverError(chain, project, 'getIncentives()', err) })));
-    balance.push(...(await getStakedAAVE(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedAAVE()', err) })));
-    balance.push(...(await getStakedLP(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedLP()', err) })));
-  } else {
-    throw new WeaverError(chain, project, 'Invalid response from Aave API');
   }
+  balance.push(...(await getIncentives(wallet).catch((err) => { throw new WeaverError(chain, project, 'getIncentives()', err) })));
   return balance;
 }
 
@@ -57,14 +50,6 @@ export const getMarketBalances = async (markets: AaveAPIResponse[], wallet: Addr
       queries.push({
         reference: 'vb' + market.symbol,
         contractAddress: market.variableDebtTokenAddress,
-        abi: minABI,
-        calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
-      });
-    }
-    if(market.stableBorrowRateEnabled) {
-      queries.push({
-        reference: 'sb' + market.symbol,
-        contractAddress: market.stableDebtTokenAddress,
         abi: minABI,
         calls: [{ reference: 'balance', methodName: 'balanceOf', methodParameters: [wallet] }]
       });
@@ -103,21 +88,6 @@ export const getMarketBalances = async (markets: AaveAPIResponse[], wallet: Addr
         }
       }
     }
-
-    // Stable Borrowing Balances:
-    if(market.stableBorrowRateEnabled) {
-      let marketStableBorrowingResults = multicallResults['sb' + market.symbol].callsReturnContext[0];
-      if(marketStableBorrowingResults.success) {
-        let balance = parseBN(marketStableBorrowingResults.returnValues[0]);
-        if(balance > 0) {
-          let newToken = await addDebtToken(chain, project, market.underlyingAsset, balance, wallet, market.aTokenAddress);
-          newToken.info = {
-            apy: market.stableBorrowRate * 100,
-          }
-          balances.push(newToken);
-        }
-      }
-    }
   })());
   await Promise.all(promises);
   return balances;
@@ -127,30 +97,7 @@ export const getMarketBalances = async (markets: AaveAPIResponse[], wallet: Addr
 export const getIncentives = async (wallet: Address) => {
   let rewards = parseInt(await query(chain, incentives, aave.incentivesABI, 'getUserUnclaimedRewards', [wallet]));
   if(rewards > 0) {
-    let newToken = await addToken(chain, project, 'unclaimed', aaveToken, rewards, wallet);
-    return [newToken];
-  } else {
-    return [];
-  }
-}
-
-// Function to get staked AAVE balance:
-export const getStakedAAVE = async (wallet: Address) => {
-  let balance = parseInt(await query(chain, stakedAave, minABI, 'balanceOf', [wallet]));
-  if(balance > 0) {
-    let newToken = await addXToken(chain, project, 'staked', stakedAave, balance, wallet, aaveToken, balance, stakedAave);
-    return [newToken];
-  } else {
-    return [];
-  }
-}
-
-// Function to get staked LP balance:
-export const getStakedLP = async (wallet: Address) => {
-  let balance = parseInt(await query(chain, lpStaking, minABI, 'balanceOf', [wallet]));
-  if(balance > 0) {
-    let tokenAddress = await query(chain, lpStaking, aave.stakingABI, 'STAKED_TOKEN', []);
-    let newToken = await addAaveBLPToken(chain, project, 'staked', tokenAddress, balance, wallet, lpStaking);
+    let newToken = await addToken(chain, project, 'unclaimed', wavax, rewards, wallet);
     return [newToken];
   } else {
     return [];

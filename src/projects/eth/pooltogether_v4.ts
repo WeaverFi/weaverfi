@@ -8,28 +8,28 @@ import { query, addToken } from '../../functions';
 import type { Chain, Address, Token } from '../../types';
 
 // Initializations:
-const chain: Chain = 'avax';
-const project = 'pooltogether';
-const poolTicketV4: Address = '0xB27f379C050f6eD0973A01667458af6eCeBc1d90';
-const poolDepositV4: Address = '0xF830F5Cb2422d555EC34178E27094a816c8F95EC';
-const usdc: Address = '0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664';
+const chain: Chain = 'eth';
+const project = 'pooltogether_v4';
+const poolTicket: Address = '0xdd4d117723C257CEe402285D3aCF218E9A8236E1';
+const poolDeposit: Address = '0xd89a09084555a7D0ABe7B111b1f78DFEdDd638Be';
+const usdc: Address = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
 
 /* ========================================================================================================================================================================= */
 
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: Token[] = [];
-  balance.push(...(await getPoolBalanceV4(wallet).catch((err) => { throw new WeaverError(chain, project, 'getPoolBalanceV4()', err) })));
+  balance.push(...(await getPoolBalance(wallet).catch((err) => { throw new WeaverError(chain, project, 'getPoolBalance()', err) })));
   return balance;
 }
 
 /* ========================================================================================================================================================================= */
 
-// Function to get V4 pool balance:
-export const getPoolBalanceV4 = async (wallet: Address) => {
-  let balance = parseInt(await query(chain, poolTicketV4, minABI, 'balanceOf', [wallet]));
+// Function to get pool balance:
+export const getPoolBalance = async (wallet: Address) => {
+  let balance = parseInt(await query(chain, poolTicket, minABI, 'balanceOf', [wallet]));
   if(balance > 0) {
-    let newToken = await addToken(chain, project, 'staked', usdc, balance, wallet, poolDepositV4);
+    let newToken = await addToken(chain, project, 'staked', usdc, balance, wallet, poolDeposit);
     return [newToken];
   } else {
     return [];
