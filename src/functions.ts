@@ -3,14 +3,13 @@
 import axios from 'axios';
 import projectLibrary from './project-lib';
 import { ethers } from 'ethers';
-import { chains } from './chains';
 import { projects } from './projects';
 import { WeaverError } from './error';
 import { getTokenPrice } from './prices';
 import { getSubgraphDomains } from './ens';
 import { Multicall } from 'ethereum-multicall';
 import { minABI, lpABI, nftABI } from './ABIs';
-import { eth_data, bsc_data, poly_data, ftm_data, avax_data, cronos_data, op_data, arb_data } from './tokens';
+import { chains, chainToTokenDataMap } from './chains';
 
 // Type Imports:
 import type { ContractCallResults, ContractCallContext } from 'ethereum-multicall';
@@ -22,12 +21,12 @@ export const defaultTokenLogo: URL = 'https://cdn.jsdelivr.net/gh/atomiclabs/cry
 export const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 export const zero: Address = '0x0000000000000000000000000000000000000000';
 const maxQueryRetries = 3;
-const estimatedL1RollupGas = 5000;
+const estimatedL1RollupGas = 5_000;
 const gasAmountEstimates: { type: string, gas: number }[] = [
-  { type: 'nativeTransfer', gas: 21000 },
-  { type: 'tokenTransfer', gas: 65000 },
-  { type: 'tokenSwap', gas: 150000 },
-  { type: 'nftTransfer', gas: 85000 }
+  { type: 'nativeTransfer', gas: 21_000 },
+  { type: 'tokenTransfer', gas: 65_000 },
+  { type: 'tokenSwap', gas: 150_000 },
+  { type: 'nftTransfer', gas: 85_000 }
 ];
 
 // Ignored Errors On Blockchain Queries:
@@ -42,7 +41,7 @@ export const ignoredErrors: { chain: Chain, address: Address }[] = [
  * Function to update ethers providers for a chain.
  */
 export const updateChainProviders = (chain: Chain) => {
-  providers[chain] = chains[chain].rpcs.map(url => new ethers.providers.StaticJsonRpcProvider(url, chains[chain].id));
+  providers[chain] = chains[chain].rpcs.map(url => new ethers.providers.StaticJsonRpcProvider({ url, timeout: 30_000, throttleLimit: 1 }, chains[chain].id));
 }
 
 /**
@@ -361,21 +360,19 @@ export const getWalletNativeTokenBalance = async (chain: Chain, wallet: Address)
 export const getWalletTokenBalance = async (chain: Chain, wallet: Address) => {
   let tokens: Token[] = [];
   let data = getChainTokenData(chain);
-  if(data) {
-    let addresses: Address[] = data.tokens.map(token => token.address);
-    let multicallResults = await multicallOneMethodQuery(chain, addresses, minABI, 'balanceOf', [wallet]);
-    let promises = data.tokens.map(token => (async () => {
-      let balanceResults = multicallResults[token.address];
-      if(balanceResults) {
-        let rawBalance = parseBN(balanceResults[0]);
-        if(rawBalance > 0) {
-          let newToken = await addTrackedToken(chain, 'wallet', 'none', token, rawBalance, wallet);
-          tokens.push(newToken);
-        }
+  let addresses: Address[] = data.tokens.map(token => token.address);
+  let multicallResults = await multicallOneMethodQuery(chain, addresses, minABI, 'balanceOf', [wallet]);
+  let promises = data.tokens.map(token => (async () => {
+    let balanceResults = multicallResults[token.address];
+    if(balanceResults) {
+      let rawBalance = parseBN(balanceResults[0]);
+      if(rawBalance > 0) {
+        let newToken = await addTrackedToken(chain, 'wallet', 'none', token, rawBalance, wallet);
+        tokens.push(newToken);
       }
-    })());
-    await Promise.all(promises);
-  }
+    }
+  })());
+  await Promise.all(promises);
   return tokens;
 }
 
@@ -390,21 +387,19 @@ export const getWalletTokenBalance = async (chain: Chain, wallet: Address) => {
 export const getWalletNFTBalance = async (chain: Chain, wallet: Address) => {
   let nfts: NFT[] = [];
   let data = getChainTokenData(chain);
-  if(data) {
-    let addresses: Address[] = data.nfts.map(nft => nft.address);
-    let multicallResults = await multicallOneMethodQuery(chain, addresses, nftABI, 'balanceOf', [wallet]);
-    let promises = data.nfts.map(nft => (async () => {
-      let balanceResults = multicallResults[nft.address];
-      if(balanceResults) {
-        let balance = parseBN(balanceResults[0]);
-        if(balance > 0) {
-          let newNFTs = await addTrackedNFTs(chain, 'wallet', 'none', nft, balance, wallet);
-          nfts.push(...newNFTs);
-        }
+  let addresses: Address[] = data.nfts.map(nft => nft.address);
+  let multicallResults = await multicallOneMethodQuery(chain, addresses, nftABI, 'balanceOf', [wallet]);
+  let promises = data.nfts.map(nft => (async () => {
+    let balanceResults = multicallResults[nft.address];
+    if(balanceResults) {
+      let balance = parseBN(balanceResults[0]);
+      if(balance > 0) {
+        let newNFTs = await addTrackedNFTs(chain, 'wallet', 'none', nft, balance, wallet);
+        nfts.push(...newNFTs);
       }
-    })());
-    await Promise.all(promises);
-  }
+    }
+  })());
+  await Promise.all(promises);
   return nfts;
 }
 
@@ -415,7 +410,7 @@ export const getWalletNFTBalance = async (chain: Chain, wallet: Address) => {
  * @param address The hash to check for validity.
  * @returns True or false, depending on if the hash is a valid address or not.
  */
-export const isAddress = (address: Address) => {
+export const isAddress = (address: string) => {
   return ethers.utils.isAddress(address);
 }
 
@@ -755,11 +750,7 @@ export const getAllTokens = () => {
  */
 export const getTokens = (chain: Chain) => {
   let chainTokenData = getChainTokenData(chain);
-  if(chainTokenData) {
-    return chainTokenData.tokens;
-  } else {
-    return [];
-  }
+  return chainTokenData.tokens;
 }
 
 /* ========================================================================================================================================================================= */
@@ -770,26 +761,7 @@ export const getTokens = (chain: Chain) => {
  * @returns The given chain's token data.
  */
 export const getChainTokenData = (chain: Chain) => {
-  switch(chain) {
-    case 'eth':
-      return eth_data;
-    case 'bsc':
-      return bsc_data;
-    case 'poly':
-      return poly_data;
-    case 'ftm':
-      return ftm_data;
-    case 'avax':
-      return avax_data;
-    case 'cronos':
-      return cronos_data;
-    case 'op':
-      return op_data;
-    case 'arb':
-      return arb_data;
-    default:
-      return undefined;
-  }
+  return chainToTokenDataMap[chain]
 }
 
 /* ========================================================================================================================================================================= */
@@ -809,15 +781,13 @@ export const getTokenLogo = (chain: Chain, symbol: string) => {
   let data = getChainTokenData(chain);
 
   // Finding Token Logo:
-  if(data) {
-    let trackedToken = data.tokens.find(token => token.symbol === symbol);
-    if(trackedToken) {
-      logo = trackedToken.logo;
-    } else {
-      let token = data.logos.find(i => i.symbol === symbol);
-      if(token) {
-        logo = token.logo;
-      }
+  let trackedToken = data.tokens.find(token => token.symbol === symbol);
+  if(trackedToken) {
+    logo = trackedToken.logo;
+  } else {
+    let token = data.logos.find(i => i.symbol === symbol);
+    if(token) {
+      logo = token.logo;
     }
   }
 
@@ -915,11 +885,7 @@ export const getNativeTokenSymbol = (chain: Chain) => {
  */
 const getTrackedTokenInfo = (chain: Chain, address: Address) => {
   let data = getChainTokenData(chain);
-  if(data) {
-    return data.tokens.find(token => token.address.toLowerCase() === address.toLowerCase());
-  } else {
-    return undefined;
-  }
+  return data.tokens.find(token => token.address.toLowerCase() === address.toLowerCase());
 }
 
 /* ========================================================================================================================================================================= */

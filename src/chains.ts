@@ -1,10 +1,27 @@
 
+// Imports:
+import { arb_data, avax_data, bsc_data, cronos_data, eth_data, ftm_data, op_data, poly_data } from './tokens';
+
 // Type Imports:
-import type { Chain, ChainData, URL } from './types';
+import type { Chain, ChainData, ChainTokenData, URL } from './types';
 
 /* ========================================================================================================================================================================= */
 
-// Default chain RPC endpoints:
+// Chain To Token Data Mapping:
+export const chainToTokenDataMap: Record<Chain, ChainTokenData> = {
+  eth: eth_data,
+  bsc: bsc_data,
+  poly: poly_data,
+  ftm: ftm_data,
+  avax: avax_data,
+  cronos: cronos_data,
+  op: op_data,
+  arb: arb_data
+}
+
+/* ========================================================================================================================================================================= */
+
+// Default Chain RPC Endpoints:
 export const defaultRpcEndpoints: Record<Chain, URL[]> = {
   eth: [
     'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
@@ -36,8 +53,8 @@ export const defaultRpcEndpoints: Record<Chain, URL[]> = {
     'https://rpc.vvs.finance'
   ],
   op: [
-    'https://optimism-mainnet.public.blastapi.io',
     'https://mainnet.optimism.io',
+    'https://optimism-mainnet.public.blastapi.io',
     'https://rpc.ankr.com/optimism'
   ],
   arb: [
