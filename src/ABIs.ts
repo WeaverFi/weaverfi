@@ -361,7 +361,7 @@ export const quickswap: Record<`${quickswapABIs}ABI`, ABI> = {
 }
 
 // BenQi ABIs:
-type benqiABIs = 'controller' | 'market';
+type benqiABIs = 'controller' | 'market' | 'liquidStaking';
 export const benqi: Record<`${benqiABIs}ABI`, ABI> = {
   controllerABI: [
     { constant: true, inputs: [], name: "getAllMarkets", outputs: [{ name: "", type: "address[]" }], type: "function" }
@@ -369,6 +369,9 @@ export const benqi: Record<`${benqiABIs}ABI`, ABI> = {
   marketABI: [
     { constant: true, inputs: [{ name: "account", type: "address" }], name: "getAccountSnapshot", outputs: [{ name: "", type: "uint256" }, { name: "", type: "uint256" }, { name: "", type: "uint256" }, { name: "", type: "uint256" }], type: "function" },
     { constant: true, inputs: [], name: "underlying", outputs: [{ name: "", type: "address" }], type: "function" }
+  ],
+  liquidStakingABI: [
+    { constant: true, inputs: [{ name: "shareAmount", type: "uint256" }], name: "getPooledAvaxByShares", outputs: [{ name: "", type: "uint256" }], type: "function" }
   ]
 }
 
@@ -733,12 +736,12 @@ export const lostworlds: Record<`${lostworldsABIs}ABI`, ABI> = {
 }
 
 // Pika ABIs:
-type pikaABIs = 'perpetualV2' | 'vaultFeeV2';
+type pikaABIs = 'perpetual' | 'vaultFee';
 export const pika: Record<`${pikaABIs}ABI`, ABI> = {
-  perpetualV2ABI: [
+  perpetualABI: [
     { constant: true, inputs: [{ name: "stakeOwner", type: "address" }], name: "getShareBalance", outputs: [{name: "", type: "uint256"}], type: "function" }
   ],
-  vaultFeeV2ABI: [
+  vaultFeeABI: [
     { constant: true, inputs: [{ name: "account", type: "address" }], name: "getClaimableReward", outputs: [{name: "", type: "uint256"}], type: "function" }
   ]
 }

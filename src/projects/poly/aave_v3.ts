@@ -8,41 +8,41 @@ import { query, multicallOneContractQuery, addToken, addDebtToken, parseBN } fro
 import type { Chain, Address, Token, DebtToken, CallContext } from '../../types';
 
 // Initializations:
-const chain: Chain = 'ftm';
-const project = 'aave';
-const addressProviderV3: Address = '0xa97684ead0e402dC232d5A977953DF7ECBaB3CDb';
-const uiDataProviderV3: Address = '0x46E1b32fA843da745D7AA0ae630b544D6af9fe81';
-const dataProviderV3: Address = '0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654';
-const incentivesV3: Address = '0x929EC64c34a17401F460460D4B9390518E5B473e';
-const wftm: Address = '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83';
+const chain: Chain = 'poly';
+const project = 'aave_v3';
+const addressProvider: Address = '0xa97684ead0e402dC232d5A977953DF7ECBaB3CDb';
+const uiDataProvider: Address = '0x7006e5a16E449123a3F26920746d03337ff37340';
+const dataProvider: Address = '0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654';
+const incentives: Address = '0x929EC64c34a17401F460460D4B9390518E5B473e';
+const wmatic: Address = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270';
 
 /* ========================================================================================================================================================================= */
 
 // Function to get project balance:
 export const get = async (wallet: Address) => {
   let balance: (Token | DebtToken)[] = [];
-  balance.push(...(await getMarketBalancesV3(wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketBalancesV3()', err) })));
+  balance.push(...(await getMarketBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getMarketBalances()', err) })));
   return balance;
 }
 
 /* ========================================================================================================================================================================= */
 
-// Function to get V3 lending market balances:
-export const getMarketBalancesV3 = async (wallet: Address) => {
+// Function to get lending market balances:
+export const getMarketBalances = async (wallet: Address) => {
 
   // Initializations:
   let balances: (Token | DebtToken)[] = [];
   let ibTokens: Record<Address, { aTokenAddress: Address, variableDebtTokenAddress: Address }> = {};
 
   // Fetching Assets:
-  let assets: Address[] = await query(chain, uiDataProviderV3, aave.uiDataProviderABI, 'getReservesList', [addressProviderV3]);
+  let assets: Address[] = await query(chain, uiDataProvider, aave.uiDataProviderABI, 'getReservesList', [addressProvider]);
 
   // Market Balance Multicall Query:
   let calls: CallContext[] = [];
   assets.forEach(asset => {
     calls.push({ reference: asset, methodName: 'getUserReserveData', methodParameters: [asset, wallet] });
   });
-  let multicallResults = await multicallOneContractQuery(chain, dataProviderV3, aave.dataProviderABI, calls);
+  let multicallResults = await multicallOneContractQuery(chain, dataProvider, aave.dataProviderABI, calls);
   let promises = assets.map(asset => (async () => {
     let balanceResults = multicallResults[asset];
     if(balanceResults) {
@@ -51,14 +51,14 @@ export const getMarketBalancesV3 = async (wallet: Address) => {
       let currentVariableDebt = parseBN(balanceResults[2]);
       let stableBorrowRate = parseBN(balanceResults[5]);
       let liquidityRate = parseBN(balanceResults[6]);
-
+  
       // Finding Interest Bearing Token Addresses:
       if(currentATokenBalance > 0 || currentStableDebt > 0 || currentVariableDebt > 0) {
         if(!ibTokens[asset]) {
-          ibTokens[asset] = await query(chain, dataProviderV3, aave.dataProviderABI, 'getReserveTokensAddresses', [asset]);
+          ibTokens[asset] = await query(chain, dataProvider, aave.dataProviderABI, 'getReserveTokensAddresses', [asset]);
         }
       }
-  
+
       // Lending Balances:
       if(currentATokenBalance > 0) {
         let newToken = await addToken(chain, project, 'lent', asset, currentATokenBalance, wallet, ibTokens[asset].aTokenAddress);
@@ -80,7 +80,7 @@ export const getMarketBalancesV3 = async (wallet: Address) => {
       // Variable Borrowing Balances:
       if(currentVariableDebt > 0) {
         let newToken = await addDebtToken(chain, project, asset, currentVariableDebt, wallet, ibTokens[asset].aTokenAddress);
-        let extraData: { variableBorrowRate: number } = await query(chain, dataProviderV3, aave.dataProviderABI, 'getReserveData', [asset]);
+        let extraData: { variableBorrowRate: number } = await query(chain, dataProvider, aave.dataProviderABI, 'getReserveData', [asset]);
         newToken.info = {
           apy: extraData.variableBorrowRate / (10 ** 25)
         }
@@ -89,21 +89,21 @@ export const getMarketBalancesV3 = async (wallet: Address) => {
     }
   })());
   await Promise.all(promises);
-  balances.push(...(await getIncentivesV3(ibTokens, wallet)));
+  balances.push(...(await getIncentives(ibTokens, wallet)));
   return balances;
 }
 
-// Function to get unclaimed V3 incentives:
-export const getIncentivesV3 = async (ibTokens: Record<Address, { aTokenAddress: Address, variableDebtTokenAddress: Address }>, wallet: Address) => {
+// Function to get unclaimed incentives:
+export const getIncentives = async (ibTokens: Record<Address, { aTokenAddress: Address, variableDebtTokenAddress: Address }>, wallet: Address) => {
   if(Object.keys(ibTokens).length > 0) {
     let tokens: Address[] = [];
     for(let asset in ibTokens) {
       tokens.push(ibTokens[asset as Address].aTokenAddress);
       tokens.push(ibTokens[asset as Address].variableDebtTokenAddress);
     }
-    let rewards = parseInt(await query(chain, incentivesV3, aave.incentivesABI, 'getUserRewards', [tokens, wallet, wftm]));
+    let rewards = parseInt(await query(chain, incentives, aave.incentivesABI, 'getUserRewards', [tokens, wallet, wmatic]));
     if(rewards > 0) {
-      let newToken = await addToken(chain, project, 'unclaimed', wftm, rewards, wallet);
+      let newToken = await addToken(chain, project, 'unclaimed', wmatic, rewards, wallet);
       return [newToken];
     } else {
       return [];
