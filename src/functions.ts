@@ -21,12 +21,12 @@ export const defaultTokenLogo: URL = 'https://cdn.jsdelivr.net/gh/atomiclabs/cry
 export const defaultAddress: Address = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 export const zero: Address = '0x0000000000000000000000000000000000000000';
 const maxQueryRetries = 3;
-const estimatedL1RollupGas = 5000;
+const estimatedL1RollupGas = 5_000;
 const gasAmountEstimates: { type: string, gas: number }[] = [
-  { type: 'nativeTransfer', gas: 21000 },
-  { type: 'tokenTransfer', gas: 65000 },
-  { type: 'tokenSwap', gas: 150000 },
-  { type: 'nftTransfer', gas: 85000 }
+  { type: 'nativeTransfer', gas: 21_000 },
+  { type: 'tokenTransfer', gas: 65_000 },
+  { type: 'tokenSwap', gas: 150_000 },
+  { type: 'nftTransfer', gas: 85_000 }
 ];
 
 // Ignored Errors On Blockchain Queries:
