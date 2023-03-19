@@ -41,7 +41,7 @@ export const ignoredErrors: { chain: Chain, address: Address }[] = [
  * Function to update ethers providers for a chain.
  */
 export const updateChainProviders = (chain: Chain) => {
-  providers[chain] = chains[chain].rpcs.map(url => new ethers.providers.StaticJsonRpcProvider(url, chains[chain].id));
+  providers[chain] = chains[chain].rpcs.map(url => new ethers.providers.StaticJsonRpcProvider({ url, timeout: 30_000, throttleLimit: 1 }, chains[chain].id));
 }
 
 /**
