@@ -123,7 +123,8 @@ export const eth_data: ChainTokenData = {
     { address: '0x92B971d307ebFc7331C23429E204A5E4adF7a833', dataQuery: 'none', name: 'PoolTogether: Club Pooly' },
     { address: '0x7Bc25283a29A3888CAb4555Ea86fF1a8C18Cc90a', dataQuery: 'indexed', name: 'Set In Merge' },
     { address: '0xE42caD6fC883877A76A26A16ed92444ab177E306', dataQuery: 'none', name: 'ConsenSys: The Merge' },
-    { address: '0xBCC664B1E6848caba2Eb2f3dE6e21F81b9276dD8', dataQuery: 'none', name: 'Pfers' }
+    { address: '0xBCC664B1E6848caba2Eb2f3dE6e21F81b9276dD8', dataQuery: 'none', name: 'Pfers' },
+    { address: '0x47691834Cbb96Ce5fBCd1c82f3804fBA63460370', dataQuery: 'listed', name: 'Atlanteans' }
   ]
 }
 
