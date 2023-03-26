@@ -10,8 +10,6 @@ import type { Chain, Address, Token, DebtToken, CallContext } from '../../types'
 // Initializations:
 const chain: Chain = 'op';
 const project = 'aave_v3';
-const addressProvider: Address = '0xa97684ead0e402dC232d5A977953DF7ECBaB3CDb';
-const uiDataProvider: Address = '0x44b864b92043a960313F3C94BD6DB4dA202814F6';
 const dataProvider: Address = '0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654';
 const incentives: Address = '0x929EC64c34a17401F460460D4B9390518E5B473e';
 const op: Address = '0x4200000000000000000000000000000000000042';
@@ -32,10 +30,10 @@ export const getMarketBalances = async (wallet: Address) => {
 
   // Initializations:
   let balances: (Token | DebtToken)[] = [];
-  let ibTokens: Record<Address, { aTokenAddress: Address, variableDebtTokenAddress: Address }> = {};
+  let ibTokens: Record<Address, { aTokenAddress: Address, stableDebtTokenAddress: Address, variableDebtTokenAddress: Address }> = {};
 
   // Fetching Assets:
-  let assets: Address[] = await query(chain, uiDataProvider, aave.uiDataProviderABI, 'getReservesList', [addressProvider]);
+  let assets: Address[] = (await query(chain, dataProvider, aave.dataProviderABI, 'getAllReservesTokens', [])).map((result: any) => result[1]);
 
   // Market Balance Multicall Query:
   let calls: CallContext[] = [];
