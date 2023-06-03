@@ -72,8 +72,14 @@ export interface TokenInfo {
 	apy?: number
 	unlock?: number
 	deprecated?: boolean
+	relic?: RelicInfo
 }
-
+export interface RelicInfo {
+	id?: number
+	entry?: number
+	poolId?: number
+	level?: number
+}
 // Token Type Guards:
 export function isNativeToken(token: OwnedToken): token is NativeToken {
 	return token.type === 'nativeToken';

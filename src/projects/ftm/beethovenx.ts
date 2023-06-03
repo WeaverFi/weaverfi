@@ -6,7 +6,7 @@ import { addBalancerLikeToken } from '../../project-functions';
 import { query, multicallOneMethodQuery, multicallOneContractQuery, addToken, parseBN } from '../../functions';
 
 // Type Imports:
-import type { Chain, Address, Token, LPToken, CallContext } from '../../types';
+import type { Chain, Address, Token, LPToken, CallContext, RelicInfo } from '../../types';
 
 // Initializations:
 const chain: Chain = 'ftm';
@@ -15,6 +15,8 @@ const masterChef: Address = '0x8166994d9ebBe5829EC86Bd81258149B87faCfd3';
 const vault: Address = '0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce';
 const beetsToken: Address = '0xF24Bcf4d1e507740041C9cFd2DddB29585aDCe1e';
 const fBeetAddress: Address = '0xfcef8a994209d6916EB2C86cDD2AFD60Aa6F54b1';
+const relicAddress: Address = '0x1ed6411670c709F4e163854654BD52c74E66D7eC';
+const fbeetsPool: Address = '0x9e4341acEf4147196e99d648C5E43B3Fc9D02678';
 const pools: Address[] = [
   '0x0073AB9F483b1d8fc1495Cd2c0cd61Eb456D0b8a',
   '0x0202975FeC570d4BeBc5A3fbEA5AA8013A24a39c',
@@ -160,6 +162,8 @@ export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
   balance.push(...(await getPoolBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getPoolBalances()', err) })));
   balance.push(...(await getStakedBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedBalances()', err) })));
+	balance.push(...(await getReliquaryBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getReliquaryBalances()', err) })));
+
   return balance;
 }
 
@@ -221,4 +225,32 @@ export const getStakedBalances = async (wallet: Address) => {
     balances.push(beets);
   }
   return balances;
+}
+
+// Function to get all reliquary balances:
+export const getReliquaryBalances = async (wallet: Address) => {
+	let balances: (Token | LPToken)[] = [];
+
+	// Balance Query:
+	const positions = await query(chain, relicAddress, beethovenx.reliquaryABI, 'relicPositionsOfOwner', [wallet]);
+	const promises = [];
+
+	for (const [index, position] of positions.positionInfos?.entries()) {
+		let balance = parseBN(position.amount) * 10 ** 18
+		if (balance > 0) {
+			const relicInfo: RelicInfo = {
+				id: Number(positions.relicIds[index]),
+				entry: Number(position.entry),
+				poolId: Number(position.poolId),
+				level: Number(position.level)
+			}
+			let promise = addBalancerLikeToken(chain, project, 'staked', fbeetsPool, balance, wallet, vault, fbeetsPool, { relic: relicInfo });
+			promises.push(promise);
+			//console.log(`#${Number(positions.relicIds[index])}`, Number(position.amount))
+		}
+	}
+	const newTokens = await Promise.all(promises);
+	balances = balances.concat(newTokens);
+
+	return balances;
 }

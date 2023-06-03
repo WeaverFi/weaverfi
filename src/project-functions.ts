@@ -6,7 +6,7 @@ import { query, multicallOneContractQuery, multicallOneMethodQuery, addXToken, g
 import { minABI, lpABI, aave, balancer, belt, alpaca, curve, bzx, axial, mstable } from './ABIs';
 
 // Type Imports:
-import type { Chain, Address, Hash, TokenStatus, TokenType, Token, LPToken, PricedToken, CallContext } from './types';
+import type { Chain, Address, Hash, TokenStatus, TokenType, Token, LPToken, PricedToken, CallContext, TokenInfo } from './types';
 
 /* ========================================================================================================================================================================= */
 
@@ -355,7 +355,7 @@ export const addBalancerToken = async (chain: Chain, location: string, status: T
 }
 
 // Function to get Balancer-like LP token info:
-export const addBalancerLikeToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, vault: Address, contract?: Address): Promise<Token | LPToken> => {
+export const addBalancerLikeToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, vault: Address, contract?: Address, info?: TokenInfo): Promise<Token | LPToken> => {
 
   // Initializing Multicalls:
   const tokenCalls: CallContext[] = [

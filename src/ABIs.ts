@@ -77,14 +77,17 @@ export const balancer: Record<`${balancerABIs}ABI`, ABI> = {
 }
 
 // Beethovenx ABIs:
-type beethovenxABIs = 'masterChef';
+type beethovenxABIs = 'masterChef' | 'reliquary';
 export const beethovenx: Record<`${beethovenxABIs}ABI`, ABI> = {
   masterChefABI: [
     { constant: true, name: "lpTokens", inputs: [{ name: "", type: "uint256" }], outputs: [{ name: "", type: "address" }], type: "function" },
     { constant: true, name: "pendingBeets", inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], outputs: [{ name: "pending", type: "uint256" }], type: "function" },
     { constant: true, name: "poolLength", inputs: [], outputs: [{ name: "", type: "uint256" }], type: "function" },
     { constant: true, name: "userInfo", inputs: [{ name: "_pid", type: "uint256" }, { name: "_user", type: "address" }], outputs: [{ name: "amount", type: "uint256" }, { name: "rewardDebt", type: "uint256" }], type: "function" },
-  ]
+	],
+	reliquaryABI: [
+		{ constant: true, name: "relicPositionsOfOwner", inputs: [{ name: "owner", type: "address" }], outputs: [{ name: "relicIds", type: "uint256[]" }, { name: "positionInfos", type: "tuple[]", "components": [{ "name": "amount", "type": "uint256" }, { "name": "rewardDebt", "type": "uint256" }, { "name": "rewardCredit", "type": "uint256" }, { "name": "entry", "type": "uint256" }, { "name": "poolId", "type": "uint256" }, { "name": "level", "type": "uint256" }] }], type: "function" },
+	]
 }
 
 // Snowball ABIs:
