@@ -6,7 +6,7 @@ import { query, multicallOneContractQuery, multicallOneMethodQuery, addXToken, g
 import { minABI, lpABI, aave, balancer, belt, alpaca, curve, bzx, axial, mstable } from './ABIs';
 
 // Type Imports:
-import type { Chain, Address, Hash, TokenStatus, TokenType, Token, LPToken, PricedToken, CallContext } from './types';
+import type { Chain, Address, Hash, TokenStatus, TokenType, Token, LPToken, PricedToken, CallContext, TokenInfo } from './types';
 
 /* ========================================================================================================================================================================= */
 
@@ -350,12 +350,12 @@ export const addBZXToken = async (chain: Chain, location: string, status: TokenS
 /* ========================================================================================================================================================================= */
 
 // Function to get Balancer LP token info:
-export const addBalancerToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, contract?: Address) => {
-  return await addBalancerLikeToken(chain, location, status, address, rawBalance, owner, '0xBA12222222228d8Ba445958a75a0704d566BF2C8', contract);
+export const addBalancerToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, options?: { contract?: Address, tokenInfo?: TokenInfo }) => {
+  return await addBalancerLikeToken(chain, location, status, address, rawBalance, owner, '0xBA12222222228d8Ba445958a75a0704d566BF2C8', options);
 }
 
 // Function to get Balancer-like LP token info:
-export const addBalancerLikeToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, vault: Address, contract?: Address): Promise<Token | LPToken> => {
+export const addBalancerLikeToken = async (chain: Chain, location: string, status: TokenStatus, address: Address, rawBalance: number, owner: Address, vault: Address, options?: { contract?: Address, tokenInfo?: TokenInfo }): Promise<Token | LPToken> => {
 
   // Initializing Multicalls:
   const tokenCalls: CallContext[] = [
@@ -414,7 +414,7 @@ export const addBalancerLikeToken = async (chain: Chain, location: string, statu
       logo: getTokenLogo(chain, symbol1)
     }
 
-    return { type, chain, location, status, owner, symbol, address, balance, token0, token1, contract };
+    return { type, chain, location, status, owner, symbol, address, balance, token0, token1, ...options };
 
   // Others:
   } else {
@@ -432,7 +432,7 @@ export const addBalancerLikeToken = async (chain: Chain, location: string, statu
     }
     let price = priceSum / (lpTokenSupply / (10 ** decimals));
 
-    return { type, chain, location, status, owner, symbol, address, balance, price, logo, contract };
+    return { type, chain, location, status, owner, symbol, address, balance, price, logo, ...options };
   }
 }
 

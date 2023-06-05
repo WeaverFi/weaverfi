@@ -68,10 +68,12 @@ export interface XToken extends OwnedToken {
 	underlyingToken: PricedToken
 }
 export interface TokenInfo {
+	id?: string | number
 	apr?: number
 	apy?: number
 	unlock?: number
 	deprecated?: boolean
+	[other: string]: any
 }
 
 // Token Type Guards:
