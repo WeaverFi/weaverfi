@@ -68,18 +68,14 @@ export interface XToken extends OwnedToken {
 	underlyingToken: PricedToken
 }
 export interface TokenInfo {
+	id?: string | number
 	apr?: number
 	apy?: number
 	unlock?: number
 	deprecated?: boolean
-	relic?: RelicInfo
+	[other: string]: any
 }
-export interface RelicInfo {
-	id?: number
-	entry?: number
-	poolId?: number
-	level?: number
-}
+
 // Token Type Guards:
 export function isNativeToken(token: OwnedToken): token is NativeToken {
 	return token.type === 'nativeToken';

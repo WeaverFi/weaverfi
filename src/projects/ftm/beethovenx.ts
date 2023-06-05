@@ -6,7 +6,7 @@ import { addBalancerLikeToken } from '../../project-functions';
 import { query, multicallOneMethodQuery, multicallOneContractQuery, addToken, parseBN } from '../../functions';
 
 // Type Imports:
-import type { Chain, Address, Token, LPToken, CallContext, RelicInfo } from '../../types';
+import type { Chain, Address, Token, LPToken, CallContext, TokenInfo } from '../../types';
 
 // Initializations:
 const chain: Chain = 'ftm';
@@ -162,8 +162,7 @@ export const get = async (wallet: Address) => {
   let balance: (Token | LPToken)[] = [];
   balance.push(...(await getPoolBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getPoolBalances()', err) })));
   balance.push(...(await getStakedBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getStakedBalances()', err) })));
-	balance.push(...(await getReliquaryBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getReliquaryBalances()', err) })));
-
+  balance.push(...(await getReliquaryBalances(wallet).catch((err) => { throw new WeaverError(chain, project, 'getReliquaryBalances()', err) })));
   return balance;
 }
 
@@ -233,20 +232,19 @@ export const getReliquaryBalances = async (wallet: Address) => {
 
 	// Balance Query:
 	const positions = await query(chain, relicAddress, beethovenx.reliquaryABI, 'relicPositionsOfOwner', [wallet]);
-	const promises = [];
 
+	const promises = [];
 	for (const [index, position] of positions.positionInfos?.entries()) {
-		let balance = parseBN(position.amount) * 10 ** 18
+		let balance = parseBN(position.amount) * 10 ** 18;
 		if (balance > 0) {
-			const relicInfo: RelicInfo = {
+			const relicInfo: TokenInfo = {
 				id: Number(positions.relicIds[index]),
 				entry: Number(position.entry),
 				poolId: Number(position.poolId),
 				level: Number(position.level)
 			}
-			let promise = addBalancerLikeToken(chain, project, 'staked', fbeetsPool, balance, wallet, vault, fbeetsPool, { relic: relicInfo });
-			promises.push(promise);
-			//console.log(`#${Number(positions.relicIds[index])}`, Number(position.amount))
+			let newPromise = addBalancerLikeToken(chain, project, 'staked', fbeetsPool, balance, wallet, vault, { contract: fbeetsPool,  tokenInfo: relicInfo });
+			promises.push(newPromise);
 		}
 	}
 	const newTokens = await Promise.all(promises);
