@@ -76,6 +76,7 @@ export const projects: Record<Chain, string[]> = {
 		'beefy',
 		'pika',
 		'pooltogether_v4',
+		'pooltogether_v5',
 	],
 	poly: [
 		'aave_v2',

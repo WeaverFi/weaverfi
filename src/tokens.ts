@@ -674,7 +674,10 @@ export const op_data: ChainTokenData = {
   ],
   logos: [
     { symbol: 'ETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' },
-    { symbol: 'PTaOptUSDC', logo: 'https://raw.githubusercontent.com/pooltogether/pooltogether-react-components/08439a1fcdf661d89211d72815eec73b26d1bc1f/src/assets/Tokens/ptausdc.png' }
+    { symbol: 'PTaOptUSDC', logo: 'https://raw.githubusercontent.com/pooltogether/pooltogether-react-components/08439a1fcdf661d89211d72815eec73b26d1bc1f/src/assets/Tokens/ptausdc.png' },
+    { symbol: 'pUSDC.e', logo: 'https://app.cabana.fi/icons/pUSDC.e.svg' },
+    { symbol: 'pWETH', logo: 'https://app.cabana.fi/icons/pWETH.svg' },
+    { symbol: 'pDAI', logo: 'https://app.cabana.fi/icons/pDAI.svg' }
   ],
   nfts: [
     { address: '0xfb3999711d4f309F6B71504268F79b3fD578DA6F', dataQuery: 'none', name: 'Merge Bears: Consensus Layer Bear' },

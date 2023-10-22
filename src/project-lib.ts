@@ -74,6 +74,7 @@ import * as op_aave_v3 from './projects/op/aave_v3';
 import * as op_beefy from './projects/op/beefy';
 import * as op_pika from './projects/op/pika';
 import * as op_pooltogether_v4 from './projects/op/pooltogether_v4';
+import * as op_pooltogether_v5 from './projects/op/pooltogether_v5';
 
 // POLY Project Imports:
 import * as poly_aave_v2 from './projects/poly/aave_v2';
@@ -163,6 +164,7 @@ const projects: Record<Chain, Record<string, any>> = {
 		beefy: op_beefy,
 		pika: op_pika,
 		pooltogether_v4: op_pooltogether_v4,
+		pooltogether_v5: op_pooltogether_v5,
 	},
 	poly: {
 		aave_v2: poly_aave_v2,

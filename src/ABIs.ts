@@ -749,3 +749,11 @@ export const pika: Record<`${pikaABIs}ABI`, ABI> = {
     { constant: true, inputs: [{ name: "account", type: "address" }], name: "getClaimableReward", outputs: [{name: "", type: "uint256"}], type: "function" }
   ]
 }
+
+// PoolTogether ABIs:
+type pooltogetherABIs = 'prizeVault';
+export const pooltogether: Record<`${pooltogetherABIs}ABI`, ABI> = {
+  prizeVaultABI: [
+    { constant: true, inputs: [{ name: '_shares', type: 'uint256' }], name: 'convertToAssets', outputs: [{ name: '', type: 'uint256' }], type: 'function' }
+  ]
+}
