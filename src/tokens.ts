@@ -670,7 +670,8 @@ export const op_data: ChainTokenData = {
     { address: '0x4200000000000000000000000000000000000042', symbol: 'OP', logo: 'https://optimistic.etherscan.io/token/images/optimism_32.png', decimals: 18 },
     { address: '0xFA436399d0458Dbe8aB890c3441256E3E09022a8', symbol: 'ZIP', logo: 'https://optimistic.etherscan.io/token/images/zipswap_32.png', decimals: 18 },
     { address: '0x4E720DD3Ac5CFe1e1fbDE4935f386Bb1C66F4642', symbol: 'BIFI', logo: 'https://optimistic.etherscan.io/token/images/beefy_32.png', decimals: 18 },
-    { address: '0x8B21e9b7dAF2c4325bf3D18c1BeB79A347fE902A', symbol: 'COLLAB', logo: 'https://assets.coingecko.com/coins/images/29098/small/collab.png?1676566517', decimals: 18 }
+    { address: '0x8B21e9b7dAF2c4325bf3D18c1BeB79A347fE902A', symbol: 'COLLAB', logo: 'https://assets.coingecko.com/coins/images/29098/small/collab.png?1676566517', decimals: 18 },
+    { address: '0x395Ae52bB17aef68C2888d941736A71dC6d4e125', symbol: 'POOL', logo: 'https://optimistic.etherscan.io/token/images/pooltogether_32.png', decimals: 18 }
   ],
   logos: [
     { symbol: 'ETH', logo: 'https://bscscan.com/token/images/ethereum_32.png' },

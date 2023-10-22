@@ -471,7 +471,9 @@ const redirectTokenPriceFeed = async (chain: Chain, address: Address) => {
       break;
     case 'op':
       switch(address.toLowerCase()) {
-        // None yet.
+        case '0x395ae52bb17aef68c2888d941736a71dc6d4e125': // POOL
+          proxyToken = { chain: 'eth', address: '0x0cec1a9154ff802e7934fc916ed7ca50bde6844e', decimals: 18 };
+          break;
       }
       break;
     case 'arb':
